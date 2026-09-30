@@ -1,0 +1,61 @@
+---
+/**
+ * Über-Seite = Entitäts-Hub der Person (ProfilePage). Text kommt aus
+ * src/content/pages/ueber.mdx, Struktur & Schema aus dieser Datei.
+ */
+import { Image } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { mdxComponents } from '@/components/mdx';
+import portrait from '@/assets/brand/portrait.jpg';
+import signature from '@/assets/brand/signature.png';
+import { PERSON } from '@/site.config';
+import { abs, breadcrumbSchema, graph, ID, personSchema, websiteSchema } from '@/lib/seo';
+
+const page = await getEntry('pages', 'ueber');
+if (!page) throw new Error('src/content/pages/ueber.mdx fehlt');
+const { Content } = await render(page);
+const crumbs = [{ name: 'Start', path: '/' }, { name: page.data.title, path: '/ueber/' }];
+
+const jsonLd = graph(
+  websiteSchema(),
+  personSchema(),
+  breadcrumbSchema(crumbs),
+  { '@type': 'ProfilePage', '@id': `${abs('/ueber/')}#page`, url: abs('/ueber/'), name: page.data.title, mainEntity: { '@id': ID.person }, ...(page.data.updated ? { dateModified: page.data.updated.toISOString() } : {}) },
+);
+---
+
+<BaseLayout title={page.data.seoTitle ?? page.data.title} description={page.data.description} type="profile" jsonLd={jsonLd}>
+  <PageHeader kicker={page.data.kicker ?? 'Über'} title={page.data.title} crumbs={crumbs} />
+  <section class="section">
+    <div class="container about">
+      <aside class="about__aside">
+        <Image src={portrait} alt={`Porträt von ${PERSON.name}`} widths={[320, 520, 720]} sizes="(min-width: 900px) 30vw, 100vw" />
+        <dl class="mono about__facts">
+          <div><dt>Name</dt><dd>{PERSON.name}</dd></div>
+          <div><dt>Rolle</dt><dd>{PERSON.jobTitle}</dd></div>
+          <div><dt>Basis</dt><dd>{PERSON.homeLocation}</dd></div>
+          <div><dt>Themen</dt><dd>{PERSON.knowsAbout.join(', ')}</dd></div>
+        </dl>
+      </aside>
+      <div>
+        <div class="prose"><Content components={mdxComponents} /></div>
+        <Image src={signature} alt="" width={280} class="about__sign" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--space-8); }
+  .about__aside { position: sticky; top: 6rem; align-self: start; }
+  .about__aside > :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border: var(--hairline) solid var(--line-strong); }
+  .about__facts { margin-top: var(--space-5); display: grid; gap: var(--space-3); }
+  .about__facts div { display: grid; grid-template-columns: 5rem 1fr; gap: var(--space-3); padding-top: var(--space-3); border-top: var(--hairline) solid var(--line); }
+  .about__facts dt { color: var(--fg-muted); text-transform: uppercase; }
+  .about__facts dd { margin: 0; }
+  .about :global(.about__sign) { margin-top: var(--space-7); width: 240px; opacity: 0.85; }
+  :global([data-theme='light']) .about :global(.about__sign) { filter: invert(1); }
+  @media (max-width: 860px) { .about { grid-template-columns: 1fr; } .about__aside { position: static; max-width: 420px; } }
+</style>

@@ -1,0 +1,39 @@
+---
+import { Image } from 'astro:assets';
+import { type Project, STATUS_LABELS } from '@/lib/content';
+
+export interface Props { project: Project; index?: number; headingLevel?: 'h2' | 'h3' }
+const { project, index, headingLevel: H = 'h3' } = Astro.props;
+const { data } = project;
+const years = `${data.started.getFullYear()}${data.ended ? `–${data.ended.getFullYear()}` : data.status === 'aktiv' ? '–heute' : ''}`;
+---
+
+<article class="pcard">
+  <div class="pcard__top mono">
+    {index !== undefined && <span class="pcard__idx">{String(index + 1).padStart(2, '0')}</span>}
+    <span class={`status status--${data.status}`}>{STATUS_LABELS[data.status]}</span>
+  </div>
+  {data.cover && (
+    <div class="pcard__media">
+      <Image src={data.cover} alt={data.coverAlt ?? ''} widths={[400, 700]} sizes="(min-width: 900px) 33vw, 100vw" />
+    </div>
+  )}
+  <H class="pcard__title display"><a href={`/projekte/${project.id}/`}>{data.title}</a></H>
+  <p class="pcard__desc">{data.summary}</p>
+  <p class="pcard__foot mono muted">{data.role && <span>{data.role} · </span>}{years}</p>
+</article>
+
+<style>
+  .pcard { position: relative; display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-5); border: var(--hairline) solid var(--line); background: var(--bg-raised); transition: border-color var(--dur-2), transform var(--dur-2) var(--ease-out); }
+  .pcard:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+  .pcard__top { display: flex; justify-content: space-between; align-items: center; }
+  .pcard__idx { color: var(--accent); }
+  .pcard__media { margin-inline: calc(var(--space-5) * -1); }
+  .pcard__media :global(img) { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+  .pcard__title { font-size: var(--step-3); line-height: 1; }
+  .pcard__title a { text-decoration: none; }
+  .pcard__title a::after { content: ''; position: absolute; inset: 0; }
+  .pcard:hover .pcard__title a { color: var(--accent); }
+  .pcard__desc { color: var(--fg-muted); font-size: var(--step--1); flex: 1; }
+  .pcard__foot { padding-top: var(--space-3); border-top: var(--hairline) solid var(--line); }
+</style>

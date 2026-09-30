@@ -1,0 +1,39 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { getAllTags, tagLabel } from '@/lib/content';
+import { breadcrumbSchema, graph, websiteSchema } from '@/lib/seo';
+
+const tags = await getAllTags();
+const title = 'Themen';
+const description = 'Alle Themen auf dennissteinmann.com im Überblick: Mobile Apps, Software, Unternehmertum, Personal Brand, SEO, KI und mehr.';
+const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/themen/' }];
+---
+
+<BaseLayout title={title} description={description} jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs))}>
+  <PageHeader kicker="Index" title="Themen" lead="Jeder Text und jedes Projekt ist einem oder mehreren Themen zugeordnet." crumbs={crumbs} />
+  <section class="section">
+    <div class="container">
+      <ul class="topics" role="list">
+        {tags.map(({ tag, count }, i) => (
+          <li>
+            <a href={`/themen/${tag}/`}>
+              <span class="mono topics__i">{String(i + 1).padStart(2, '0')}</span>
+              <span class="display topics__name">{tagLabel(tag)}</span>
+              <span class="mono topics__count">{count}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .topics { list-style: none; padding: 0; }
+  .topics a { display: grid; grid-template-columns: 3rem 1fr auto; align-items: baseline; gap: var(--space-4); padding-block: var(--space-4); border-top: var(--hairline) solid var(--line); text-decoration: none; }
+  .topics li:last-child a { border-bottom: var(--hairline) solid var(--line); }
+  .topics__i, .topics__count { color: var(--fg-muted); }
+  .topics__name { font-size: var(--step-3); line-height: 1; transition: transform var(--dur-2) var(--ease-out); }
+  .topics a:hover .topics__name { transform: translateX(0.4rem); color: var(--accent); }
+</style>

@@ -1,0 +1,23 @@
+---
+/**
+ * Bild mit Bildunterschrift. Nutzung in MDX:
+ *   <Figure src={import('./screenshot.png')} alt="Was zu sehen ist" caption="Quelle / Erklärung" wide />
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+export interface Props {
+  /** Lokales Bild: src={import('./bild.jpg')} */
+  src: ImageMetadata | Promise<{ default: ImageMetadata }>;
+  alt: string;
+  caption?: string;
+  /** Bricht aus der Textspalte aus (bis 1100px). */
+  wide?: boolean;
+}
+const { src, alt, caption, wide = false } = Astro.props;
+---
+
+<figure class:list={[{ wide }]}>
+  <Image src={src} alt={alt} widths={wide ? [640, 1100, 1600, 2200] : [480, 720, 1080, 1440]} sizes={wide ? '(min-width: 1100px) 1100px, 100vw' : '(min-width: 760px) 720px, 100vw'} />
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

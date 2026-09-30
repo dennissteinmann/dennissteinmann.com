@@ -1,0 +1,42 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import { getProjects } from '@/lib/content';
+import { breadcrumbSchema, collectionSchema, graph, websiteSchema } from '@/lib/seo';
+
+const projects = await getProjects();
+const active = projects.filter((p) => p.data.status === 'aktiv' || p.data.status === 'idee');
+const past = projects.filter((p) => !active.includes(p));
+const title = 'Projekte';
+const description = 'Alle Projekte von Dennis Steinmann – Apps, Software und Unternehmen. Mit Status, Rolle, Zeitraum und allen Artikeln zum jeweiligen Projekt.';
+const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/projekte/' }];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs), collectionSchema('/projekte/', title, description, projects.map((p) => ({ path: `/projekte/${p.id}/`, name: p.data.title }))))}
+>
+  <PageHeader kicker={`Werkverzeichnis · ${projects.length} Projekte`} title="Woran ich <em>baue.</em>" lead="Jedes Projekt hat eine eigene Seite. Dort laufen alle Artikel, Logbuch-Einträge und Zahlen zusammen – ein dauerhaftes Archiv statt verstreuter Posts." crumbs={crumbs} />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><span class="section-head__index">01</span><h2 class="display h-m">Aktuell</h2><span></span></div>
+      <div class="pgrid">{active.map((p, i) => <ProjectCard project={p} index={i} />)}</div>
+    </div>
+  </section>
+
+  {past.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><span class="section-head__index">02</span><h2 class="display h-m">Archiv</h2><span></span></div>
+        <div class="pgrid">{past.map((p, i) => <ProjectCard project={p} index={i} />)}</div>
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--space-4); }
+</style>

@@ -1,0 +1,43 @@
+---
+/**
+ * Freie Unterseiten aus src/content/pages/*.mdx → /<dateiname>/
+ * Seiten mit eigener Route (z. B. ueber) werden hier ausgelassen.
+ */
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { mdxComponents } from '@/components/mdx';
+import { type Page, getPages, formatDate, DEDICATED_PAGES } from '@/lib/content';
+import { abs, breadcrumbSchema, graph, websiteSchema } from '@/lib/seo';
+
+export async function getStaticPaths() {
+  return (await getPages())
+    .filter((p) => !DEDICATED_PAGES.includes(p.id))
+    .map((page) => ({ params: { slug: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props as { page: Page };
+const { data } = page;
+const { Content } = await render(page);
+const path = `/${page.id}/`;
+const crumbs = [{ name: 'Start', path: '/' }, { name: data.title, path }];
+---
+
+<BaseLayout
+  title={data.seoTitle ?? data.title}
+  description={data.description}
+  noindex={data.noindex}
+  jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs), { '@type': data.schemaType, url: abs(path), name: data.title, description: data.description })}
+>
+  <PageHeader kicker={data.kicker} title={data.title} crumbs={crumbs} />
+  <section class="section">
+    <div class="container container--narrow">
+      <div class="prose"><Content components={mdxComponents} /></div>
+      {data.updated && <p class="mono muted updated">Stand: {formatDate(data.updated)}</p>}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .updated { margin-top: var(--space-7); }
+</style>

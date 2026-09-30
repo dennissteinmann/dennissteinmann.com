@@ -1,0 +1,22 @@
+---
+/**
+ * Hinweisbox. <Callout type="note|warn|lesson" title="…">Text</Callout>
+ * "lesson" = Learning / Erkenntnis (Build-in-Public-Format).
+ */
+export interface Props { type?: 'note' | 'warn' | 'lesson'; title?: string }
+const { type = 'note', title } = Astro.props;
+const labels = { note: 'Notiz', warn: 'Achtung', lesson: 'Learning' };
+---
+
+<aside class:list={['callout', `callout--${type}`]}>
+  <p class="callout__label mono">{title ?? labels[type]}</p>
+  <div class="callout__body"><slot /></div>
+</aside>
+
+<style>
+  .callout { padding: var(--space-5); background: var(--bg-raised); border: var(--hairline) solid var(--line); border-left: 3px solid var(--fg-muted); }
+  .callout--warn { border-left-color: var(--accent); }
+  .callout--lesson { border-left-color: var(--highlight); }
+  .callout__label { text-transform: uppercase; letter-spacing: var(--tracking-caps); color: var(--fg-muted); margin-bottom: var(--space-2); }
+  .callout__body > :global(* + *) { margin-top: 0.8em; }
+</style>

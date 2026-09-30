@@ -1,0 +1,106 @@
+name: Build & Deploy dennissteinmann.com
+
+# Jeder Push auf main = Build + Deploy auf den Server (rsync über SSH).
+# Gleiches Muster wie sinnapps-website (CloudPanel, sshpass).
+# Benötigte Repository-Secrets (Settings → Secrets and variables → Actions):
+#   SSH_HOST, SSH_USER, SSH_PASSWORD, optional SSH_PORT (Standard 22)
+# Solange SSH_HOST fehlt, wird nur gebaut (Qualitätsprüfung), nicht deployed.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+env:
+  # Ziel RELATIV zum Home des SSH-Users. CloudPanel verlinkt ~/htdocs auf das Document-Root.
+  REMOTE_PATH: htdocs/dennissteinmann.com
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Type- & Content-Check + Build
+        run: npm run build
+
+      - name: SEO-Smoke-Test
+        run: node scripts/check-dist.mjs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Secrets vorhanden?
+        id: guard
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          if [ -z "$SSH_HOST" ]; then
+            echo "::warning::SSH_HOST nicht gesetzt – Deploy übersprungen."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/download-artifact@v4
+        if: steps.guard.outputs.ok == 'true'
+        with:
+          name: dist
+          path: dist
+
+      - name: Install sshpass
+        if: steps.guard.outputs.ok == 'true'
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Trust host key
+        if: steps.guard.outputs.ok == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.SSH_PORT || 22 }}" -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Ensure remote directory exists
+        if: steps.guard.outputs.ok == 'true'
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          sshpass -e ssh -p "${{ secrets.SSH_PORT || 22 }}" -o StrictHostKeyChecking=accept-new \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "mkdir -p ~/'${{ env.REMOTE_PATH }}' && ls -ld ~/'${{ env.REMOTE_PATH }}'"
+
+      - name: Deploy with rsync
+        if: steps.guard.outputs.ok == 'true'
+        env:
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
+        run: |
+          # -rlz (kein -a): Zielordner gehört dem CloudPanel-Site-User.
+          # --delete entfernt Dateien, die nicht mehr im Build sind.
+          # .well-known/ (Let's Encrypt) bleibt unangetastet.
+          sshpass -e rsync -rlzv --delete --checksum \
+            --omit-dir-times --no-perms --no-owner --no-group \
+            -e "ssh -p ${{ secrets.SSH_PORT || 22 }} -o StrictHostKeyChecking=accept-new" \
+            --exclude='.well-known/' \
+            --exclude='.DS_Store' \
+            ./dist/ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.REMOTE_PATH }}/"

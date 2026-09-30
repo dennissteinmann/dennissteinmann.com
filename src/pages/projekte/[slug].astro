@@ -1,0 +1,88 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+import LogList from '@/components/LogList.astro';
+import { mdxComponents } from '@/components/mdx';
+import { type Project, getProjects, getArticles, getArticleNumbers, getLog, STATUS_LABELS, formatDate, tagLabel } from '@/lib/content';
+import { abs, breadcrumbSchema, graph, ID, websiteSchema } from '@/lib/seo';
+
+export async function getStaticPaths() {
+  return (await getProjects()).map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props as { project: Project };
+const { data } = project;
+const { Content } = await render(project);
+const path = `/projekte/${project.id}/`;
+const articles = (await getArticles()).filter((a) => a.data.project?.id === project.id);
+const numbers = await getArticleNumbers();
+const log = (await getLog()).filter((l) => l.data.project?.id === project.id);
+const crumbs = [{ name: 'Start', path: '/' }, { name: 'Projekte', path: '/projekte/' }, { name: data.title, path }];
+
+const jsonLd = graph(
+  websiteSchema(),
+  breadcrumbSchema(crumbs),
+  {
+    '@type': 'CreativeWork',
+    '@id': `${abs(path)}#project`,
+    name: data.title,
+    description: data.summary,
+    url: abs(path),
+    creator: { '@id': ID.person },
+    dateCreated: data.started.toISOString(),
+    ...(data.url ? { sameAs: data.url } : {}),
+    keywords: data.tags.map(tagLabel).join(', '),
+  },
+);
+---
+
+<BaseLayout title={`${data.title} – Projekt`} description={data.description} image={`/og/projekte/${project.id}.png`} jsonLd={jsonLd}>
+  <PageHeader kicker="Projekt" title={data.title} lead={data.summary} crumbs={crumbs}>
+    <dl class="facts mono">
+      <div><dt>Status</dt><dd><span class={`status status--${data.status}`}>{STATUS_LABELS[data.status]}</span></dd></div>
+      {data.role && <div><dt>Rolle</dt><dd>{data.role}</dd></div>}
+      <div><dt>Start</dt><dd>{formatDate(data.started)}</dd></div>
+      {data.ended && <div><dt>Ende</dt><dd>{formatDate(data.ended)}</dd></div>}
+      {data.url && <div><dt>Website</dt><dd><a href={data.url} rel="noopener">{new URL(data.url).hostname}</a></dd></div>}
+    </dl>
+  </PageHeader>
+
+  {data.cover && (
+    <div class="container cover"><Image src={data.cover} alt={data.coverAlt ?? ''} widths={[640, 1024, 1440]} sizes="100vw" loading="eager" /></div>
+  )}
+
+  <section class="section">
+    <div class="container container--narrow">
+      <div class="prose"><Content components={mdxComponents} /></div>
+    </div>
+  </section>
+
+  {articles.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><span class="section-head__index">{String(articles.length).padStart(2, '0')}</span><h2 class="display h-m">Artikel zu {data.title}</h2><span></span></div>
+        {articles.map((a) => <ArticleCard article={a} number={numbers.get(a.id)} />)}
+      </div>
+    </section>
+  )}
+
+  {log.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><span class="section-head__index">{String(log.length).padStart(2, '0')}</span><h2 class="display h-m">Logbuch</h2><a class="arrow-link" href="/logbuch/">Gesamtes Logbuch</a></div>
+        <LogList entries={log} headingLevel="h3" />
+      </div>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .facts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-7); padding-top: var(--space-5); border-top: var(--hairline) solid var(--line); margin-top: var(--space-6) !important; }
+  .facts dt { color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .facts dd { margin: 0; }
+  .cover { margin-top: var(--space-7); }
+  .cover :global(img) { width: 100%; max-height: 70vh; object-fit: cover; }
+</style>

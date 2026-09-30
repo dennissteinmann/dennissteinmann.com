@@ -1,0 +1,117 @@
+---
+import { NAV, SITE } from '@/site.config';
+import Crest from './Crest.astro';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a href="/" class="brand" aria-label={`${SITE.name} – Startseite`}>
+      <Crest size="1.9rem" />
+      <span class="brand__text">
+        <span class="wordmark brand__name">Steinmann</span>
+        <span class="brand__motto mono">{SITE.motto}</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Hauptnavigation" id="site-nav">
+      <ul role="list">
+        {NAV.map((item, i) => (
+          <li>
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              <span class="nav__index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="site-header__tools">
+      <button class="theme-toggle" type="button" aria-label="Farbschema wechseln" data-theme-toggle>
+        <span aria-hidden="true" class="theme-toggle__dot"></span>
+      </button>
+      <button class="menu-toggle mono" type="button" aria-expanded="false" aria-controls="site-nav" data-menu-toggle>
+        Menü
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector('.site-header');
+  const menuBtn = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  menuBtn?.addEventListener('click', () => {
+    const open = menuBtn.getAttribute('aria-expanded') === 'true';
+    menuBtn.setAttribute('aria-expanded', String(!open));
+    header?.classList.toggle('is-open', !open);
+    menuBtn.textContent = open ? "Menü" : "Schließen";
+    document.body.style.overflow = open ? "" : "hidden";
+  });
+
+  document.querySelector('[data-theme-toggle]')?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.dataset.theme === 'light' ? 'dark' : 'light';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch {}
+  });
+
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+
+<style>
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom: var(--hairline) solid transparent;
+    transition: border-color var(--dur-2);
+  }
+  .site-header.is-scrolled { border-bottom-color: var(--line); }
+  .site-header__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-5); min-height: 4.25rem; }
+
+  .brand { display: flex; align-items: center; gap: var(--space-3); text-decoration: none; color: var(--fg-strong); }
+  .brand:hover { color: var(--fg-strong); }
+  .brand:hover :global(.crest) { color: var(--accent); }
+  .brand :global(.crest) { transition: color var(--dur-2); }
+  .brand__text { display: flex; flex-direction: column; line-height: 1; gap: 0.3rem; }
+  .brand__name { font-size: 1.15rem; }
+  .brand__motto { font-size: 0.6rem; white-space: nowrap; text-transform: uppercase; letter-spacing: 0.22em; color: var(--fg-muted); }
+
+  .nav ul { display: flex; gap: var(--space-2); list-style: none; padding: 0; }
+  .nav a {
+    display: inline-flex; align-items: baseline; gap: 0.45em;
+    padding: 0.5em 0.75em; text-decoration: none;
+    font-size: var(--step--1); font-weight: 500; color: var(--fg-muted);
+    transition: color var(--dur-1);
+  }
+  .nav a:hover, .nav a[aria-current='page'] { color: var(--fg-strong); }
+  .nav a[aria-current='page'] .nav__index { color: var(--accent); }
+  .nav__index { font-family: var(--font-mono); font-size: 0.68em; color: var(--fg-subtle); }
+
+  .site-header__tools { display: flex; align-items: center; gap: var(--space-3); }
+  .theme-toggle { width: 2.25rem; height: 2.25rem; display: grid; place-items: center; border: var(--hairline) solid var(--line-strong); border-radius: 50%; }
+  .theme-toggle__dot { width: 0.85rem; height: 0.85rem; border-radius: 50%; background: linear-gradient(90deg, var(--fg-strong) 50%, transparent 50%); border: 1.5px solid var(--fg-strong); transition: transform var(--dur-3) var(--ease-out); }
+  :global([data-theme='light']) .theme-toggle__dot { transform: rotate(180deg); }
+  .menu-toggle { display: none; text-transform: uppercase; letter-spacing: 0.1em; padding: 0.6em 0.9em; border: var(--hairline) solid var(--line-strong); color: var(--fg-strong); }
+
+  @media (max-width: 860px) {
+    .menu-toggle { display: inline-block; }
+    .nav {
+      position: fixed; inset: 4.25rem 0 auto 0; height: calc(100dvh - 4.25rem);
+      background: var(--bg); padding: var(--space-6) var(--gutter);
+      transform: translateY(-8px); opacity: 0; visibility: hidden;
+      transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out), visibility var(--dur-2);
+    }
+    .is-open .nav { opacity: 1; visibility: visible; transform: none; }
+    .nav ul { flex-direction: column; gap: 0; }
+    .nav li { border-bottom: var(--hairline) solid var(--line); }
+    .nav a { font-family: var(--font-display); font-size: var(--step-4); font-weight: 400; color: var(--fg-strong); padding: 0.25em 0; gap: 0.6em; width: 100%; }
+    .nav__index { font-size: var(--step--1); }
+  }
+</style>

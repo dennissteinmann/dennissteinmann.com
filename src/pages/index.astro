@@ -1,0 +1,142 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ArticleCard from '@/components/ArticleCard.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import LogList from '@/components/LogList.astro';
+import Crest from '@/components/Crest.astro';
+import portrait from '@/assets/brand/portrait.jpg';
+import { SITE, PERSON } from '@/site.config';
+import { getArticles, getArticleNumbers, getProjects, getLog } from '@/lib/content';
+import { graph, personSchema, websiteSchema } from '@/lib/seo';
+
+const articles = await getArticles();
+const numbers = await getArticleNumbers();
+const [featured, ...rest] = articles;
+const projects = (await getProjects()).filter((p) => p.data.status === 'aktiv').slice(0, 3);
+const log = (await getLog()).slice(0, 3);
+const projectNames = new Map((await getProjects()).map((p) => [p.id, p.data.title]));
+---
+
+<BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), personSchema())}>
+  <section class="hero grid-lines">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="container hero__inner">
+      <p class="kicker reveal">
+        <span class="kicker--accent">●</span>&nbsp; {PERSON.jobTitle} — Seit {SITE.startYear} öffentlich dokumentiert
+      </p>
+      <h1 class="display h-xxl hero__title reveal" style="--i:1">
+        Dennis<br /><em>Steinmann</em>
+      </h1>
+      <div class="hero__row reveal" style="--i:2">
+        <p class="lead">
+          Ich baue Apps, Software und Unternehmen – und schreibe hier auf, wie es wirklich läuft.
+          Mit Zahlen, Fehlern und allem, was ich dabei lerne.
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--accent" href="/artikel/">Artikel lesen</a>
+          <a class="btn" href="/projekte/">Projekte</a>
+        </div>
+      </div>
+      <figure class="hero__portrait reveal" style="--i:3">
+        <Image src={portrait} alt="Porträt von Dennis Steinmann" widths={[240, 400, 560]} sizes="(min-width: 900px) 280px, 40vw" loading="eager" fetchpriority="high" />
+        <figcaption class="mono">Fig. 01 — {PERSON.name}</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee__track mono">
+      {Array.from({ length: 2 }).map(() => (
+        <span>Build in Public <Crest size="0.9rem" /> Langform statt Lärm <Crest size="0.9rem" /> Zahlen statt Behauptungen <Crest size="0.9rem" /> {SITE.motto} <Crest size="0.9rem" />&nbsp;</span>
+      ))}
+    </div>
+  </div>
+
+  {featured && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-head__index">01</span>
+          <h2 class="display h-m">Neueste Artikel</h2>
+          <a class="arrow-link" href="/artikel/">Alle {articles.length}</a>
+        </div>
+        <ArticleCard article={featured} number={numbers.get(featured.id)} variant="feature" />
+        {rest.slice(0, 4).map((a) => <ArticleCard article={a} number={numbers.get(a.id)} />)}
+      </div>
+    </section>
+  )}
+
+  {projects.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-head__index">02</span>
+          <h2 class="display h-m">Aktive Projekte</h2>
+          <a class="arrow-link" href="/projekte/">Alle Projekte</a>
+        </div>
+        <div class="pgrid">{projects.map((p, i) => <ProjectCard project={p} index={i} />)}</div>
+      </div>
+    </section>
+  )}
+
+  {log.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-head__index">03</span>
+          <h2 class="display h-m">Aus dem Logbuch</h2>
+          <a class="arrow-link" href="/logbuch/">Ganzes Logbuch</a>
+        </div>
+        <LogList entries={log} projectNames={projectNames} headingLevel="h3" />
+      </div>
+    </section>
+  )}
+
+  <section class="section manifest">
+    <div class="container manifest__inner">
+      <Crest size="clamp(6rem, 12vw, 11rem)" class="manifest__crest" />
+      <div>
+        <p class="kicker kicker--accent">Warum diese Seite existiert</p>
+        <p class="display h-l">Social-Media-Posts verschwinden nach 48 Stunden. <em>Diese Seite bleibt.</em></p>
+        <p class="lead muted">Alles, was ich teile, beginnt hier als ausführlicher Text – und wird erst danach zu Posts, Carousels und Videos. Das Original bleibt auffindbar. Für Jahrzehnte.</p>
+        <a class="arrow-link" href="/ueber/">Mehr über mich</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { position: relative; overflow: hidden; padding-block: var(--space-8) var(--space-9); border-bottom: var(--hairline) solid var(--line); }
+  .hero__glow {
+    position: absolute; inset: auto -20% -60% 20%; height: 120%; z-index: -1; pointer-events: none;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--glow) 38%, transparent), color-mix(in srgb, var(--accent) 12%, transparent) 55%, transparent);
+    filter: blur(40px); opacity: 0.55;
+  }
+  .hero__inner { display: grid; grid-template-columns: 1fr auto; gap: var(--space-6); align-items: end; }
+  .hero__inner > .kicker { grid-column: 1 / -1; }
+  .hero__title { grid-column: 1; letter-spacing: -0.03em; }
+  .hero__row { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--space-6); padding-top: var(--space-6); border-top: var(--hairline) solid var(--line); }
+  .hero__cta { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+  .hero__portrait { grid-column: 2; grid-row: 2; width: clamp(9rem, 22vw, 17.5rem); }
+  .hero__portrait :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1) contrast(1.1); transition: filter var(--dur-3) var(--ease-out); border: var(--hairline) solid var(--line-strong); }
+  .hero__portrait:hover :global(img) { filter: none; }
+  .hero__portrait figcaption { margin-top: var(--space-2); color: var(--fg-muted); }
+
+  .marquee { overflow: hidden; border-bottom: var(--hairline) solid var(--line); padding-block: var(--space-4); color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.14em; }
+  .marquee__track { display: flex; width: max-content; }
+  .marquee__track span { display: inline-flex; align-items: center; gap: var(--space-5); padding-right: var(--space-5); white-space: nowrap; }
+  @media (prefers-reduced-motion: no-preference) { .marquee__track { animation: marquee 50s linear infinite; } @keyframes marquee { to { transform: translateX(-50%); } } }
+
+  .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--space-4); }
+
+  .manifest__inner { display: grid; grid-template-columns: auto 1fr; gap: var(--space-8); align-items: start; }
+  .manifest__inner > div > * + * { margin-top: var(--space-5); }
+  .manifest :global(.manifest__crest) { color: var(--accent); }
+
+  @media (max-width: 760px) {
+    .hero__inner { grid-template-columns: 1fr; }
+    .hero__portrait { grid-column: 1; grid-row: auto; }
+    .manifest__inner { grid-template-columns: 1fr; gap: var(--space-6); }
+  }
+</style>

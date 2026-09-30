@@ -1,0 +1,14 @@
+---
+/**
+ * Selbst gehostetes Video (liegt in /public/media/…) – kein Drittanbieter,
+ * kein Cookie-Banner. <Video src="/media/2026/demo.mp4" poster="/media/2026/demo.jpg" caption="…" />
+ * YouTube bewusst NICHT eingebettet (Datenschutz, Performance) – stattdessen verlinken.
+ */
+export interface Props { src: string; poster?: string; caption?: string; loop?: boolean }
+const { src, poster, caption, loop = false } = Astro.props;
+---
+
+<figure>
+  <video src={src} poster={poster} controls preload="metadata" playsinline loop={loop} muted={loop} autoplay={loop}></video>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>

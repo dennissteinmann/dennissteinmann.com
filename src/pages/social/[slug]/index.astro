@@ -1,0 +1,71 @@
+---
+/**
+ * Social-Kit je Artikel: /social/<slug>/  (noindex, per robots.txt gesperrt)
+ * Zeigt Carousel-Folien, OG-Bild und fertigen Post-Text zum Kopieren.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { type Article, getArticles, getArticleNumbers } from '@/lib/content';
+import { getSlides, getCaption } from '@/lib/social';
+
+export async function getStaticPaths() {
+  const numbers = await getArticleNumbers();
+  return (await getArticles()).map((article) => ({ params: { slug: article.id }, props: { article, number: numbers.get(article.id) } }));
+}
+
+const { article, number } = Astro.props as { article: Article; number?: number };
+const slides = getSlides(article);
+const caption = getCaption(article, number);
+const base = `/social/${article.id}`;
+---
+
+<BaseLayout title={`Social-Kit: ${article.data.title}`} description="Internes Social-Media-Kit: Carousel-Folien, Vorschaubild und Post-Text zu einem Artikel auf dennissteinmann.com." noindex>
+  <PageHeader kicker="Social-Kit · intern" title={article.data.title} crumbs={[{ name: 'Start', path: '/' }, { name: 'Artikel', path: '/artikel/' }, { name: article.data.title, path: `/artikel/${article.id}/` }, { name: 'Social', path: `${base}/` }]} />
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><span class="section-head__index">01</span><h2 class="display h-m">Carousel · {slides.length} Folien</h2><span class="mono muted">1080 × 1350 PNG</span></div>
+      <ol class="slides" role="list">
+        {slides.map((_, i) => (
+          <li>
+            <a href={`${base}/${i + 1}.png`} download={`${article.id}-${String(i + 1).padStart(2, '0')}.png`}>
+              <img src={`${base}/${i + 1}.png`} alt={`Folie ${i + 1}`} width="1080" height="1350" loading="lazy" />
+            </a>
+            <span class="mono muted">{String(i + 1).padStart(2, '0')} · Download</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container kit">
+      <div>
+        <div class="section-head"><span class="section-head__index">02</span><h2 class="display h-m">Post-Text</h2><button class="btn" type="button" data-copy>Kopieren</button></div>
+        <pre class="caption" data-caption>{caption}</pre>
+      </div>
+      <div>
+        <div class="section-head"><span class="section-head__index">03</span><h2 class="display h-m">Link-Vorschau</h2><span></span></div>
+        <img src={`/og/artikel/${article.id}.png`} alt="OG-Bild" width="1200" height="630" />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  document.querySelector('[data-copy]')?.addEventListener('click', async (e) => {
+    const text = document.querySelector('[data-caption]')?.textContent ?? '';
+    await navigator.clipboard.writeText(text);
+    (e.currentTarget as HTMLButtonElement).textContent = 'Kopiert ✓';
+  });
+</script>
+
+<style>
+  .slides { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--space-4); }
+  .slides img { width: 100%; height: auto; border: var(--hairline) solid var(--line); }
+  .slides li { display: grid; gap: var(--space-2); }
+  .kit { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-7); }
+  .kit img { width: 100%; height: auto; border: var(--hairline) solid var(--line); }
+  .caption { white-space: pre-wrap; font-family: var(--font-mono); font-size: var(--step--1); line-height: 1.6; padding: var(--space-5); background: var(--bg-raised); border: var(--hairline) solid var(--line); }
+  @media (max-width: 900px) { .kit { grid-template-columns: 1fr; } }
+</style>
