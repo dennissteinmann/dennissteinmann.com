@@ -75,3 +75,7 @@ export async function getRelated(e: Exploration, limit = 3): Promise<Exploration
 /** Markdown/MDX-Body für Maschinen säubern (llms-full.txt, .md-Endpunkte). */
 export const cleanBody = (body = '') =>
   body.replace(/^import .*$/gm, '').replace(/^export .*$/gm, '').replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\n{3,}/g, '\n\n').trim();
+
+export const PROJECT_KIND_PLURAL: Record<Project['data']['kind'], string> = {
+  app: 'Apps', software: 'Software', website: 'Websites', unternehmen: 'Unternehmen', medien: 'Medien', plattform: 'Plattformen', forschung: 'Forschung',
+};
