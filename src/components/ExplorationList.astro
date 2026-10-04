@@ -1,0 +1,36 @@
+---
+/** Typografischer Index der Explorationen – wie ein Inhaltsverzeichnis. */
+import { type Exploration, KIND_LABELS, formatMonth, isoDate } from '@/lib/content';
+
+export interface Props { items: Exploration[]; headingLevel?: 'h2' | 'h3'; showSummary?: boolean }
+const { items, headingLevel: H = 'h3', showSummary = true } = Astro.props;
+---
+
+<ol class="xl" role="list">
+  {items.map((e) => (
+    <li class="xl__item">
+      <a href={`/explorationen/${e.id}/`} class="xl__link plain">
+        <time class="meta xl__date" datetime={isoDate(e.data.pubDate)}>{formatMonth(e.data.pubDate)}</time>
+        <div class="xl__body">
+          <H class="display xl__title">{e.data.title}</H>
+          {showSummary && <p class="xl__summary">{e.data.description}</p>}
+        </div>
+        <span class="meta xl__kind">{KIND_LABELS[e.data.kind]}{e.data.draft && ' · Entwurf'}</span>
+      </a>
+    </li>
+  ))}
+</ol>
+
+<style>
+  .xl__item { border-top: 1px solid var(--line); }
+  .xl__item:last-child { border-bottom: 1px solid var(--line); }
+  .xl__link { display: grid; grid-template-columns: 3fr 7fr 2fr; gap: var(--gutter); padding-block: var(--s-5); align-items: baseline; }
+  .xl__title { font-size: var(--t-l); line-height: 1.08; transition: opacity var(--fast); }
+  .xl__summary { margin-top: var(--s-2); color: var(--grey); font-size: var(--t-body); max-width: 32em; }
+  .xl__kind { text-align: right; }
+  .xl__link:hover .xl__title { opacity: 0.55; }
+  @media (max-width: 760px) {
+    .xl__link { grid-template-columns: 1fr; gap: var(--s-2); }
+    .xl__kind { text-align: left; }
+  }
+</style>

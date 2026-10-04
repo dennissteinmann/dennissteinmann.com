@@ -1,142 +1,114 @@
 ---
 import { Image } from 'astro:assets';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import ArticleCard from '@/components/ArticleCard.astro';
+import ExplorationList from '@/components/ExplorationList.astro';
 import ProjectCard from '@/components/ProjectCard.astro';
-import LogList from '@/components/LogList.astro';
-import Crest from '@/components/Crest.astro';
 import portrait from '@/assets/brand/portrait.jpg';
 import { SITE, PERSON } from '@/site.config';
-import { getArticles, getArticleNumbers, getProjects, getLog } from '@/lib/content';
+import { getExplorations, getProjects, getTopics, getPress } from '@/lib/content';
 import { graph, personSchema, websiteSchema } from '@/lib/seo';
 
-const articles = await getArticles();
-const numbers = await getArticleNumbers();
-const [featured, ...rest] = articles;
-const projects = (await getProjects()).filter((p) => p.data.status === 'aktiv').slice(0, 3);
-const log = (await getLog()).slice(0, 3);
-const projectNames = new Map((await getProjects()).map((p) => [p.id, p.data.title]));
+const explorations = (await getExplorations()).slice(0, 5);
+const projects = await getProjects();
+// Galerie: zuerst große & aktive Projekte mit Bild
+const strip = projects
+  .filter((p) => p.data.icon || p.data.cover)
+  .sort((a, b) => ({ l: 0, m: 1, s: 2 })[a.data.size] - ({ l: 0, m: 1, s: 2 })[b.data.size] || a.data.order - b.data.order)
+  .slice(0, 12);
+const topics = await getTopics();
+const press = await getPress();
 ---
 
-<BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), personSchema())}>
-  <section class="hero grid-lines">
-    <div class="hero__glow" aria-hidden="true"></div>
-    <div class="container hero__inner">
-      <p class="kicker reveal">
-        <span class="kicker--accent">●</span>&nbsp; {PERSON.jobTitle} — Seit {SITE.startYear} öffentlich dokumentiert
-      </p>
-      <h1 class="display h-xxl hero__title reveal" style="--i:1">
-        Dennis<br /><em>Steinmann</em>
-      </h1>
-      <div class="hero__row reveal" style="--i:2">
-        <p class="lead">
-          Ich baue Apps, Software und Unternehmen – und schreibe hier auf, wie es wirklich läuft.
-          Mit Zahlen, Fehlern und allem, was ich dabei lerne.
-        </p>
-        <div class="hero__cta">
-          <a class="btn btn--accent" href="/artikel/">Artikel lesen</a>
-          <a class="btn" href="/projekte/">Projekte</a>
-        </div>
-      </div>
-      <figure class="hero__portrait reveal" style="--i:3">
-        <Image src={portrait} alt="Porträt von Dennis Steinmann" widths={[240, 400, 560]} sizes="(min-width: 900px) 280px, 40vw" loading="eager" fetchpriority="high" />
-        <figcaption class="mono">Fig. 01 — {PERSON.name}</figcaption>
-      </figure>
+<BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), await personSchema())}>
+  <section class="hero wrap">
+    <h1 class="display t-xxl hero__statement">
+      <span class="sr-only">{SITE.name}: </span>Ich denke öffentlich nach&nbsp;– und baue, was dabei <em>entsteht.</em>
+    </h1>
+    <div class="hero__aside sans">
+      <p>{PERSON.name}<br /><span class="muted">{PERSON.jobTitle}</span></p>
+      <p class="muted">{explorations.length > 0 && <>Explorationen über </>}{topics.slice(0, 4).map((t, i) => <>{i > 0 && ', '}<a href={`/themen/${t.id}/`}>{t.data.title}</a></>)}.</p>
     </div>
   </section>
 
-  <div class="marquee" aria-hidden="true">
-    <div class="marquee__track mono">
-      {Array.from({ length: 2 }).map(() => (
-        <span>Build in Public <Crest size="0.9rem" /> Langform statt Lärm <Crest size="0.9rem" /> Zahlen statt Behauptungen <Crest size="0.9rem" /> {SITE.motto} <Crest size="0.9rem" />&nbsp;</span>
-      ))}
+  {explorations.length > 0 && (
+    <section class="wrap space">
+      <div class="sec">
+        <h2 class="display t-m sec__head">Explorationen</h2>
+        <div class="sec__body">
+          <ExplorationList items={explorations} />
+          <p class="sec__more"><a class="link" href="/explorationen/">Alle Explorationen</a></p>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="space strip-wrap" aria-labelledby="projects-h">
+    <div class="wrap sec">
+      <h2 id="projects-h" class="display t-m sec__head">Projekte</h2>
+      <p class="sec__body muted sans">{projects.length} Apps, Websites, Plattformen und Unternehmen. <a href="/projekte/">Alle ansehen</a></p>
     </div>
-  </div>
+    <div class="strip" tabindex="0" aria-label="Projektgalerie, horizontal scrollbar">
+      {strip.map((p) => <div class="strip__item"><ProjectCard project={p} sizes="(min-width: 900px) 26vw, 70vw" /></div>)}
+    </div>
+  </section>
 
-  {featured && (
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <span class="section-head__index">01</span>
-          <h2 class="display h-m">Neueste Artikel</h2>
-          <a class="arrow-link" href="/artikel/">Alle {articles.length}</a>
-        </div>
-        <ArticleCard article={featured} number={numbers.get(featured.id)} variant="feature" />
-        {rest.slice(0, 4).map((a) => <ArticleCard article={a} number={numbers.get(a.id)} />)}
-      </div>
-    </section>
-  )}
+  <section class="wrap space">
+    <div class="sec">
+      <h2 class="display t-m sec__head">Themen</h2>
+      <ul role="list" class="sec__body topics">
+        {topics.map((t) => <li><a class="display plain" href={`/themen/${t.id}/`}>{t.data.title}</a></li>)}
+      </ul>
+    </div>
+  </section>
 
-  {projects.length > 0 && (
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <span class="section-head__index">02</span>
-          <h2 class="display h-m">Aktive Projekte</h2>
-          <a class="arrow-link" href="/projekte/">Alle Projekte</a>
-        </div>
-        <div class="pgrid">{projects.map((p, i) => <ProjectCard project={p} index={i} />)}</div>
-      </div>
-    </section>
-  )}
-
-  {log.length > 0 && (
-    <section class="section">
-      <div class="container">
-        <div class="section-head">
-          <span class="section-head__index">03</span>
-          <h2 class="display h-m">Aus dem Logbuch</h2>
-          <a class="arrow-link" href="/logbuch/">Ganzes Logbuch</a>
-        </div>
-        <LogList entries={log} projectNames={projectNames} headingLevel="h3" />
-      </div>
-    </section>
-  )}
-
-  <section class="section manifest">
-    <div class="container manifest__inner">
-      <Crest size="clamp(6rem, 12vw, 11rem)" class="manifest__crest" />
-      <div>
-        <p class="kicker kicker--accent">Warum diese Seite existiert</p>
-        <p class="display h-l">Social-Media-Posts verschwinden nach 48 Stunden. <em>Diese Seite bleibt.</em></p>
-        <p class="lead muted">Alles, was ich teile, beginnt hier als ausführlicher Text – und wird erst danach zu Posts, Carousels und Videos. Das Original bleibt auffindbar. Für Jahrzehnte.</p>
-        <a class="arrow-link" href="/ueber/">Mehr über mich</a>
-      </div>
+  <section class="wrap space-l about">
+    <figure class="about__img">
+      <Image src={portrait} alt={`Porträt von ${PERSON.name}`} widths={[360, 560, 800]} sizes="(min-width: 900px) 28vw, 80vw" class="fade" />
+    </figure>
+    <div class="about__text">
+      <p class="display t-l">{PERSON.description}</p>
+      <p class="sans about__links">
+        <a href="/ueber/">Über mich</a>
+        <a href="/presse/">Presse{press.length > 0 && ` (${press.length})`}</a>
+        <a href="/kontakt/">Kontakt</a>
+      </p>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .hero { position: relative; overflow: hidden; padding-block: var(--space-8) var(--space-9); border-bottom: var(--hairline) solid var(--line); }
-  .hero__glow {
-    position: absolute; inset: auto -20% -60% 20%; height: 120%; z-index: -1; pointer-events: none;
-    background: radial-gradient(closest-side, color-mix(in srgb, var(--glow) 38%, transparent), color-mix(in srgb, var(--accent) 12%, transparent) 55%, transparent);
-    filter: blur(40px); opacity: 0.55;
-  }
-  .hero__inner { display: grid; grid-template-columns: 1fr auto; gap: var(--space-6); align-items: end; }
-  .hero__inner > .kicker { grid-column: 1 / -1; }
-  .hero__title { grid-column: 1; letter-spacing: -0.03em; }
-  .hero__row { grid-column: 1 / -1; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: var(--space-6); padding-top: var(--space-6); border-top: var(--hairline) solid var(--line); }
-  .hero__cta { display: flex; gap: var(--space-3); flex-wrap: wrap; }
-  .hero__portrait { grid-column: 2; grid-row: 2; width: clamp(9rem, 22vw, 17.5rem); }
-  .hero__portrait :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1) contrast(1.1); transition: filter var(--dur-3) var(--ease-out); border: var(--hairline) solid var(--line-strong); }
-  .hero__portrait:hover :global(img) { filter: none; }
-  .hero__portrait figcaption { margin-top: var(--space-2); color: var(--fg-muted); }
+  .hero { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-top: clamp(6rem, 18vh, 14rem); padding-bottom: var(--s-7); align-items: end; }
+  .hero__statement { grid-column: 1 / span 10; max-width: 11.5em; }
+  .hero__aside { grid-column: 10 / span 3; margin-top: var(--s-6); display: grid; gap: var(--s-3); }
+  .hero__aside a { color: inherit; }
 
-  .marquee { overflow: hidden; border-bottom: var(--hairline) solid var(--line); padding-block: var(--space-4); color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.14em; }
-  .marquee__track { display: flex; width: max-content; }
-  .marquee__track span { display: inline-flex; align-items: center; gap: var(--space-5); padding-right: var(--space-5); white-space: nowrap; }
-  @media (prefers-reduced-motion: no-preference) { .marquee__track { animation: marquee 50s linear infinite; } @keyframes marquee { to { transform: translateX(-50%); } } }
+  .sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); }
+  .sec__head { padding-top: var(--s-5); }
+  .sec__more { margin-top: var(--s-4); }
 
-  .pgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: var(--space-4); }
+  .strip-wrap .sec { margin-bottom: var(--s-5); align-items: baseline; }
+  .strip-wrap .sec__head { padding-top: 0; }
+  .strip { display: flex; gap: var(--s-3); overflow-x: auto; padding-inline: var(--gutter); scroll-snap-type: x mandatory; scrollbar-width: none; scroll-padding-inline: var(--gutter); }
+  .strip::-webkit-scrollbar { display: none; }
+  .strip__item { flex: 0 0 clamp(15rem, 26vw, 26rem); scroll-snap-align: start; }
+  .strip__item :global(.pc__stage) { aspect-ratio: 4 / 5 !important; }
 
-  .manifest__inner { display: grid; grid-template-columns: auto 1fr; gap: var(--space-8); align-items: start; }
-  .manifest__inner > div > * + * { margin-top: var(--space-5); }
-  .manifest :global(.manifest__crest) { color: var(--accent); }
+  .topics { display: flex; flex-wrap: wrap; gap: 0 0.5em; font-size: var(--t-l); line-height: 1.25; }
+  .topics li:not(:last-child)::after { content: ','; color: var(--grey-light); }
+  .topics a { transition: opacity var(--fast); }
+  .topics a:hover { opacity: 0.5; }
 
-  @media (max-width: 760px) {
-    .hero__inner { grid-template-columns: 1fr; }
-    .hero__portrait { grid-column: 1; grid-row: auto; }
-    .manifest__inner { grid-template-columns: 1fr; gap: var(--space-6); }
+  .about { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: end; }
+  .about__img { grid-column: 2 / span 4; }
+  .about__img :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .about__text { grid-column: 7 / span 5; }
+  .about__text .display { line-height: 1.15; }
+  .about__links { display: flex; gap: var(--s-4); margin-top: var(--s-5); }
+
+  @media (max-width: 900px) {
+    .hero, .about, .sec { grid-template-columns: 1fr; }
+    .hero__statement, .hero__aside, .about__img, .about__text { grid-column: 1; }
+    .about__img { max-width: 70%; margin-bottom: var(--s-5); }
+    .sec__head { padding-top: 0; margin-bottom: var(--s-3); }
   }
 </style>

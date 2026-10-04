@@ -8,15 +8,11 @@ import { breadcrumbSchema, graph, websiteSchema } from '@/lib/seo';
 const entries = await getLog();
 const projectNames = new Map((await getProjects()).map((p) => [p.id, p.data.title]));
 const title = 'Logbuch';
-const description = 'Das Logbuch von Dennis Steinmann: kurze, datierte Fortschrittsnotizen aus allen laufenden Projekten – Build in Public, Woche für Woche.';
+const description = 'Das Logbuch von Dennis Steinmann: kurze, datierte Notizen über Fortschritte, Releases und Erkenntnisse aus allen laufenden Projekten.';
 const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/logbuch/' }];
 ---
 
 <BaseLayout title={title} description={description} jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs))}>
-  <PageHeader kicker={`Build in Public · ${entries.length} Einträge`} title="Gradatim. <em>Schritt für Schritt.</em>" lead="Kurze Notizen, wenn etwas passiert: ein Release, eine Zahl, eine Erkenntnis. Die ausführliche Geschichte steht in den Artikeln." crumbs={crumbs} />
-  <section class="section">
-    <div class="container">
-      <LogList entries={entries} projectNames={projectNames} />
-    </div>
-  </section>
+  <PageHeader title="Logbuch" lead="Kurze Notizen, wenn etwas passiert. Schritt für Schritt." crumbs={crumbs} />
+  <section class="wrap space"><LogList entries={entries} projectNames={projectNames} /></section>
 </BaseLayout>

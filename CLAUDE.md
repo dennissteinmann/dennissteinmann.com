@@ -1,8 +1,9 @@
 # dennissteinmann.com – Arbeitsanweisungen für KI-Agenten & Entwickler
 
-Persönliche Website von Dennis Steinmann. **Zentrale der Personal Brand**: Jeder Inhalt
-erscheint zuerst hier als Langform, danach wird er zu Social-Media-Content. Die Seite ist
-auf **Jahrzehnte** ausgelegt – jede Entscheidung wird daran gemessen.
+Persönliche Website von Dennis Steinmann. **Zentrale seines Denkens und seiner Arbeit**:
+Explorationen (Langform), alle Projekte als Karten, Medien, Presse, Dokumente, Social-Media-
+Steuerung (/studio/). Ziel: dauerhaft auffindbar in Google UND von KI-Assistenten als Experte
+empfohlen. Die Seite ist auf **Jahrzehnte** ausgelegt – jede Entscheidung wird daran gemessen.
 
 > Diese Datei gilt für JEDE Codeänderung. Vor Änderungen an Design, URLs, Metadaten oder
 > Deployment die jeweilige Doku in `docs/` lesen. Weicht eine Änderung davon ab, wird
@@ -23,13 +24,13 @@ npm run dev          # lokal: http://localhost:4321 (Entwürfe sichtbar)
 npm run build        # astro check + Build nach dist/
 npm run check:seo    # SEO-Smoke-Test über dist/ (läuft auch in CI)
 npm run verify       # build + check:seo – vor jedem Push ausführen
-npm run new artikel "Titel"   # auch: projekt | log | seite
+npm run new exploration "Titel"   # auch: projekt | thema | log | medium | presse | seite
 ```
 
 ## Nicht verhandelbare Regeln
 
 ### 1. URLs sind ein Vertrag (→ `docs/SEO.md`)
-- Muster: `/artikel/<slug>/`, `/projekte/<slug>/`, `/themen/<tag>/`, `/<seite>/`, `/logbuch/`
+- Muster: `/explorationen/<slug>/`, `/projekte/<slug>/`, `/themen/<slug>/`, `/medien/`, `/presse/`, `/<seite>/`, `/logbuch/`
 - Kleinbuchstaben, Bindestriche, **Slash am Ende**, **kein Datum im Pfad**, deutsch.
 - Ein veröffentlichter Slug (= Ordnername) wird **nie** geändert. Falls unvermeidbar:
   301-Redirect in `docs/DEPLOYMENT.md` → nginx-Abschnitt eintragen.
@@ -38,12 +39,13 @@ npm run new artikel "Titel"   # auch: projekt | log | seite
 ### 2. Design nur über Tokens (→ `docs/DESIGN.md`)
 - Farben, Schriften, Abstände, Radien, Animationen ausschließlich via `var(--…)` aus
   `src/styles/tokens.css`. Keine Hex-Werte, keine px-Schriftgrößen in Komponenten.
-- Drei Schriften, feste Rollen: **Instrument Serif** = Headlines, **Inter Tight** =
-  Text/UI/Wortmarke, **JetBrains Mono** = Metadaten/Labels. Keine weiteren Schriften.
-- Ein Akzent pro Ansicht dominant: Signal-Orange. Lime nur für Highlights/Kennzahlen.
-- Kanten statt Rundungen, Haarlinien statt Schatten, Mono-Nummerierung (01, 02, № 001).
-- Beide Themes (dunkel = Standard, hell = „Papier“) müssen funktionieren.
-- Neue Seiten verwenden `BaseLayout` + `PageHeader`; neue Sektionen `section-head`.
+- Stil „Weißraum“: echtes Weiß, Schwarz, viel Raum, Bauhaus-Raster, naturalistische Bilder.
+- Zwei Schriften: **EB Garamond** (Stimme: Titel, Text) und **Jost** (Struktur: Navigation, Meta).
+- **Verboten:** Akzentfarben in der UI (v. a. Orange), Creme-/Papier-Hintergründe,
+  Eyebrow-/Kicker-Texte, Status-Punkte/Live-Dots, Marquees, Filmkorn, Schatten, Verläufe,
+  Mono-Deko. Vollständige Liste: `docs/DESIGN.md` §2.
+- Farbe nur aus Bildern und Projektfarben (`color` im Projekt).
+- Neue Seiten verwenden `BaseLayout` + `PageHeader`; Sektionen: Titel links, Inhalt rechts.
 
 ### 3. Jede Seite ist SEO- & KI-fähig (→ `docs/SEO.md`)
 - Metadaten nur über `BaseLayout`-Props → `SEO.astro`. Keine eigenen `<meta>`-Tags.
@@ -54,7 +56,8 @@ npm run new artikel "Titel"   # auch: projekt | log | seite
 - Keine Third-Party-Skripte, kein Tracking, keine Cookie-Banner-Pflicht erzeugen.
 
 ### 4. Inhalte liegen als Dateien im Repo (→ `docs/CONTENT.md`)
-- Artikel: `src/content/articles/<slug>/index.mdx` + Bilder im selben Ordner.
+- Explorationen: `src/content/explorations/<slug>/index.mdx` + Bilder im selben Ordner.
+- Expertise = Themen-Dateien (`src/content/topics/`) mit `definition` + `position`.
 - Schemas in `src/content.config.ts` erzwingen Description-Länge, Summary, Tags usw.
   **Schema-Fehler nicht durch Aufweichen des Schemas lösen**, sondern den Inhalt fixen.
 - Identität, Navigation, Profile: nur in `src/site.config.ts`.
@@ -70,10 +73,10 @@ npm run new artikel "Titel"   # auch: projekt | log | seite
 ```
 src/
   site.config.ts        Identität, Navigation, Profile (Single Source of Truth)
-  content.config.ts     Schemas: articles, projects, log, pages
+  content.config.ts     Schemas: explorations, projects, topics, media, press, log, pages
   content/              Alle Inhalte (MDX/MD + Bilder)
   styles/tokens.css     Design-Tokens (einzige Quelle für Werte)
-  styles/global.css     Basis, Utilities, Buttons, Raster
+  styles/global.css     Basis, Utilities, Raster
   styles/prose.css      Langform-Typografie
   lib/content.ts        Abfragen, Lesezeit, Nummerierung, Themen
   lib/seo.ts            JSON-LD-Bausteine
@@ -81,14 +84,16 @@ src/
   lib/og.ts, social.ts  OG-Bilder & Social-Carousels
   components/           UI-Bausteine; components/mdx/ = in MDX ohne Import nutzbar
   layouts/BaseLayout    <html>, <head>, Header, Footer
-  pages/                Routen (inkl. sitemap.xml, robots.txt, llms.txt, rss.xml, og/, social/)
+  pages/                Routen (inkl. sitemap.xml, robots.txt, llms.txt, rss.xml, og/, social/, studio/)
 docs/                   DESIGN, SEO, CONTENT, SOCIAL, DEPLOYMENT, DECISIONS, moodboard/
 scripts/                new.mjs (Content-CLI), check-dist.mjs (SEO-Check)
 ```
 
 ## Offene TODOs von Dennis (vor Livegang)
 
-- `src/site.config.ts` → `PERSON.sameAs`: echte Profil-URLs (LinkedIn, Instagram, …)
+- `src/site.config.ts` → `CHANNELS`: echte Profil-URLs (LinkedIn, Instagram, …)
+- Importierte Projekte prüfen (59 Stück, Quelle als Kommentar im MDX; Entwürfe ergänzen)
+- Themen-Positionen in eigenen Worten schärfen (`src/content/topics/*.mdx`)
 - `src/content/pages/impressum.mdx`, `kontakt.mdx`, `datenschutz.mdx`: echte Angaben
 - `src/content/pages/ueber.mdx`: Text in eigenen Worten
 - GitHub-Secrets für Deploy setzen (`docs/DEPLOYMENT.md`)

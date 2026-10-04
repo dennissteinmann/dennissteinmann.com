@@ -4,19 +4,18 @@ export interface Props { crumbs: Crumb[] }
 const { crumbs } = Astro.props;
 ---
 
-<nav class="breadcrumbs mono" aria-label="Brotkrumen">
+<nav class="breadcrumbs meta" aria-label="Brotkrumen">
   <ol role="list">
     {crumbs.map((c, i) => (
-      <li>
-        {i < crumbs.length - 1 ? <a href={c.path}>{c.name}</a> : <span aria-current="page">{c.name}</span>}
-      </li>
+      <li>{i < crumbs.length - 1 ? <a class="plain" href={c.path}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>
     ))}
   </ol>
 </nav>
 
 <style>
-  .breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 0.5em; list-style: none; padding: 0; color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .breadcrumbs li + li::before { content: '/'; margin-right: 0.5em; color: var(--fg-subtle); }
-  .breadcrumbs a { text-decoration: none; }
-  .breadcrumbs [aria-current] { color: var(--fg); display: inline-block; max-width: 40ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
+  .breadcrumbs ol { display: flex; flex-wrap: wrap; gap: 0.45em; }
+  .breadcrumbs li + li::before { content: '/'; margin-right: 0.45em; color: var(--grey-light); }
+  .breadcrumbs a { color: var(--grey); }
+  .breadcrumbs a:hover { color: var(--ink); }
+  .breadcrumbs [aria-current] { color: var(--grey); display: inline-block; max-width: 36ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 </style>

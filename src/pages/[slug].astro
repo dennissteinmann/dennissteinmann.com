@@ -1,8 +1,5 @@
 ---
-/**
- * Freie Unterseiten aus src/content/pages/*.mdx → /<dateiname>/
- * Seiten mit eigener Route (z. B. ueber) werden hier ausgelassen.
- */
+/** Freie Unterseiten aus src/content/pages/*.mdx → /<dateiname>/ */
 import { render } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHeader from '@/components/PageHeader.astro';
@@ -11,33 +8,27 @@ import { type Page, getPages, formatDate, DEDICATED_PAGES } from '@/lib/content'
 import { abs, breadcrumbSchema, graph, websiteSchema } from '@/lib/seo';
 
 export async function getStaticPaths() {
-  return (await getPages())
-    .filter((p) => !DEDICATED_PAGES.includes(p.id))
-    .map((page) => ({ params: { slug: page.id }, props: { page } }));
+  return (await getPages()).filter((p) => !DEDICATED_PAGES.includes(p.id)).map((page) => ({ params: { slug: page.id }, props: { page } }));
 }
 
 const { page } = Astro.props as { page: Page };
-const { data } = page;
+const d = page.data;
 const { Content } = await render(page);
 const path = `/${page.id}/`;
-const crumbs = [{ name: 'Start', path: '/' }, { name: data.title, path }];
+const crumbs = [{ name: 'Start', path: '/' }, { name: d.title, path }];
 ---
 
-<BaseLayout
-  title={data.seoTitle ?? data.title}
-  description={data.description}
-  noindex={data.noindex}
-  jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs), { '@type': data.schemaType, url: abs(path), name: data.title, description: data.description })}
->
-  <PageHeader kicker={data.kicker} title={data.title} crumbs={crumbs} />
-  <section class="section">
-    <div class="container container--narrow">
-      <div class="prose"><Content components={mdxComponents} /></div>
-      {data.updated && <p class="mono muted updated">Stand: {formatDate(data.updated)}</p>}
-    </div>
+<BaseLayout title={d.seoTitle ?? d.title} description={d.description} noindex={d.noindex}
+  jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs), { '@type': d.schemaType, url: abs(path), name: d.title, description: d.description })}>
+  <PageHeader title={d.title} crumbs={crumbs} />
+  <section class="wrap space-b">
+    <div class="prose body"><Content components={mdxComponents} /></div>
+    {d.updated && <p class="meta body updated">Stand: {formatDate(d.updated)}</p>}
   </section>
 </BaseLayout>
 
 <style>
-  .updated { margin-top: var(--space-7); }
+  .body { margin-left: calc(100% / 12 * 3); }
+  .updated { margin-top: var(--s-6); }
+  @media (max-width: 900px) { .body { margin-left: 0; } }
 </style>

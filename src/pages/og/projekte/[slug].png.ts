@@ -1,5 +1,5 @@
 import type { APIRoute, GetStaticPaths } from 'astro';
-import { type Project, getProjects, STATUS_LABELS } from '@/lib/content';
+import { type Project, getProjects, PROJECT_KIND_LABELS, projectYears } from '@/lib/content';
 import { ogTemplate, renderPng, pngResponse } from '@/lib/og';
 
 export const getStaticPaths = (async () =>
@@ -7,6 +7,5 @@ export const getStaticPaths = (async () =>
 
 export const GET: APIRoute = async ({ props }) => {
   const { project } = props as { project: Project };
-  const d = project.data;
-  return pngResponse(await renderPng(ogTemplate({ kicker: `Projekt · ${STATUS_LABELS[d.status]}`, title: d.title, meta: `Seit ${d.started.getFullYear()}${d.role ? ` · ${d.role}` : ''}` }), 1200, 630));
+  return pngResponse(await renderPng(ogTemplate({ title: project.data.title, meta: `${PROJECT_KIND_LABELS[project.data.kind]} · ${projectYears(project)}` }), 1200, 630));
 };

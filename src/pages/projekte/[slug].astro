@@ -1,88 +1,151 @@
 ---
+/**
+ * Projektseite = Hub. Für Projekte ohne eigene Website ist sie die
+ * offizielle Heimat: Beschreibung, Links, Dokumente, Medien, Presse,
+ * Explorationen und Logbuch an einem Ort.
+ */
 import { Image } from 'astro:assets';
-import { render } from 'astro:content';
+import { render, getEntries } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import PageHeader from '@/components/PageHeader.astro';
-import ArticleCard from '@/components/ArticleCard.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import ExplorationList from '@/components/ExplorationList.astro';
 import LogList from '@/components/LogList.astro';
 import { mdxComponents } from '@/components/mdx';
-import { type Project, getProjects, getArticles, getArticleNumbers, getLog, STATUS_LABELS, formatDate, tagLabel } from '@/lib/content';
+import {
+  type Project, getProjects, getExplorations, getLog, getMedia, getPress, PROJECT_KIND_LABELS, STATUS_LABELS, formatDate, formatMonth, isoDate,
+} from '@/lib/content';
 import { abs, breadcrumbSchema, graph, ID, websiteSchema } from '@/lib/seo';
 
 export async function getStaticPaths() {
-  return (await getProjects()).map((project) => ({ params: { slug: project.id }, props: { project } }));
+  const all = await getProjects();
+  return all.map((project) => ({ params: { slug: project.id }, props: { project, all } }));
 }
 
-const { project } = Astro.props as { project: Project };
-const { data } = project;
+const { project, all } = Astro.props as { project: Project; all: Project[] };
+const d = project.data;
 const { Content } = await render(project);
 const path = `/projekte/${project.id}/`;
-const articles = (await getArticles()).filter((a) => a.data.project?.id === project.id);
-const numbers = await getArticleNumbers();
+const topics = await getEntries(d.topics);
+const explorations = (await getExplorations()).filter((e) => e.data.projects.some((p) => p.id === project.id));
 const log = (await getLog()).filter((l) => l.data.project?.id === project.id);
-const crumbs = [{ name: 'Start', path: '/' }, { name: 'Projekte', path: '/projekte/' }, { name: data.title, path }];
+const media = (await getMedia()).filter((m) => m.data.project?.id === project.id);
+const press = (await getPress()).filter((p) => p.data.project?.id === project.id);
+const siblings = all.filter((p) => p.id !== project.id && p.data.kind === d.kind).slice(0, 3);
+const crumbs = [{ name: 'Start', path: '/' }, { name: 'Projekte', path: '/projekte/' }, { name: d.title, path }];
+const domain = d.url ? new URL(d.url).hostname.replace(/^www\./, '') : undefined;
 
-const jsonLd = graph(
-  websiteSchema(),
-  breadcrumbSchema(crumbs),
-  {
-    '@type': 'CreativeWork',
-    '@id': `${abs(path)}#project`,
-    name: data.title,
-    description: data.summary,
-    url: abs(path),
-    creator: { '@id': ID.person },
-    dateCreated: data.started.toISOString(),
-    ...(data.url ? { sameAs: data.url } : {}),
-    keywords: data.tags.map(tagLabel).join(', '),
-  },
-);
+const schemaType = d.kind === 'app' ? 'MobileApplication' : d.kind === 'software' ? 'SoftwareApplication' : d.kind === 'unternehmen' ? 'Organization' : 'CreativeWork';
+const jsonLd = graph(websiteSchema(), breadcrumbSchema(crumbs), {
+  '@type': schemaType,
+  '@id': `${abs(path)}#project`,
+  name: d.title,
+  description: d.summary,
+  url: d.url ?? abs(path),
+  ...(schemaType === 'Organization' ? { founder: { '@id': ID.person }, foundingDate: isoDate(d.started) } : { creator: { '@id': ID.person }, dateCreated: isoDate(d.started) }),
+  ...(schemaType === 'MobileApplication' ? { operatingSystem: 'iOS', applicationCategory: 'MobileApplication' } : {}),
+  sameAs: [d.url, ...d.links.map((l) => l.url)].filter(Boolean),
+  subjectOf: { '@type': 'WebPage', url: abs(path) },
+});
 ---
 
-<BaseLayout title={`${data.title} – Projekt`} description={data.description} image={`/og/projekte/${project.id}.png`} jsonLd={jsonLd}>
-  <PageHeader kicker="Projekt" title={data.title} lead={data.summary} crumbs={crumbs}>
-    <dl class="facts mono">
-      <div><dt>Status</dt><dd><span class={`status status--${data.status}`}>{STATUS_LABELS[data.status]}</span></dd></div>
-      {data.role && <div><dt>Rolle</dt><dd>{data.role}</dd></div>}
-      <div><dt>Start</dt><dd>{formatDate(data.started)}</dd></div>
-      {data.ended && <div><dt>Ende</dt><dd>{formatDate(data.ended)}</dd></div>}
-      {data.url && <div><dt>Website</dt><dd><a href={data.url} rel="noopener">{new URL(data.url).hostname}</a></dd></div>}
-    </dl>
-  </PageHeader>
+<BaseLayout title={`${d.title} – ${PROJECT_KIND_LABELS[d.kind]}`} description={d.description} image={`/og/projekte/${project.id}.png`} jsonLd={jsonLd}>
+  <header class="wrap head">
+    <div class="head__card"><ProjectCard project={project} headingLevel="h2" /></div>
+    <div class="head__text">
+      <h1 class="display t-xl">{d.title}</h1>
+      <p class="lead">{d.summary}</p>
+      <dl class="facts sans">
+        <div><dt>Art</dt><dd>{PROJECT_KIND_LABELS[d.kind]}</dd></div>
+        <div><dt>Status</dt><dd>{STATUS_LABELS[d.status]}</dd></div>
+        {d.role && <div><dt>Rolle</dt><dd>{d.role}</dd></div>}
+        <div><dt>Zeitraum</dt><dd>{formatMonth(d.started)}{d.ended ? ` – ${formatMonth(d.ended)}` : d.status === 'aktiv' ? ' – heute' : ''}</dd></div>
+        {d.url && <div><dt>Website</dt><dd><a href={d.url} rel="noopener">{domain}</a></dd></div>}
+        {d.links.map((l) => <div><dt>{l.label}</dt><dd><a href={l.url} rel="noopener">Öffnen</a></dd></div>)}
+        {topics.length > 0 && <div><dt>Themen</dt><dd>{topics.map((t, i) => <>{i > 0 && ', '}<a href={`/themen/${t.id}/`}>{t.data.title}</a></>)}</dd></div>}
+      </dl>
+    </div>
+  </header>
 
-  {data.cover && (
-    <div class="container cover"><Image src={data.cover} alt={data.coverAlt ?? ''} widths={[640, 1024, 1440]} sizes="100vw" loading="eager" /></div>
+  {d.cover && d.kind !== 'medien' && (
+    <figure class="wrap cover"><Image src={d.cover} alt={d.coverAlt ?? ''} widths={[640, 1024, 1600]} sizes="100vw" /></figure>
   )}
 
-  <section class="section">
-    <div class="container container--narrow">
-      <div class="prose"><Content components={mdxComponents} /></div>
-    </div>
+  <section class="wrap space">
+    <div class="prose body"><Content components={mdxComponents} /></div>
   </section>
 
-  {articles.length > 0 && (
-    <section class="section">
-      <div class="container">
-        <div class="section-head"><span class="section-head__index">{String(articles.length).padStart(2, '0')}</span><h2 class="display h-m">Artikel zu {data.title}</h2><span></span></div>
-        {articles.map((a) => <ArticleCard article={a} number={numbers.get(a.id)} />)}
-      </div>
+  {d.documents.length > 0 && (
+    <section class="wrap space sec">
+      <h2 class="display t-m">Dokumente</h2>
+      <ul role="list" class="docs">
+        {d.documents.map((doc) => (
+          <li>
+            <a href={doc.href} class="plain docs__link">
+              <span class="docs__title">{doc.title}</span>
+              <span class="meta">{doc.kind}{doc.date && ` · ${formatDate(doc.date)}`}</span>
+            </a>
+            {doc.description && <p class="meta">{doc.description}</p>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {explorations.length > 0 && (
+    <section class="wrap space"><h2 class="display t-m sec-h">Explorationen</h2><ExplorationList items={explorations} /></section>
+  )}
+
+  {(media.length > 0 || press.length > 0) && (
+    <section class="wrap space sec">
+      <h2 class="display t-m">Medien & Presse</h2>
+      <ul role="list" class="docs">
+        {press.map((p) => <li><span class="docs__title">{p.data.outlet}: „{p.data.title}“</span> <span class="meta">{formatDate(p.data.date)}</span></li>)}
+        {media.map((m) => <li><span class="docs__title">{m.data.title}</span> <span class="meta">{formatDate(m.data.date)}</span></li>)}
+      </ul>
     </section>
   )}
 
   {log.length > 0 && (
-    <section class="section">
-      <div class="container">
-        <div class="section-head"><span class="section-head__index">{String(log.length).padStart(2, '0')}</span><h2 class="display h-m">Logbuch</h2><a class="arrow-link" href="/logbuch/">Gesamtes Logbuch</a></div>
-        <LogList entries={log} headingLevel="h3" />
-      </div>
+    <section class="wrap space"><h2 class="display t-m sec-h">Logbuch</h2><LogList entries={log} headingLevel="h3" /></section>
+  )}
+
+  {siblings.length > 0 && (
+    <section class="wrap space">
+      <h2 class="display t-m sec-h">Weitere {PROJECT_KIND_LABELS[d.kind] === 'App' ? 'Apps' : 'Projekte dieser Art'}</h2>
+      <div class="siblings">{siblings.map((p) => <ProjectCard project={p} />)}</div>
     </section>
   )}
+
+  <div class="wrap"><Breadcrumbs crumbs={crumbs} /></div>
 </BaseLayout>
 
 <style>
-  .facts { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-7); padding-top: var(--space-5); border-top: var(--hairline) solid var(--line); margin-top: var(--space-6) !important; }
-  .facts dt { color: var(--fg-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-top: var(--s-7); align-items: start; }
+  .head__card { grid-column: 1 / span 4; }
+  .head__card :global(.pc__caption) { display: none; }
+  .head__text { grid-column: 6 / span 7; }
+  .head__text .lead { margin-top: var(--s-4); }
+  .facts { margin-top: var(--s-5); display: grid; gap: var(--s-1); }
+  .facts div { display: grid; grid-template-columns: 7rem 1fr; gap: var(--s-3); padding-block: var(--s-1); border-top: 1px solid var(--line); }
+  .facts dt { color: var(--grey); }
   .facts dd { margin: 0; }
-  .cover { margin-top: var(--space-7); }
-  .cover :global(img) { width: 100%; max-height: 70vh; object-fit: cover; }
+  .cover { margin-top: var(--s-7); }
+  .cover :global(img) { width: 100%; max-height: 80vh; object-fit: cover; }
+  .body { margin-left: calc((100% - var(--measure)) * 0.42); }
+  .sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); }
+  .sec-h { margin-bottom: var(--s-4); }
+  .docs { display: grid; }
+  .docs li { padding-block: var(--s-3); border-top: 1px solid var(--line); }
+  .docs__link { display: flex; justify-content: space-between; gap: var(--s-4); align-items: baseline; }
+  .docs__title { font-size: var(--t-body); }
+  .docs__link:hover .docs__title { text-decoration: underline; }
+  .siblings { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gutter); }
+  @media (max-width: 900px) {
+    .head, .sec { grid-template-columns: 1fr; }
+    .head__card, .head__text { grid-column: 1; }
+    .head__card { max-width: 60%; margin-bottom: var(--s-5); }
+    .body { margin-left: 0; }
+    .siblings { grid-template-columns: 1fr 1fr; }
+  }
 </style>

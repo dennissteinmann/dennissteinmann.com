@@ -1,0 +1,98 @@
+---
+/**
+ * Presse-Seite: Pressekit + Berichterstattung. Für Journalist:innen UND
+ * für KI-Systeme die kompakteste, faktische Quelle über die Person.
+ */
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import portrait from '@/assets/brand/portrait.jpg';
+import { PERSON, SITE, activeChannels } from '@/site.config';
+import { getPress, getProjects, getTopics, formatDate, isoDate } from '@/lib/content';
+import { abs, breadcrumbSchema, graph, ID, personSchema, websiteSchema, PERSON_IMAGE } from '@/lib/seo';
+
+const press = await getPress();
+const projects = await getProjects();
+const topics = await getTopics();
+const companies = projects.filter((p) => p.data.kind === 'unternehmen' && !p.data.draft);
+const apps = projects.filter((p) => p.data.kind === 'app' && !p.data.draft);
+const channels = activeChannels();
+const title = 'Presse';
+const description = 'Pressebereich von Dennis Steinmann: Kurz- und Langbiografie, Fakten, Pressefotos zum Download und Berichterstattung über seine Projekte.';
+const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/presse/' }];
+
+const shortBio = `${PERSON.name} ist ${PERSON.jobTitle} aus ${PERSON.homeLocation}. Er entwickelt Apps, Software und Marken und schreibt auf ${SITE.url.replace('https://', '')} über ${topics.slice(0, 3).map((t) => t.data.title).join(', ')}.`;
+---
+
+<BaseLayout title={title} description={description} jsonLd={graph(websiteSchema(), await personSchema(), breadcrumbSchema(crumbs), { '@type': 'WebPage', url: abs('/presse/'), name: title, about: { '@id': ID.person } })}>
+  <PageHeader title="Presse" lead="Alles für Berichte, Interviews und Anfragen – Biografie, Fakten und Fotos." crumbs={crumbs} />
+
+  <section class="wrap space sec">
+    <h2 class="display t-m">Kurzbiografie</h2>
+    <div>
+      <p class="t-m bio">{shortBio}</p>
+      <p class="meta copy-hint">Frei zur Verwendung, gerne mit Link auf {SITE.url.replace('https://', '')}.</p>
+    </div>
+  </section>
+
+  <section class="wrap space sec">
+    <h2 class="display t-m">Fakten</h2>
+    <dl class="facts">
+      <div><dt>Name</dt><dd>{PERSON.name}</dd></div>
+      <div><dt>Tätigkeit</dt><dd>{PERSON.jobTitle}</dd></div>
+      <div><dt>Herkunft</dt><dd>{PERSON.homeLocation}</dd></div>
+      {companies.length > 0 && <div><dt>Unternehmen</dt><dd>{companies.map((c, i) => <>{i > 0 && ', '}<a href={`/projekte/${c.id}/`}>{c.data.title}</a></>)}</dd></div>}
+      <div><dt>Projekte</dt><dd>{projects.filter((p) => !p.data.draft).length}, davon {apps.length} Apps</dd></div>
+      <div><dt>Themen</dt><dd>{topics.map((t, i) => <>{i > 0 && ', '}<a href={`/themen/${t.id}/`}>{t.data.title}</a></>)}</dd></div>
+      {channels.length > 0 && <div><dt>Profile</dt><dd>{channels.map((c, i) => <>{i > 0 && ', '}<a href={c.url} rel="me noopener">{c.name}</a></>)}</dd></div>}
+    </dl>
+  </section>
+
+  <section class="wrap space sec">
+    <h2 class="display t-m">Pressefotos</h2>
+    <div class="photos">
+      <figure>
+        <Image src={portrait} alt={`Pressefoto ${PERSON.name}`} widths={[400, 700]} sizes="(min-width: 900px) 30vw, 80vw" />
+        <figcaption class="meta"><a href={PERSON_IMAGE} download>Herunterladen</a> · frei zur redaktionellen Verwendung</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="wrap space sec">
+    <h2 class="display t-m">Berichterstattung</h2>
+    {press.length === 0 ? <p class="muted">Noch keine Einträge.</p> : (
+      <ol role="list" class="coverage">
+        {press.map((p) => (
+          <li>
+            <time class="meta" datetime={isoDate(p.data.date)}>{formatDate(p.data.date)}</time>
+            <p class="coverage__title">{p.data.url ? <a href={p.data.url} rel="noopener">{p.data.title}</a> : p.data.title}</p>
+            <p class="meta">{p.data.outlet}{p.data.project && <> · <a href={`/projekte/${p.data.project.id}/`}>Zum Projekt</a></>}</p>
+          </li>
+        ))}
+      </ol>
+    )}
+  </section>
+
+  <section class="wrap space sec">
+    <h2 class="display t-m">Kontakt</h2>
+    <p>Anfragen bitte über die <a href="/kontakt/">Kontaktseite</a>.</p>
+  </section>
+</BaseLayout>
+
+<style>
+  .sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); border-top: 1px solid var(--line); }
+  .bio { max-width: 30em; line-height: 1.4; }
+  .copy-hint { margin-top: var(--s-3); }
+  .facts { display: grid; max-width: 44em; }
+  .facts div { display: grid; grid-template-columns: 9rem 1fr; gap: var(--s-3); padding-block: var(--s-2); border-bottom: 1px solid var(--line); }
+  .facts dt { font-family: var(--sans); font-size: var(--t-s); color: var(--grey); padding-top: 0.2em; }
+  .facts dd { margin: 0; }
+  .photos figure { max-width: 22rem; }
+  .photos :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .photos figcaption { margin-top: var(--s-2); }
+  .photos figcaption a { color: inherit; }
+  .coverage { display: grid; gap: var(--s-5); }
+  .coverage__title { font-size: var(--t-m); line-height: 1.25; }
+  .coverage .meta a { color: inherit; }
+  @media (max-width: 900px) { .sec { grid-template-columns: 1fr; } }
+</style>

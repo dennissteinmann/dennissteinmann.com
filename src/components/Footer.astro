@@ -1,69 +1,42 @@
 ---
-import { Image } from 'astro:assets';
-import { NAV, FOOTER_NAV, SITE, PERSON } from '@/site.config';
+import { NAV, FOOTER_NAV, SITE, activeChannels } from '@/site.config';
 import Crest from './Crest.astro';
-import signature from '@/assets/brand/signature.png';
 
 const year = new Date().getFullYear();
-const years = year > SITE.startYear ? `${SITE.startYear}–${year}` : `${year}`;
+const channels = activeChannels();
 ---
 
-<footer class="site-footer grid-lines">
-  <div class="container">
-    <div class="site-footer__motto">
-      <p class="display h-xl">
-        Gradatim<br /><em>Ferociter.</em>
-      </p>
-      <p class="mono muted">{SITE.mottoTranslation}</p>
-    </div>
-
-    <div class="site-footer__grid">
-      <div class="site-footer__sign">
-        <Image src={signature} alt="Unterschrift Dennis Steinmann" width={260} class="signature" />
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__grid">
+      <div class="footer__mark">
+        <Crest size="2.6rem" />
+        <p class="footer__motto"><em>{SITE.motto}</em><br /><span class="meta">{SITE.mottoTranslation}</span></p>
       </div>
-
-      <nav aria-label="Footer: Inhalte">
-        <p class="kicker">Inhalte</p>
-        <ul role="list">
-          {NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+      <ul role="list" class="sans">
+        {NAV.map((n) => <li><a class="plain" href={n.href}>{n.label}</a></li>)}
+      </ul>
+      <ul role="list" class="sans">
+        {FOOTER_NAV.map((n) => <li><a class="plain" href={n.href}>{n.label}</a></li>)}
+      </ul>
+      {channels.length > 0 && (
+        <ul role="list" class="sans">
+          {channels.map((c) => <li><a class="plain" href={c.url} rel="me noopener">{c.name}</a></li>)}
         </ul>
-      </nav>
-
-      <nav aria-label="Footer: Service">
-        <p class="kicker">Service</p>
-        <ul role="list">
-          {FOOTER_NAV.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
-        </ul>
-      </nav>
-
-      {PERSON.sameAs.length > 0 && (
-        <nav aria-label="Profile">
-          <p class="kicker">Profile</p>
-          <ul role="list">
-            {PERSON.sameAs.map((u) => <li><a href={u} rel="me noopener">{new URL(u).hostname.replace('www.', '')}</a></li>)}
-          </ul>
-        </nav>
       )}
     </div>
-
-    <div class="site-footer__base mono">
-      <span class="site-footer__crest"><Crest size="1.25rem" /> © {years} {SITE.name}</span>
-      <span class="muted">Handgebaut. Statisch. Ohne Tracking.</span>
-    </div>
+    <p class="meta footer__base">© {year} {SITE.name}</p>
   </div>
 </footer>
 
 <style>
-  .site-footer { margin-top: var(--space-10); padding-top: var(--space-9); border-top: var(--hairline) solid var(--line); background: var(--bg-sunken); }
-  .site-footer__motto { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: var(--space-5); padding-bottom: var(--space-8); }
-  .site-footer__motto .display { color: var(--fg-strong); }
-  .site-footer__grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: var(--space-6); padding-block: var(--space-7); border-top: var(--hairline) solid var(--line); }
-  .site-footer ul { list-style: none; padding: 0; margin-top: var(--space-3); display: grid; gap: var(--space-2); }
-  .site-footer li a { text-decoration: none; color: var(--fg); font-size: var(--step--1); }
-  .site-footer li a:hover { color: var(--accent); }
-  .signature { width: min(260px, 70%); opacity: 0.85; }
-  :global([data-theme='light']) .signature { filter: invert(1); }
-  .site-footer__base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-4); padding-block: var(--space-5); border-top: var(--hairline) solid var(--line); color: var(--fg-muted); }
-  .site-footer__crest { display: inline-flex; align-items: center; gap: var(--space-3); }
-  @media (max-width: 760px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } .site-footer__sign { grid-column: 1 / -1; } }
+  .footer { margin-top: var(--s-8); padding-block: var(--s-7) var(--s-4); }
+  .footer__grid { display: grid; grid-template-columns: 6fr 2fr 2fr 2fr; gap: var(--gutter); }
+  .footer__mark { display: flex; gap: var(--s-4); align-items: flex-start; }
+  .footer__motto { font-size: var(--t-m); line-height: 1.2; }
+  .footer ul { display: grid; gap: var(--s-1); align-content: start; }
+  .footer ul a { color: var(--grey); }
+  .footer ul a:hover { color: var(--ink); }
+  .footer__base { margin-top: var(--s-7); }
+  @media (max-width: 860px) { .footer__grid { grid-template-columns: 1fr 1fr; row-gap: var(--s-5); } .footer__mark { grid-column: 1 / -1; } }
 </style>

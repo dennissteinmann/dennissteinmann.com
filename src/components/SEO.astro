@@ -1,7 +1,7 @@
 ---
 /**
- * Alle <head>-Metadaten an EINER Stelle. Seiten übergeben nur Daten,
- * nie eigene <meta>-Tags. Checkliste: docs/SEO.md
+ * Alle <head>-Metadaten an EINER Stelle. Seiten übergeben nur Daten.
+ * Checkliste: docs/SEO.md
  */
 import { SITE } from '@/site.config';
 import { abs } from '@/lib/seo';
@@ -9,9 +9,7 @@ import { abs } from '@/lib/seo';
 export interface Props {
   title: string;
   description: string;
-  /** Pfad relativ zur Domain; Standard = aktuelle URL */
   canonical?: string;
-  /** OG-Bild-Pfad (1200×630). Standard: generisches Site-Bild */
   image?: string;
   imageAlt?: string;
   type?: 'website' | 'article' | 'profile';
@@ -20,27 +18,12 @@ export interface Props {
   modifiedTime?: Date;
   tags?: string[];
   jsonLd?: object;
-  /** Alternative Maschinenfassung (z. B. /artikel/x.md) */
   markdownAlt?: string;
 }
 
-const {
-  title,
-  description,
-  canonical,
-  image = '/og/default.png',
-  imageAlt,
-  type = 'website',
-  noindex = false,
-  publishedTime,
-  modifiedTime,
-  tags = [],
-  jsonLd,
-  markdownAlt,
-} = Astro.props;
-
+const { title, description, canonical, image = '/og/default.png', imageAlt, type = 'website', noindex = false, publishedTime, modifiedTime, tags = [], jsonLd, markdownAlt } = Astro.props;
 const isHome = Astro.url.pathname === '/';
-const fullTitle = isHome ? `${SITE.name} – ${SITE.tagline}` : `${title} · ${SITE.name}`;
+const fullTitle = isHome ? `${SITE.name} – Explorationen, Projekte, Medien` : `${title} · ${SITE.name}`;
 const canonicalURL = canonical ? abs(canonical) : new URL(Astro.url.pathname, SITE.url).href;
 const ogImage = abs(image);
 ---
@@ -71,9 +54,9 @@ const ogImage = abs(image);
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
 
-<link rel="alternate" type="application/rss+xml" title={`${SITE.name} – Artikel`} href="/rss.xml" />
+<link rel="alternate" type="application/rss+xml" title={`${SITE.name} – Explorationen`} href="/rss.xml" />
 <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
-{markdownAlt && <link rel="alternate" type="text/markdown" title="Markdown-Fassung" href={markdownAlt} />}
+{markdownAlt && <link rel="alternate" type="text/markdown" title="Markdown" href={markdownAlt} />}
 <link rel="sitemap" href="/sitemap.xml" />
 
 {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}

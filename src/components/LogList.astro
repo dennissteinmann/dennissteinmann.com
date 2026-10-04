@@ -1,14 +1,9 @@
 ---
 import { render } from 'astro:content';
-import { type LogEntry, formatDateShort, isoDate } from '@/lib/content';
+import { type LogEntry, formatDate, isoDate } from '@/lib/content';
 import { mdxComponents } from './mdx';
 
-export interface Props {
-  entries: LogEntry[];
-  /** Projektnamen je id – für die Zuordnung in der Gesamtliste */
-  projectNames?: Map<string, string>;
-  headingLevel?: 'h2' | 'h3';
-}
+export interface Props { entries: LogEntry[]; projectNames?: Map<string, string>; headingLevel?: 'h2' | 'h3' }
 const { entries, projectNames, headingLevel: H = 'h2' } = Astro.props;
 const rendered = await Promise.all(entries.map(async (e) => ({ e, Content: (await render(e)).Content })));
 ---
@@ -16,30 +11,26 @@ const rendered = await Promise.all(entries.map(async (e) => ({ e, Content: (awai
 <ol class="log" role="list">
   {rendered.map(({ e, Content }) => (
     <li class="log__item" id={`log-${e.id.split('/').pop()}`}>
-      <div class="log__meta mono">
-        <time datetime={isoDate(e.data.date)}>{formatDateShort(e.data.date)}</time>
+      <p class="meta">
+        <time datetime={isoDate(e.data.date)}>{formatDate(e.data.date)}</time>
         {e.data.project && projectNames?.get(e.data.project.id) && (
-          <a href={`/projekte/${e.data.project.id}/`} class="log__project">{projectNames.get(e.data.project.id)}</a>
+          <> · <a href={`/projekte/${e.data.project.id}/`}>{projectNames.get(e.data.project.id)}</a></>
         )}
-      </div>
-      <div class="log__body">
+      </p>
+      <div>
         <H class="log__title">{e.data.title}</H>
         <div class="prose log__text"><Content components={mdxComponents} /></div>
-        {e.data.article && <a class="arrow-link" href={`/artikel/${e.data.article.id}/`}>Ganzer Artikel</a>}
+        {e.data.exploration && <p class="log__more"><a class="link" href={`/explorationen/${e.data.exploration.id}/`}>Weiterlesen</a></p>}
       </div>
     </li>
   ))}
 </ol>
 
 <style>
-  .log { list-style: none; padding: 0; }
-  .log__item { display: grid; grid-template-columns: minmax(9rem, 1fr) 3fr; gap: var(--space-5); padding-block: var(--space-6); border-top: var(--hairline) solid var(--line); scroll-margin-top: 6rem; }
-  .log__item:target { background: linear-gradient(90deg, rgb(216 243 106 / 0.08), transparent); }
-  .log__meta { display: flex; flex-direction: column; gap: var(--space-1); color: var(--fg-muted); position: relative; padding-left: 1.1rem; }
-  .log__meta::before { content: ''; position: absolute; left: 0; top: 0.45em; width: 0.5rem; height: 0.5rem; background: var(--accent); }
-  .log__project { color: var(--fg); }
-  .log__title { font-family: var(--font-sans); font-size: var(--step-1); font-weight: 650; line-height: 1.3; color: var(--fg-strong); }
-  .log__text { margin-top: var(--space-3); font-size: var(--step--1); color: var(--fg); }
-  .log__body .arrow-link { margin-top: var(--space-4); }
-  @media (max-width: 760px) { .log__item { grid-template-columns: 1fr; gap: var(--space-3); } .log__meta { flex-direction: row; gap: var(--space-4); } }
+  .log__item { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); padding-block: var(--s-5); border-top: 1px solid var(--line); scroll-margin-top: 4rem; }
+  .log__item .meta a { color: var(--grey); }
+  .log__title { font-size: var(--t-m); line-height: 1.2; }
+  .log__text { margin-top: var(--s-2); color: var(--ink-soft); }
+  .log__more { margin-top: var(--s-3); }
+  @media (max-width: 760px) { .log__item { grid-template-columns: 1fr; gap: var(--s-2); } }
 </style>

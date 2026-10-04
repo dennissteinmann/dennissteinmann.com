@@ -1,13 +1,13 @@
 # dennissteinmann.com
 
-Persönliche Website von Dennis Steinmann – die Zentrale für Langform-Artikel, Projekte
-und das Build-in-Public-Logbuch. Statisch gebaut mit Astro, optimiert für klassische
+Persönliche Website von Dennis Steinmann – die Zentrale für Explorationen, Projekte,
+Medien, Presse und Social Media. Statisch gebaut mit Astro, optimiert für klassische
 Suche und KI-Suche, automatisch deployed bei Push auf `main`.
 
 ```bash
 npm install
 npm run dev                      # http://localhost:4321
-npm run new artikel "Titel"      # neuer Artikel (auch: projekt | log | seite)
+npm run new exploration "Titel"  # auch: projekt | thema | log | medium | presse | seite
 npm run verify                   # Build + SEO-Check
 ```
 

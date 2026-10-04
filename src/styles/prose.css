@@ -1,59 +1,42 @@
 /* ==========================================================================
-   PROSE – Langform-Typografie für Artikel, Projekte und Unterseiten.
-   Optimiert für 15–40 Minuten Lesezeit: 68ch Satzbreite, 1.68 Zeilenhöhe,
-   Serif-Zwischenüberschriften als Rhythmusgeber.
+   PROSE – Langform. Serif, ruhige Zeilen, viel Luft. Wie ein gutes Buch.
    ========================================================================== */
 
-.prose { max-width: var(--measure); font-size: var(--step-0); line-height: var(--lh-body); color: var(--fg); }
-.prose > * + * { margin-top: 1.25em; }
+.prose { max-width: var(--measure); font-size: var(--t-body); line-height: var(--lh-body); color: var(--ink); hanging-punctuation: first; }
+.prose > * + * { margin-top: 1.1em; }
 
-.prose h2, .prose h3, .prose h4 { color: var(--fg-strong); scroll-margin-top: 6rem; }
-.prose h2 {
-  font-family: var(--font-display); font-weight: 400; font-size: var(--step-3); line-height: var(--lh-snug); letter-spacing: -0.01em;
-  margin-top: 2.4em; padding-top: 0.9em; border-top: var(--hairline) solid var(--line);
-}
-.prose h3 { font-family: var(--font-sans); font-weight: 700; font-size: var(--step-1); line-height: 1.3; margin-top: 2em; letter-spacing: -0.01em; }
-.prose h4 { font-family: var(--font-mono); font-weight: 500; font-size: var(--step--1); text-transform: uppercase; letter-spacing: var(--tracking-caps); margin-top: 2em; color: var(--fg-muted); }
-.prose h2 + *, .prose h3 + *, .prose h4 + * { margin-top: 0.75em; }
+.prose h2 { font-size: var(--t-l); line-height: 1.1; letter-spacing: -0.01em; margin-top: 2.4em; scroll-margin-top: 5rem; }
+.prose h3 { font-size: var(--t-m); line-height: 1.2; font-style: italic; margin-top: 2em; scroll-margin-top: 5rem; }
+.prose h4 { font-family: var(--sans); font-size: var(--t-s); font-weight: 500; margin-top: 2em; }
+.prose h2 + *, .prose h3 + *, .prose h4 + * { margin-top: 0.7em; }
 
-/* Überschriften-Anker (wird per rehype o. Ä. nicht benötigt – id kommt von Astro) */
-.prose :is(h2, h3) a { text-decoration: none; }
+.prose a { text-decoration-color: var(--grey-light); }
+.prose a:hover { text-decoration-color: var(--ink); }
+.prose strong { font-weight: 600; }
+.prose em { font-style: italic; }
 
-.prose a { color: var(--fg-strong); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; }
-.prose a:hover { color: var(--accent); }
-.prose strong { color: var(--fg-strong); font-weight: 650; }
-.prose mark { background: var(--highlight); color: var(--highlight-fg); padding: 0 0.15em; }
+.prose ul, .prose ol { padding-left: 1.2em; }
+.prose li + li { margin-top: 0.35em; }
+.prose ul > li::marker { content: '–  '; color: var(--grey); }
+.prose ol > li::marker { font-family: var(--sans); font-size: 0.8em; color: var(--grey); }
 
-.prose ul, .prose ol { padding-left: 1.3em; }
-.prose li + li { margin-top: 0.45em; }
-.prose ul > li::marker { content: '— '; color: var(--accent); }
-.prose ol > li::marker { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+.prose blockquote { margin-block: 2.2em; font-size: var(--t-l); line-height: 1.15; font-style: italic; letter-spacing: -0.01em; }
+.prose blockquote cite, .prose blockquote footer { display: block; margin-top: 0.8em; font-family: var(--sans); font-size: var(--t-xs); font-style: normal; color: var(--grey); letter-spacing: 0; }
 
-.prose blockquote {
-  margin-block: 2em; padding-left: 1em; border-left: 2px solid var(--accent);
-  font-family: var(--font-display); font-size: var(--step-2); line-height: 1.25; color: var(--fg-strong);
-}
-.prose blockquote p + p { margin-top: 0.5em; }
-.prose blockquote cite, .prose blockquote footer { display: block; margin-top: 0.8em; font-family: var(--font-mono); font-size: var(--step--2); font-style: normal; color: var(--fg-muted); }
+.prose hr { border: 0; margin-block: 3em; text-align: center; }
+.prose hr::after { content: '*'; color: var(--grey); font-size: var(--t-m); }
 
-.prose hr { border: 0; height: var(--hairline); background: var(--line-strong); margin-block: 3em; }
+.prose code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.78em; }
+.prose pre { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.8rem; line-height: 1.65; padding: var(--s-4); overflow-x: auto; border: 1px solid var(--line); background: var(--white) !important; }
 
-.prose code { font-family: var(--font-mono); font-size: 0.86em; padding: 0.12em 0.35em; background: var(--surface); border: var(--hairline) solid var(--line); }
-.prose pre {
-  font-family: var(--font-mono); font-size: var(--step--1); line-height: 1.6;
-  padding: var(--space-5); overflow-x: auto; background: var(--code-bg) !important;
-  border: var(--hairline) solid var(--line); margin-inline: calc(var(--space-5) * -1);
-}
-.prose pre code { padding: 0; background: none; border: 0; font-size: inherit; }
+.prose table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: var(--t-s); font-variant-numeric: tabular-nums; }
+.prose th { font-weight: 500; text-align: left; color: var(--grey); }
+.prose th, .prose td { padding: 0.7em 0.8em 0.7em 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 
-.prose table { width: 100%; border-collapse: collapse; font-size: var(--step--1); font-variant-numeric: tabular-nums; }
-.prose th { font-family: var(--font-mono); font-weight: 500; font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.08em; text-align: left; color: var(--fg-muted); }
-.prose th, .prose td { padding: 0.7em 0.8em 0.7em 0; border-bottom: var(--hairline) solid var(--line); vertical-align: top; }
-
-/* Bilder & Figures: dürfen die Satzbreite verlassen */
 .prose img { width: 100%; }
-.prose figure { margin-block: 2.5em; }
-.prose figcaption, .figure__caption { margin-top: var(--space-3); font-family: var(--font-mono); font-size: var(--step--2); color: var(--fg-muted); }
-@media (min-width: 1100px) { .prose .wide { width: min(1100px, 100vw - 2 * var(--gutter)); max-width: none; margin-inline: calc((var(--measure) - min(1100px, 100vw - 2 * var(--gutter))) / 2); } }
-
-.prose video, .prose iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; background: var(--surface); }
+.prose figure { margin-block: 3em; }
+.prose figcaption, .figure__caption { margin-top: var(--s-2); font-family: var(--sans); font-size: var(--t-xs); color: var(--grey); }
+@media (min-width: 1100px) {
+  .prose .wide { width: min(1100px, 100vw - 2 * var(--gutter)); max-width: none; margin-inline: calc((var(--measure) - min(1100px, 100vw - 2 * var(--gutter))) / 2); }
+}
+.prose video, .prose iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; background: var(--placeholder); }

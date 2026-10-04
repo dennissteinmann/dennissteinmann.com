@@ -1,39 +1,88 @@
 ---
+/**
+ * Projektkarte. Das Erscheinungsbild folgt der Art des Projekts:
+ *  app          → farbige Fläche (Projektfarbe) mit App-Icon, wie ein Objekt auf einem Sockel
+ *  website/software/plattform → Bildschirm-Ausschnitt (cover) oder Domain als Typografie
+ *  unternehmen  → reine Typografie, Name als Wortmarke
+ *  medien/forschung → Hochformat wie ein Buch- oder Plakatcover
+ * Projektfarbe (`color`) gehört dem Projekt – die Website selbst bleibt schwarz/weiß.
+ */
 import { Image } from 'astro:assets';
-import { type Project, STATUS_LABELS } from '@/lib/content';
+import { type Project, PROJECT_KIND_LABELS, STATUS_LABELS, projectYears } from '@/lib/content';
 
-export interface Props { project: Project; index?: number; headingLevel?: 'h2' | 'h3' }
-const { project, index, headingLevel: H = 'h3' } = Astro.props;
-const { data } = project;
-const years = `${data.started.getFullYear()}${data.ended ? `–${data.ended.getFullYear()}` : data.status === 'aktiv' ? '–heute' : ''}`;
+export interface Props { project: Project; headingLevel?: 'h2' | 'h3'; sizes?: string }
+const { project, headingLevel: H = 'h3', sizes = '(min-width: 900px) 40vw, 90vw' } = Astro.props;
+const d = project.data;
+const href = `/projekte/${project.id}/`;
+const domain = d.url ? new URL(d.url).hostname.replace(/^www\./, '') : undefined;
+const variant =
+  d.kind === 'app' ? 'object' :
+  d.kind === 'unternehmen' ? 'type' :
+  d.kind === 'medien' || d.kind === 'forschung' ? 'cover' : 'screen';
+const statusNote = d.status === 'aktiv' ? '' : ` · ${STATUS_LABELS[d.status]}`;
+const style = d.color ? `--pc:${d.color}` : '';
 ---
 
-<article class="pcard">
-  <div class="pcard__top mono">
-    {index !== undefined && <span class="pcard__idx">{String(index + 1).padStart(2, '0')}</span>}
-    <span class={`status status--${data.status}`}>{STATUS_LABELS[data.status]}</span>
+<article class:list={['pc', `pc--${variant}`, { 'pc--colored': !!d.color, 'pc--draft': d.draft }]} style={style}>
+  <a href={href} class="pc__stage plain" aria-label={d.title} tabindex="-1">
+    {variant === 'object' && (
+      d.icon
+        ? <Image src={d.icon} alt="" width={240} height={240} class="pc__icon" />
+        : <span class="pc__glyph display">{d.title.charAt(0)}</span>
+    )}
+    {variant === 'screen' && (
+      d.cover
+        ? <Image src={d.cover} alt={d.coverAlt ?? ''} widths={[480, 800, 1200]} sizes={sizes} class="pc__img" />
+        : d.icon
+          ? <Image src={d.icon} alt="" width={200} height={200} class="pc__icon pc__icon--flat" />
+          : <span class="pc__domain display">{domain ?? d.title}</span>
+    )}
+    {variant === 'type' && <span class="pc__word display">{d.title}</span>}
+    {variant === 'cover' && (
+      d.cover
+        ? <Image src={d.cover} alt={d.coverAlt ?? ''} widths={[400, 700]} sizes={sizes} class="pc__img" />
+        : <span class="pc__booktitle display">{d.title}</span>
+    )}
+  </a>
+  <div class="pc__caption">
+    <H class="pc__title"><a href={href} class="plain">{d.title}</a></H>
+    <p class="meta">{PROJECT_KIND_LABELS[d.kind]} · {projectYears(project)}{statusNote}{d.draft && ' · Entwurf'}</p>
   </div>
-  {data.cover && (
-    <div class="pcard__media">
-      <Image src={data.cover} alt={data.coverAlt ?? ''} widths={[400, 700]} sizes="(min-width: 900px) 33vw, 100vw" />
-    </div>
-  )}
-  <H class="pcard__title display"><a href={`/projekte/${project.id}/`}>{data.title}</a></H>
-  <p class="pcard__desc">{data.summary}</p>
-  <p class="pcard__foot mono muted">{data.role && <span>{data.role} · </span>}{years}</p>
 </article>
 
 <style>
-  .pcard { position: relative; display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-5); border: var(--hairline) solid var(--line); background: var(--bg-raised); transition: border-color var(--dur-2), transform var(--dur-2) var(--ease-out); }
-  .pcard:hover { border-color: var(--line-strong); transform: translateY(-2px); }
-  .pcard__top { display: flex; justify-content: space-between; align-items: center; }
-  .pcard__idx { color: var(--accent); }
-  .pcard__media { margin-inline: calc(var(--space-5) * -1); }
-  .pcard__media :global(img) { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
-  .pcard__title { font-size: var(--step-3); line-height: 1; }
-  .pcard__title a { text-decoration: none; }
-  .pcard__title a::after { content: ''; position: absolute; inset: 0; }
-  .pcard:hover .pcard__title a { color: var(--accent); }
-  .pcard__desc { color: var(--fg-muted); font-size: var(--step--1); flex: 1; }
-  .pcard__foot { padding-top: var(--space-3); border-top: var(--hairline) solid var(--line); }
+  .pc { --pc: var(--placeholder); display: flex; flex-direction: column; gap: var(--s-3); }
+  .pc__stage { position: relative; display: grid; place-items: center; overflow: hidden; background: var(--pc); transition: opacity var(--fast); }
+  .pc__stage:hover { opacity: 0.94; }
+  .pc__stage :global(img.pc__img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease); }
+  .pc:hover .pc__stage :global(img.pc__img) { transform: scale(1.025); }
+
+  /* App: Objekt auf farbiger Fläche */
+  .pc--object .pc__stage { aspect-ratio: 1; }
+  .pc__stage :global(.pc__icon) { width: 34%; height: auto; border-radius: 22.5%; box-shadow: 0 1.5rem 3rem -1.5rem rgb(0 0 0 / 0.35); transition: transform var(--slow) var(--ease); }
+  .pc:hover .pc__stage :global(.pc__icon) { transform: translateY(-4px); }
+  .pc__stage :global(.pc__icon--flat) { box-shadow: none; width: 28%; }
+  .pc__glyph { font-size: clamp(4rem, 10vw, 9rem); color: var(--white); mix-blend-mode: difference; }
+  .pc--object:not(.pc--colored) .pc__glyph { color: var(--ink); mix-blend-mode: normal; }
+
+  /* Website/Software: Bildschirm */
+  .pc--screen .pc__stage { aspect-ratio: 16 / 10; }
+  .pc__domain { font-size: clamp(1.6rem, 2.6vw, 2.6rem); padding: var(--s-4); text-align: center; }
+  .pc--screen:not(.pc--colored) .pc__stage, .pc--type .pc__stage { background: var(--white); outline: 1px solid var(--line); outline-offset: -1px; }
+  .pc--colored .pc__domain { color: var(--white); }
+
+  /* Unternehmen: Wortmarke */
+  .pc--type .pc__stage { aspect-ratio: 5 / 3; }
+  .pc__word { font-size: clamp(1.8rem, 3.2vw, 3.4rem); letter-spacing: -0.02em; padding: var(--s-4); text-align: center; line-height: 1; }
+  .pc--type.pc--colored .pc__stage { outline: 0; }
+  .pc--type.pc--colored .pc__word { color: var(--white); }
+
+  /* Medien/Forschung: Cover im Hochformat */
+  .pc--cover .pc__stage { aspect-ratio: 3 / 4; place-items: end start; }
+  .pc__booktitle { font-size: clamp(1.6rem, 2.4vw, 2.4rem); line-height: 1.05; padding: var(--s-4); color: var(--white); font-style: italic; }
+  .pc--cover:not(.pc--colored) .pc__stage { background: var(--marble); }
+
+  .pc__title { font-family: var(--serif); font-size: var(--t-m); line-height: 1.15; }
+  .pc__caption .meta { margin-top: 0.15rem; }
+  .pc--draft { opacity: 0.55; }
 </style>

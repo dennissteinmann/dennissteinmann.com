@@ -1,0 +1,73 @@
+---
+/**
+ * Medien: alle Bilder, Videos, Auftritte – plus alle Projekt-Dokumente
+ * an einem Ort (Archiv für Projekte ohne eigene Website).
+ */
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { getMedia, getProjects, MEDIA_KIND_LABELS, formatDate } from '@/lib/content';
+import { breadcrumbSchema, graph, websiteSchema } from '@/lib/seo';
+
+const media = await getMedia();
+const projects = await getProjects();
+const documents = projects.flatMap((p) => p.data.documents.map((doc) => ({ ...doc, project: p })));
+const title = 'Medien';
+const description = 'Medien von Dennis Steinmann: Fotos, Videos, Vorträge, Interviews sowie Dokumente zu allen Projekten – frei zugänglich an einem Ort.';
+const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/medien/' }];
+---
+
+<BaseLayout title={title} description={description} jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs))}>
+  <PageHeader title="Medien" lead="Bilder, Bewegtbild, Auftritte und Dokumente. Was hier liegt, bleibt auffindbar." crumbs={crumbs} />
+
+  <section class="wrap space">
+    {media.length === 0 && <p class="muted">Noch keine Medien.</p>}
+    <ul role="list" class="gallery">
+      {media.map((m, i) => (
+        <li class:list={['gallery__item', `gallery__item--${i % 5}`]}>
+          {m.data.image && (
+            <a href={m.data.href ?? '#'} class="plain">
+              <Image src={m.data.image} alt={m.data.imageAlt ?? m.data.title} widths={[400, 800]} sizes="(min-width: 900px) 33vw, 100vw" />
+            </a>
+          )}
+          <p class="gallery__title">{m.data.title}</p>
+          <p class="meta">{MEDIA_KIND_LABELS[m.data.kind]} · {formatDate(m.data.date)}{m.data.source && ` · ${m.data.source}`}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  {documents.length > 0 && (
+    <section class="wrap space sec">
+      <h2 class="display t-m">Dokumente</h2>
+      <ul role="list" class="docs">
+        {documents.map((doc) => (
+          <li>
+            <a href={doc.href} class="plain">{doc.title}</a>
+            <span class="meta">{doc.kind} · <a href={`/projekte/${doc.project.id}/`}>{doc.project.data.title}</a></span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</BaseLayout>
+
+<style>
+  .gallery { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); row-gap: var(--s-7); }
+  .gallery__item { grid-column: span 4; }
+  .gallery__item--0 { grid-column: 1 / span 5; }
+  .gallery__item--1 { grid-column: 8 / span 4; margin-top: var(--s-7); }
+  .gallery__item--2 { grid-column: 3 / span 4; }
+  .gallery__item--3 { grid-column: 8 / span 5; margin-top: var(--s-6); }
+  .gallery__item--4 { grid-column: 2 / span 6; }
+  .gallery :global(img) { width: 100%; height: auto; }
+  .gallery__title { margin-top: var(--s-3); }
+  .sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); }
+  .docs li { display: flex; justify-content: space-between; gap: var(--s-4); padding-block: var(--s-3); border-top: 1px solid var(--line); }
+  .docs .meta a { color: inherit; }
+  @media (max-width: 900px) {
+    .gallery { grid-template-columns: 1fr; }
+    .gallery__item[class] { grid-column: 1; margin-top: 0; }
+    .sec { grid-template-columns: 1fr; }
+  }
+</style>

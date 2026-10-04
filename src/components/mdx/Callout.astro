@@ -1,22 +1,17 @@
 ---
-/**
- * Hinweisbox. <Callout type="note|warn|lesson" title="…">Text</Callout>
- * "lesson" = Learning / Erkenntnis (Build-in-Public-Format).
- */
-export interface Props { type?: 'note' | 'warn' | 'lesson'; title?: string }
-const { type = 'note', title } = Astro.props;
-const labels = { note: 'Notiz', warn: 'Achtung', lesson: 'Learning' };
+/** Hervorgehobener Gedanke. <Callout title="Learning">Text</Callout> */
+export interface Props { title?: string; type?: string }
+const { title } = Astro.props;
 ---
 
-<aside class:list={['callout', `callout--${type}`]}>
-  <p class="callout__label mono">{title ?? labels[type]}</p>
+<aside class="callout">
+  {title && <p class="callout__title">{title}</p>}
   <div class="callout__body"><slot /></div>
 </aside>
 
 <style>
-  .callout { padding: var(--space-5); background: var(--bg-raised); border: var(--hairline) solid var(--line); border-left: 3px solid var(--fg-muted); }
-  .callout--warn { border-left-color: var(--accent); }
-  .callout--lesson { border-left-color: var(--highlight); }
-  .callout__label { text-transform: uppercase; letter-spacing: var(--tracking-caps); color: var(--fg-muted); margin-bottom: var(--space-2); }
+  .callout { margin-block: 2.4em; padding-left: var(--s-4); border-left: 1px solid var(--ink); }
+  .callout__title { font-family: var(--sans); font-size: var(--t-xs); color: var(--grey); margin-bottom: var(--s-1); }
+  .callout__body { font-style: italic; }
   .callout__body > :global(* + *) { margin-top: 0.8em; }
 </style>

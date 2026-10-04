@@ -35,6 +35,13 @@ jobs:
       - name: Install
         run: npm ci
 
+      # Optimierte Bilder zwischen Builds cachen (sonst jedes Mal neu berechnet)
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-assets-${{ hashFiles('src/**/*.{png,jpg,jpeg,webp}') }}
+          restore-keys: astro-assets-
+
       - name: Type- & Content-Check + Build
         run: npm run build
 

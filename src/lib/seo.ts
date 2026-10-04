@@ -1,20 +1,25 @@
 /**
- * JSON-LD-Bausteine. Alle Entitäten haben stabile @id-URIs, damit
- * Suchmaschinen und KI-Systeme sie seitenübergreifend verknüpfen können
- * (Knowledge Graph). Die @ids NIE ändern – siehe docs/SEO.md.
+ * JSON-LD-Bausteine. Stabile @id-URIs verknüpfen alle Seiten zu einem
+ * Wissensgraphen rund um die Person. @ids NIE ändern – siehe docs/SEO.md.
  */
-import { SITE, PERSON } from '@/site.config';
+import { SITE, PERSON, activeChannels } from '@/site.config';
+import { getTopics, getPress } from './content';
 
 export const ID = {
   person: `${SITE.url}/#person`,
   website: `${SITE.url}/#website`,
 };
-
+export const PERSON_IMAGE = '/media/brand/dennis-steinmann.jpg';
 export const abs = (path: string) => new URL(path, SITE.url).href;
 
-export const PERSON_IMAGE = '/media/brand/dennis-steinmann.jpg';
-
-export function personSchema(image: string = PERSON_IMAGE) {
+/**
+ * Person mit Expertise (`knowsAbout` → Themen-Hubs) und Presse (`subjectOf`).
+ * Async, weil Themen & Presse aus den Collections kommen.
+ */
+export async function personSchema() {
+  const topics = await getTopics();
+  const press = await getPress();
+  const sameAs = activeChannels().map((c) => c.url);
   return {
     '@type': 'Person',
     '@id': ID.person,
@@ -22,11 +27,22 @@ export function personSchema(image: string = PERSON_IMAGE) {
     givenName: PERSON.givenName,
     familyName: PERSON.familyName,
     url: abs('/ueber/'),
+    image: abs(PERSON_IMAGE),
     jobTitle: PERSON.jobTitle,
     description: PERSON.description,
-    knowsAbout: PERSON.knowsAbout,
-    image: abs(image),
-    ...(PERSON.sameAs.filter(Boolean).length ? { sameAs: PERSON.sameAs.filter(Boolean) } : {}),
+    nationality: PERSON.nationality,
+    homeLocation: { '@type': 'Country', name: PERSON.homeLocation },
+    knowsAbout: topics.map((t) => ({
+      '@type': 'Thing',
+      name: t.data.title,
+      description: t.data.definition,
+      url: abs(`/themen/${t.id}/`),
+      ...(t.data.sameAs ? { sameAs: t.data.sameAs } : {}),
+    })),
+    ...(sameAs.length ? { sameAs } : {}),
+    ...(press.length
+      ? { subjectOf: press.map((p) => ({ '@type': 'NewsArticle', headline: p.data.title, publisher: { '@type': 'Organization', name: p.data.outlet }, datePublished: p.data.date.toISOString(), ...(p.data.url ? { url: p.data.url } : {}) })) }
+      : {}),
   };
 }
 
@@ -44,31 +60,17 @@ export function websiteSchema() {
 }
 
 export type Crumb = { name: string; path: string };
-
 export function breadcrumbSchema(crumbs: Crumb[]) {
   return {
     '@type': 'BreadcrumbList',
-    itemListElement: crumbs.map((c, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: c.name,
-      item: abs(c.path),
-    })),
+    itemListElement: crumbs.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.name, item: abs(c.path) })),
   };
 }
 
 export function articleSchema(a: {
-  path: string;
-  title: string;
-  description: string;
-  summary: string;
-  pubDate: Date;
-  updated?: Date;
-  image: string;
-  tags: string[];
-  wordCount: number;
-  projectPath?: string;
-  projectName?: string;
+  path: string; title: string; description: string; summary: string; pubDate: Date; updated?: Date;
+  image: string; topics: { name: string; path: string }[]; wordCount: number; genre: string;
+  citations: { title: string; url: string }[]; distributed: string[];
 }) {
   const url = abs(a.path);
   return {
@@ -79,6 +81,7 @@ export function articleSchema(a: {
     headline: a.title,
     description: a.description,
     abstract: a.summary,
+    genre: a.genre,
     datePublished: a.pubDate.toISOString(),
     dateModified: (a.updated ?? a.pubDate).toISOString(),
     inLanguage: SITE.lang,
@@ -86,20 +89,18 @@ export function articleSchema(a: {
     author: { '@id': ID.person },
     publisher: { '@id': ID.person },
     isPartOf: { '@id': ID.website },
-    keywords: a.tags.join(', '),
+    about: a.topics.map((t) => ({ '@type': 'Thing', name: t.name, url: abs(t.path) })),
+    keywords: a.topics.map((t) => t.name).join(', '),
     wordCount: a.wordCount,
-    ...(a.projectPath ? { about: { '@type': 'CreativeWork', name: a.projectName, url: abs(a.projectPath) } } : {}),
+    ...(a.citations.length ? { citation: a.citations.map((c) => ({ '@type': 'CreativeWork', name: c.title, url: c.url })) } : {}),
+    ...(a.distributed.length ? { sameAs: a.distributed } : {}),
   };
 }
 
 export function faqSchema(faq: { q: string; a: string }[]) {
   return {
     '@type': 'FAQPage',
-    mainEntity: faq.map((f) => ({
-      '@type': 'Question',
-      name: f.q,
-      acceptedAnswer: { '@type': 'Answer', text: f.a },
-    })),
+    mainEntity: faq.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a, author: { '@id': ID.person } } })),
   };
 }
 
@@ -111,12 +112,8 @@ export function collectionSchema(path: string, name: string, description: string
     name,
     description,
     isPartOf: { '@id': ID.website },
-    mainEntity: {
-      '@type': 'ItemList',
-      itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(it.path), name: it.name })),
-    },
+    mainEntity: { '@type': 'ItemList', itemListElement: items.map((it, i) => ({ '@type': 'ListItem', position: i + 1, url: abs(it.path), name: it.name })) },
   };
 }
 
-/** Bündelt mehrere Knoten in einen @graph. */
 export const graph = (...nodes: object[]) => ({ '@context': 'https://schema.org', '@graph': nodes });

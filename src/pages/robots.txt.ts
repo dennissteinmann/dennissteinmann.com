@@ -18,10 +18,10 @@ export const GET: APIRoute = () => {
   const body = [
     'User-agent: *',
     'Allow: /',
-    'Disallow: /social/',
+    'Disallow: /social/', 'Disallow: /studio/',
     '',
     '# KI-Suche & Assistenten: ausdrücklich erlaubt',
-    ...AI_AGENTS.flatMap((a) => [`User-agent: ${a}`, 'Allow: /', 'Disallow: /social/', '']),
+    ...AI_AGENTS.flatMap((a) => [`User-agent: ${a}`, 'Allow: /', 'Disallow: /social/', 'Disallow: /studio/', '']),
     `Sitemap: ${SITE.url}/sitemap.xml`,
     '',
     `# Maschinenlesbare Übersicht: ${SITE.url}/llms.txt`,

@@ -1,8 +1,5 @@
 ---
-/**
- * Kennzahlen-Kacheln im Stil der LinkedIn-Carousels (Lime-Highlight).
- * <Stats items={[{ value: '300.000', label: 'Downloads / Monat' }, …]} />
- */
+/** Kennzahlen, typografisch. <Stats items={[{ value: '300.000', label: 'Downloads / Monat' }]} /> */
 export interface Props { items: { value: string; label: string }[] }
 const { items } = Astro.props;
 ---
@@ -17,8 +14,8 @@ const { items } = Astro.props;
 </dl>
 
 <style>
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr)); gap: var(--space-3); margin-block: 2em; }
-  .stats__item { display: flex; flex-direction: column-reverse; justify-content: flex-end; padding: var(--space-5); background: var(--highlight); color: var(--highlight-fg); }
-  .stats dd { font-family: var(--font-sans); font-weight: 800; font-size: var(--step-3); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; margin: 0; }
-  .stats dt { font-family: var(--font-mono); font-size: var(--step--2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: var(--space-2); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: var(--s-4); margin-block: 2.4em; }
+  .stats__item { display: flex; flex-direction: column-reverse; justify-content: flex-end; padding-top: var(--s-3); border-top: 1px solid var(--ink); }
+  .stats dd { font-family: var(--serif); font-size: var(--t-l); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: lining-nums tabular-nums; margin: 0; }
+  .stats dt { font-family: var(--sans); font-size: var(--t-xs); color: var(--grey); margin-top: var(--s-2); }
 </style>

@@ -1,0 +1,56 @@
+---
+/**
+ * Projektfeld: unkonventionelles, asymmetrisches Raster (Bauhaus).
+ * Karten werden nach einem festen Rhythmus versetzt platziert – kein
+ * gleichförmiges Kachelraster. `size` (s/m/l) verbreitert/verkleinert.
+ */
+import ProjectCard from './ProjectCard.astro';
+import type { Project } from '@/lib/content';
+
+export interface Props { projects: Project[]; headingLevel?: 'h2' | 'h3' }
+const { projects, headingLevel = 'h3' } = Astro.props;
+
+// Rhythmus: Spaltenstart, Breite (von 12), vertikaler Versatz in rem
+const RHYTHM = [
+  { start: 1, span: 5, offset: 0 },
+  { start: 8, span: 4, offset: 7 },
+  { start: 3, span: 4, offset: 2 },
+  { start: 9, span: 3, offset: 0 },
+  { start: 1, span: 3, offset: 5 },
+  { start: 5, span: 6, offset: 0 },
+  { start: 2, span: 4, offset: 3 },
+  { start: 8, span: 5, offset: 9 },
+];
+const SIZE_DELTA = { s: -1, m: 0, l: 2 } as const;
+
+const placed = projects.map((project, i) => {
+  const r = RHYTHM[i % RHYTHM.length];
+  const span = Math.max(3, r.span + SIZE_DELTA[project.data.size]);
+  const start = Math.min(r.start, 13 - span);
+  return { project, style: `--start:${start};--span:${span};--offset:${r.offset}rem` };
+});
+---
+
+<div class="field">
+  {placed.map(({ project, style }) => (
+    <div class="field__item" style={style}>
+      <ProjectCard project={project} headingLevel={headingLevel} />
+    </div>
+  ))}
+</div>
+
+<style>
+  .field { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); row-gap: var(--s-7); align-items: start; }
+  .field__item { grid-column: var(--start) / span var(--span); margin-top: var(--offset); }
+  @media (max-width: 900px) {
+    .field { grid-template-columns: 1fr 1fr; row-gap: var(--s-6); }
+    .field__item { grid-column: auto; margin-top: 0; }
+    .field__item:nth-child(even) { margin-top: var(--s-6); }
+  }
+  @media (max-width: 520px) {
+    .field { grid-template-columns: 1fr; }
+    .field__item:nth-child(even) { margin-top: 0; }
+    .field__item:nth-child(3n + 2) { padding-left: 18%; }
+    .field__item:nth-child(3n) { padding-right: 18%; }
+  }
+</style>

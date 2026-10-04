@@ -1,25 +1,15 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Crest from '@/components/Crest.astro';
 ---
 
-<BaseLayout title="Seite nicht gefunden" description="Diese Seite existiert nicht (mehr). Über die Navigation findest du alle Artikel, Projekte und das Logbuch von Dennis Steinmann." noindex>
-  <section class="section nf grid-lines">
-    <div class="container">
-      <Crest size="5rem" class="nf__crest" />
-      <p class="kicker kicker--accent">Fehler 404</p>
-      <h1 class="display h-xl">Hier geht's <em>nicht</em> weiter.</h1>
-      <p class="lead muted">Die Seite wurde verschoben oder hat nie existiert. Aber jeder Umweg ist ein Schritt – gradatim.</p>
-      <div class="nf__links">
-        <a class="btn btn--accent" href="/">Zur Startseite</a>
-        <a class="btn" href="/artikel/">Alle Artikel</a>
-      </div>
-    </div>
+<BaseLayout title="Nicht gefunden" description="Diese Seite existiert nicht (mehr). Über die Navigation findest du alle Explorationen, Projekte, Themen und Medien von Dennis Steinmann." noindex>
+  <section class="wrap nf">
+    <h1 class="display t-xxl">Hier ist <em>nichts.</em></h1>
+    <p class="lead">Nur Weißraum. Vielleicht weiter bei den <a href="/explorationen/">Explorationen</a> oder den <a href="/projekte/">Projekten</a>.</p>
   </section>
 </BaseLayout>
 
 <style>
-  .nf .container > * + * { margin-top: var(--space-5); }
-  .nf :global(.nf__crest) { color: var(--accent); }
-  .nf__links { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+  .nf { padding-block: clamp(6rem, 22vh, 16rem) var(--s-7); }
+  .nf .lead { margin-top: var(--s-5); }
 </style>

@@ -1,0 +1,63 @@
+---
+/**
+ * Studio – interne Social-Media-Zentrale (noindex, robots.txt gesperrt).
+ * Zeigt je Exploration, auf welchen Kanälen sie bereits verbreitet wurde
+ * (Frontmatter `distribution`), und verlinkt das Social-Kit.
+ * Verbreitet? → in der Exploration eintragen:
+ *   distribution:
+ *     - { channel: linkedin, url: https://…, date: 2026-10-05 }
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import { CHANNELS } from '@/site.config';
+import { getExplorations, formatDate } from '@/lib/content';
+
+const items = await getExplorations();
+const done = (e: (typeof items)[number], ch: string) => e.data.distribution.find((d) => d.channel === ch);
+---
+
+<BaseLayout title="Studio" description="Interne Übersicht: Verbreitung aller Explorationen auf Social Media, Social-Kits und Kanalstatus. Nicht öffentlich verlinkt." noindex>
+  <PageHeader title="Studio" lead="Vom Gedanken zum Post. Jede Exploration, jeder Kanal, ein Blick." />
+
+  <section class="wrap space">
+    <h2 class="display t-m sec-h">Kanäle</h2>
+    <ul role="list" class="channels sans">
+      {CHANNELS.map((c) => (
+        <li>{c.url ? <a href={c.url} rel="noopener">{c.name}</a> : <span class="muted">{c.name} – URL fehlt in site.config.ts</span>}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="wrap space">
+    <h2 class="display t-m sec-h">Verbreitung</h2>
+    <div class="table-wrap">
+      <table class="matrix sans">
+        <thead>
+          <tr><th>Exploration</th>{CHANNELS.map((c) => <th>{c.name}</th>)}<th>Kit</th></tr>
+        </thead>
+        <tbody>
+          {items.map((e) => (
+            <tr>
+              <td><a href={`/explorationen/${e.id}/`}>{e.data.title}</a><br /><span class="meta">{formatDate(e.data.pubDate)}{e.data.draft && ' · Entwurf'}</span></td>
+              {CHANNELS.map((c) => {
+                const d = done(e, c.id);
+                return <td>{d ? (d.url ? <a href={d.url} rel="noopener">gepostet</a> : 'gepostet') : <span class="muted">—</span>}</td>;
+              })}
+              <td><a href={`/social/${e.id}/`}>öffnen</a></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .sec-h { margin-bottom: var(--s-4); }
+  .channels { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); }
+  .table-wrap { overflow-x: auto; }
+  .matrix { width: 100%; border-collapse: collapse; font-size: var(--t-s); }
+  .matrix th { text-align: left; font-weight: 400; color: var(--grey); padding: var(--s-2) var(--s-3) var(--s-2) 0; border-bottom: 1px solid var(--ink); white-space: nowrap; }
+  .matrix td { padding: var(--s-3) var(--s-3) var(--s-3) 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .matrix td:first-child { min-width: 18rem; font-family: var(--serif); font-size: var(--t-body); }
+</style>

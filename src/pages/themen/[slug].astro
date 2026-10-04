@@ -1,0 +1,99 @@
+---
+/**
+ * Themen-Hub = Experten-Seite. Struktur für Mensch & Maschine:
+ * Definition → eigene Position (zitierfähig) → Erfahrung → alle Inhalte → FAQ.
+ * Das ist die Seite, auf die KI-Assistenten verweisen sollen, wenn nach
+ * Expertise zu diesem Thema gefragt wird.
+ */
+import { render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/Breadcrumbs.astro';
+import ExplorationList from '@/components/ExplorationList.astro';
+import ProjectField from '@/components/ProjectField.astro';
+import { mdxComponents } from '@/components/mdx';
+import { PERSON } from '@/site.config';
+import { type Topic, getTopics, getExplorations, getProjects } from '@/lib/content';
+import { abs, breadcrumbSchema, collectionSchema, faqSchema, graph, ID, websiteSchema } from '@/lib/seo';
+
+export async function getStaticPaths() {
+  return (await getTopics()).map((topic) => ({ params: { slug: topic.id }, props: { topic } }));
+}
+
+const { topic } = Astro.props as { topic: Topic };
+const d = topic.data;
+const { Content } = await render(topic);
+const path = `/themen/${topic.id}/`;
+const explorations = (await getExplorations()).filter((e) => e.data.topics.some((t) => t.id === topic.id));
+const projects = (await getProjects()).filter((p) => p.data.topics.some((t) => t.id === topic.id));
+const crumbs = [{ name: 'Start', path: '/' }, { name: 'Themen', path: '/themen/' }, { name: d.title, path }];
+const years = d.since ? new Date().getFullYear() - d.since : undefined;
+
+const jsonLd = graph(
+  websiteSchema(),
+  breadcrumbSchema(crumbs),
+  {
+    '@type': 'DefinedTerm',
+    '@id': `${abs(path)}#term`,
+    name: d.title,
+    description: d.definition,
+    url: abs(path),
+    ...(d.sameAs ? { sameAs: d.sameAs } : {}),
+  },
+  {
+    ...collectionSchema(path, `${PERSON.name} über ${d.title}`, d.description, explorations.map((e) => ({ path: `/explorationen/${e.id}/`, name: e.data.title }))),
+    about: { '@id': `${abs(path)}#term` },
+    author: { '@id': ID.person },
+    abstract: d.position,
+  },
+  ...(d.faq?.length ? [faqSchema(d.faq)] : []),
+);
+---
+
+<BaseLayout title={`${d.title} – ${PERSON.name}`} description={d.description} jsonLd={jsonLd}>
+  <header class="wrap head">
+    <h1 class="display t-xxl">{d.title}</h1>
+    <p class="definition">{d.definition}</p>
+  </header>
+
+  <section class="wrap space position">
+    <blockquote class="display t-l position__text">
+      <p>{d.position}</p>
+      <footer class="meta">— {PERSON.name}{years && years > 0 ? `, beschäftigt sich seit ${d.since} damit` : ''}</footer>
+    </blockquote>
+  </section>
+
+  <section class="wrap">
+    <div class="prose body"><Content components={mdxComponents} /></div>
+  </section>
+
+  {explorations.length > 0 && (
+    <section class="wrap space"><h2 class="display t-m sec-h">Explorationen zu {d.title}</h2><ExplorationList items={explorations} /></section>
+  )}
+
+  {projects.length > 0 && (
+    <section class="wrap space"><h2 class="display t-m sec-h">Projekte</h2><ProjectField projects={projects} /></section>
+  )}
+
+  {d.faq?.length && (
+    <section class="wrap space">
+      <h2 class="display t-m sec-h">Fragen</h2>
+      <dl class="faq">{d.faq.map((f) => <div><dt>{f.q}</dt><dd>{f.a}</dd></div>)}</dl>
+    </section>
+  )}
+
+  <div class="wrap"><Breadcrumbs crumbs={crumbs} /></div>
+</BaseLayout>
+
+<style>
+  .head { padding-top: var(--s-7); }
+  .definition { margin-top: var(--s-5); max-width: 30em; font-size: var(--t-m); line-height: 1.4; color: var(--ink-soft); margin-left: calc(100% / 12 * 3); }
+  .position { padding-left: calc(100% / 12 * 3); }
+  .position__text { font-style: italic; max-width: 22em; }
+  .position__text footer { margin-top: var(--s-4); font-style: normal; }
+  .body { margin-left: calc(100% / 12 * 3); }
+  .sec-h { margin-bottom: var(--s-5); }
+  .faq { display: grid; gap: var(--s-4); max-width: var(--measure); }
+  .faq dt { font-style: italic; }
+  .faq dd { margin: var(--s-1) 0 0; color: var(--ink-soft); }
+  @media (max-width: 900px) { .definition, .body { margin-left: 0; } .position { padding-left: var(--gutter); } }
+</style>

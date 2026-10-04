@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHeader from '@/components/PageHeader.astro';
+import ExplorationList from '@/components/ExplorationList.astro';
+import { getExplorations } from '@/lib/content';
+import { breadcrumbSchema, collectionSchema, graph, websiteSchema } from '@/lib/seo';
+
+const items = await getExplorations();
+const title = 'Explorationen';
+const description = 'Explorationen von Dennis Steinmann: lange Gedanken, Theorien und Geschichten über Technologie, Unternehmertum, KI und Marken – sie wachsen mit der Zeit.';
+const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/explorationen/' }];
+const byYear = Map.groupBy(items, (e) => e.data.pubDate.getFullYear());
+---
+
+<BaseLayout title={title} description={description} jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs), collectionSchema('/explorationen/', title, description, items.map((e) => ({ path: `/explorationen/${e.id}/`, name: e.data.title }))))}>
+  <PageHeader title="Explorationen" lead="Gedanken, die Zeit brauchen. Manche sind fertig, die meisten wachsen weiter – jede trägt ihr Datum und ihre Geschichte." crumbs={crumbs} />
+  <section class="wrap space">
+    {[...byYear].map(([year, list]) => (
+      <div class="year">
+        <h2 class="display t-l year__label">{year}</h2>
+        <ExplorationList items={list} />
+      </div>
+    ))}
+  </section>
+</BaseLayout>
+
+<style>
+  .year + .year { margin-top: var(--s-7); }
+  .year__label { color: var(--grey-light); margin-bottom: var(--s-4); }
+</style>

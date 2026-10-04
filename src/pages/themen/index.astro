@@ -1,39 +1,42 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHeader from '@/components/PageHeader.astro';
-import { getAllTags, tagLabel } from '@/lib/content';
-import { breadcrumbSchema, graph, websiteSchema } from '@/lib/seo';
+import { getTopics, getExplorations, getProjects } from '@/lib/content';
+import { breadcrumbSchema, collectionSchema, graph, websiteSchema } from '@/lib/seo';
 
-const tags = await getAllTags();
+const topics = await getTopics();
+const explorations = await getExplorations();
+const projects = await getProjects();
+const count = (id: string) =>
+  explorations.filter((e) => e.data.topics.some((t) => t.id === id)).length + projects.filter((p) => p.data.topics.some((t) => t.id === id)).length;
 const title = 'Themen';
-const description = 'Alle Themen auf dennissteinmann.com im Überblick: Mobile Apps, Software, Unternehmertum, Personal Brand, SEO, KI und mehr.';
+const description = 'Die Themen von Dennis Steinmann: Mobile Apps, künstliche Intelligenz, Unternehmertum, Personal Branding, SEO und KI-Suche – mit Position und Erfahrung.';
 const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/themen/' }];
 ---
 
-<BaseLayout title={title} description={description} jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs))}>
-  <PageHeader kicker="Index" title="Themen" lead="Jeder Text und jedes Projekt ist einem oder mehreren Themen zugeordnet." crumbs={crumbs} />
-  <section class="section">
-    <div class="container">
-      <ul class="topics" role="list">
-        {tags.map(({ tag, count }, i) => (
-          <li>
-            <a href={`/themen/${tag}/`}>
-              <span class="mono topics__i">{String(i + 1).padStart(2, '0')}</span>
-              <span class="display topics__name">{tagLabel(tag)}</span>
-              <span class="mono topics__count">{count}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
+<BaseLayout title={title} description={description} jsonLd={graph(websiteSchema(), breadcrumbSchema(crumbs), collectionSchema('/themen/', title, description, topics.map((t) => ({ path: `/themen/${t.id}/`, name: t.data.title }))))}>
+  <PageHeader title="Themen" lead="Worüber ich nachdenke, wofür ich stehe – und was ich aus eigener Erfahrung dazu sagen kann." crumbs={crumbs} />
+  <section class="wrap space">
+    <ul role="list" class="topics">
+      {topics.map((t) => (
+        <li>
+          <a href={`/themen/${t.id}/`} class="plain topics__link">
+            <span class="display t-xl topics__name">{t.data.title}</span>
+            <span class="topics__position">{t.data.position}</span>
+            <span class="meta">{count(t.id)} Einträge{t.data.since && ` · seit ${t.data.since}`}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   </section>
 </BaseLayout>
 
 <style>
-  .topics { list-style: none; padding: 0; }
-  .topics a { display: grid; grid-template-columns: 3rem 1fr auto; align-items: baseline; gap: var(--space-4); padding-block: var(--space-4); border-top: var(--hairline) solid var(--line); text-decoration: none; }
-  .topics li:last-child a { border-bottom: var(--hairline) solid var(--line); }
-  .topics__i, .topics__count { color: var(--fg-muted); }
-  .topics__name { font-size: var(--step-3); line-height: 1; transition: transform var(--dur-2) var(--ease-out); }
-  .topics a:hover .topics__name { transform: translateX(0.4rem); color: var(--accent); }
+  .topics li { border-top: 1px solid var(--line); }
+  .topics__link { display: grid; grid-template-columns: 6fr 4fr 2fr; gap: var(--gutter); padding-block: var(--s-5); align-items: baseline; }
+  .topics__name { line-height: 1; transition: opacity var(--fast); }
+  .topics__position { color: var(--grey); font-style: italic; }
+  .topics__link .meta { text-align: right; }
+  .topics__link:hover .topics__name { opacity: 0.5; }
+  @media (max-width: 900px) { .topics__link { grid-template-columns: 1fr; gap: var(--s-2); } .topics__link .meta { text-align: left; } }
 </style>

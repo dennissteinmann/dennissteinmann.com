@@ -1,94 +1,99 @@
 # Inhalte pflegen
 
-Alle Inhalte sind Dateien in `src/content/`. Kein CMS, keine Datenbank – dafür
-versioniert, portabel und in 20 Jahren noch lesbar.
+Alle Inhalte sind Dateien in `src/content/`. Kein CMS – versioniert, portabel, in 20 Jahren lesbar.
 
 ## Schnellstart
 
 ```bash
-npm run dev                                   # Vorschau auf http://localhost:4321
-npm run new artikel "Wie ich meine erste App verkauft habe"
+npm run dev                                         # http://localhost:4321
+npm run new exploration "Warum kleine Apps gewinnen"
 npm run new projekt "Meine App"
+npm run new thema "Produktdesign"
 npm run new log "Version 1.2 ist live" meine-app
+npm run new medium "Vortrag auf der XY-Konferenz"
+npm run new presse "Interview im Magazin XY"
 npm run new seite "Uses"
 ```
 
-Neue Artikel starten als `draft: true` → lokal sichtbar (mit „Entwurf“-Markierung),
-im Live-Build unsichtbar. Zum Veröffentlichen `draft: false` setzen, committen, pushen.
+Neue Explorationen, Projekte und Seiten starten als `draft: true` → lokal sichtbar, live unsichtbar.
 
 ## Typen
 
 | Typ | Ort | URL | Wofür |
 |---|---|---|---|
-| Artikel | `articles/<slug>/index.mdx` | `/artikel/<slug>/` | Langform (Kern der Seite) |
-| Projekt | `projects/<slug>/index.mdx` | `/projekte/<slug>/` | Hub je Projekt |
-| Logbuch | `log/<datum>-<slug>.md` | `/logbuch/#log-…` | kurze Fortschrittsnotiz |
-| Seite | `pages/<slug>.mdx` | `/<slug>/` | freie Unterseiten (Über, Kontakt, Uses …) |
+| Exploration | `explorations/<slug>/index.mdx` | `/explorationen/<slug>/` | Langform-Gedanken, Theorien, Geschichten (Kern) |
+| Projekt | `projects/<slug>/index.mdx` | `/projekte/<slug>/` | Hub je Projekt inkl. Dokumente |
+| Thema | `topics/<slug>.mdx` | `/themen/<slug>/` | Experten-Hub: Definition + Position |
+| Medium | `media/<jahr>/<slug>.md` | `/medien/` | Foto, Video, Podcast, Vortrag, Interview |
+| Presse | `press/<datum>-<slug>.md` | `/presse/` | Berichterstattung über dich |
+| Logbuch | `log/<datum>-<slug>.md` | `/logbuch/#log-…` | kurze Notiz |
+| Seite | `pages/<slug>.mdx` | `/<slug>/` | freie Unterseiten |
 
-Unterseite in die Navigation aufnehmen: `NAV` oder `FOOTER_NAV` in `src/site.config.ts`.
-
-## Medien
-
-**Bilder gehören zum Inhalt**: in den Ordner des Artikels/Projekts legen.
-
-```
-src/content/articles/meine-erste-app/
-  index.mdx
-  cover.jpg          ← Titelbild (frontmatter: cover: ./cover.jpg + coverAlt)
-  dashboard.png      ← im Text verwendet
-```
-
-Im Text:
-
-```mdx
-![Umsatz-Dashboard im März](./dashboard.png)
-
-<Figure src={import('./dashboard.png')} alt="Umsatz-Dashboard im März" caption="Abb. 2 — App Store Connect, März 2026" wide />
-```
-
-Astro erzeugt automatisch AVIF/WebP in mehreren Größen – Originale einfach in voller
-Qualität ablegen (ideal: JPG/PNG, 1600–2400 px breit, < 5 MB).
-
-**Videos, PDFs, Downloads** (werden nicht optimiert) → `public/media/<jahr>/…`,
-eingebunden mit absolutem Pfad `/media/2026/demo.mp4`. Videos als MP4 (H.264),
-max. ~20 MB; größere Videos auf YouTube und nur verlinken.
-Dateinamen: Kleinbuchstaben, Bindestriche, sprechend (`app-onboarding-demo.mp4`).
-
-## MDX-Bausteine (ohne Import nutzbar)
-
-```mdx
-<Callout type="lesson" title="Learning">Text</Callout>   // note | warn | lesson
-<Stats items={[{ value: '300.000', label: 'Downloads / Monat' }, { value: '$5.000', label: 'Umsatz / Monat' }]} />
-<Figure src={import('./bild.jpg')} alt="…" caption="…" wide />
-<Video src="/media/2026/demo.mp4" poster="/media/2026/demo.jpg" caption="…" />
-```
-
-Neue Bausteine → `src/components/mdx/` + in `index.ts` registrieren + hier dokumentieren.
-
-## Frontmatter-Referenz (Artikel)
+## Explorationen
 
 | Feld | Pflicht | Hinweis |
 |---|---|---|
-| `title` | ✓ | 10–80 Zeichen |
-| `seoTitle` | | abweichender `<title>` |
+| `title` | ✓ | 5–80 Zeichen |
 | `description` | ✓ | 70–165 Zeichen – Such-Snippet |
-| `summary` | ✓ | 120–600 Zeichen – sichtbare Kurzfassung, für KI-Suche |
-| `pubDate` | ✓ | `2026-09-30` |
-| `updated` | | bei substanzieller Überarbeitung setzen |
-| `draft` | | `true` = nicht live |
-| `tags` | ✓ | 1–6 Slugs, z. B. `mobile-apps` (Anzeigenamen in `src/lib/content.ts`) |
-| `project` | | Slug eines Projekts → erscheint auf dessen Hub-Seite |
-| `cover` / `coverAlt` | | Titelbild; `coverAlt` Pflicht wenn `cover` |
-| `keyTakeaways` | | 3–7 Kernaussagen (Box + Carousel) |
-| `faq` | | `- q: … / a: …` → FAQ-Box + FAQPage-Schema |
-| `social` | | `hook`, `slides`, `cta`, `caption` → siehe `docs/SOCIAL.md` |
-| `canonical` | | nur wenn zuerst woanders erschienen |
+| `summary` | ✓ | 120–600 Zeichen – die These, sichtbar oben, für KI-Suche |
+| `kind` | | `essay` · `theorie` · `geschichte` · `analyse` · `anleitung` · `notiz` |
+| `stage` | | `keimling` · `wachsend` · `ausgereift` – Gedanken dürfen wachsen |
+| `pubDate` / `updated` | ✓ / | `updated` bei substanzieller Überarbeitung |
+| `changelog` | | `- { date: 2026-11-01, note: "Abschnitt zu X ergänzt" }` |
+| `topics` | ✓ | 1–5 Themen-Slugs aus `src/content/topics/` |
+| `projects` | | Projekt-Slugs |
+| `keyTakeaways`, `faq`, `sources` | | Kernaussagen, Fragen, Quellen (→ Zitate im Schema) |
+| `cover` / `coverAlt` | | Titelbild im selben Ordner |
+| `social` | | Carousel-Steuerung, siehe docs/SOCIAL.md |
+| `distribution` | | Wo gepostet: `- { channel: linkedin, url: …, date: … }` |
 
-**YAML-Falle:** Enthält ein Wert `: ` (Doppelpunkt + Leerzeichen), in Anführungszeichen setzen.
+## Projekte
 
-## Schreibstil
+`kind` bestimmt das Kartendesign: `app` (Icon auf Farbfläche) · `website` / `software` /
+`plattform` (Screenshot oder Domain) · `unternehmen` (Wortmarke) · `medien` / `forschung` (Hochformat-Cover).
 
-- Ich-Perspektive, konkret, ehrlich, mit Zahlen. Keine Floskeln.
-- Erster Absatz: worum geht es und warum jetzt. Zwischenüberschriften, die man einzeln
-  zitieren könnte. Kurze Absätze (2–4 Sätze).
-- Auf ältere Artikel und Projektseiten verlinken (interne Verlinkung = SEO-Rückgrat).
+| Feld | Hinweis |
+|---|---|
+| `icon` | quadratisches Logo/App-Icon (`./icon.png`, ≥ 512 px) |
+| `cover` | Screenshot/Bild (`./cover.jpg`, ~1800 px, JPG) |
+| `color` | Markenfarbe des Projekts `#rrggbb` – färbt nur dessen Karte |
+| `size` | `s` · `m` · `l` – Gewicht im Projektfeld |
+| `links` | `- { label: App Store, url: … }` |
+| `documents` | Dateien für Projekte ohne eigene Website, siehe unten |
+| `order` | kleiner = weiter vorn |
+
+### Dokumente
+
+PDFs, Decks, Whitepaper nach `public/dokumente/<projekt>/` legen und eintragen:
+
+```yaml
+documents:
+  - { title: Pitch Deck, href: /dokumente/meine-app/pitch.pdf, kind: PDF, date: 2026-05-01 }
+```
+
+Sie erscheinen auf der Projektseite und gesammelt unter `/medien/`.
+
+## Themen (Experten-Hubs)
+
+```yaml
+title: Produktdesign
+description: (70–165 Zeichen)
+definition: Neutrale Ein-Satz-Definition des Begriffs.
+position: Deine eigene, zitierfähige These – das, was KI-Assistenten über dich wiedergeben sollen.
+since: 2019
+sameAs: https://de.wikipedia.org/wiki/Produktdesign
+```
+
+## Bilder & Medien
+
+Bilder liegen beim Inhalt (`./bild.jpg`) und werden automatisch optimiert. Große Bilder als JPG.
+Videos/PDFs/Downloads → `public/media/<jahr>/…` bzw. `public/dokumente/…`.
+
+```mdx
+<Figure src={import('./bild.jpg')} alt="…" caption="…" wide />
+<Callout title="Learning">Text</Callout>
+<Stats items={[{ value: '300.000', label: 'Downloads / Monat' }]} />
+<Video src="/media/2026/demo.mp4" caption="…" />
+```
+
+**YAML-Falle:** Werte mit `: ` in Anführungszeichen setzen.

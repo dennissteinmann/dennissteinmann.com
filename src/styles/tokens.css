@@ -1,120 +1,71 @@
 /* ==========================================================================
-   DESIGN TOKENS – die einzige Quelle für Farbe, Typo, Abstand, Bewegung.
-   Begründung jeder Entscheidung: docs/DESIGN.md
-   Regel: In Komponenten KEINE Hex-Werte, px-Schriftgrößen oder Ad-hoc-
-   Abstände. Immer var(--…) verwenden. Neue Tokens nur hier ergänzen.
+   DESIGN TOKENS v2 – "Weißraum". Einzige Quelle für Farbe, Typo, Raum.
+   Begründung: docs/DESIGN.md. In Komponenten nur var(--…) verwenden.
    ========================================================================== */
 
 :root {
-  /* --- Rohpalette (aus dem Moodboard abgeleitet) ------------------------- */
-  --c-ink-950: #0b0b0a;     /* Gradatim-Banner: fast schwarz, warm */
-  --c-ink-900: #121210;
-  --c-ink-850: #191916;
-  --c-ink-800: #22221e;
-  --c-ink-600: #4a4843;
-  --c-stone-400: #8f897e;   /* warme Grautöne statt kaltem Grau */
-  --c-stone-300: #b9b2a5;
-  --c-paper-100: #f3efe6;   /* LinkedIn-Carousel-Creme */
-  --c-paper-50: #faf8f3;
-  --c-signal-500: #ec4a2a;  /* Sonnen-Orange/Rot aus dem STEINMANN-Logo */
-  --c-signal-600: #c93a1d;
-  --c-lime-300: #d8f36a;    /* Highlight-Grün der LinkedIn-Kennzahlen */
-  --c-gold-400: #e2b25a;    /* Golden Hour / Art-Déco-Gold */
-  --c-navy-900: #0f2436;    /* Slogan-Hintergrund, Art-Déco-Blau */
-  --c-lake-400: #2ea6c9;    /* See aus dem Logo – nur für Diagramme */
-
-  /* --- Typografie -------------------------------------------------------- */
-  --font-display: 'Instrument Serif', 'Iowan Old Style', 'Times New Roman', serif;
-  --font-sans: 'Inter Tight Variable', 'Inter Tight', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-
-  /* Fluide Skala (Mobile 360px → Desktop 1440px), Verhältnis ~1.25 → 1.333 */
-  --step--2: clamp(0.72rem, 0.70rem + 0.08vw, 0.78rem);
-  --step--1: clamp(0.84rem, 0.82rem + 0.1vw, 0.9rem);
-  --step-0: clamp(1.03rem, 0.98rem + 0.22vw, 1.19rem);
-  --step-1: clamp(1.25rem, 1.15rem + 0.45vw, 1.55rem);
-  --step-2: clamp(1.55rem, 1.35rem + 0.9vw, 2.15rem);
-  --step-3: clamp(1.95rem, 1.6rem + 1.6vw, 3.05rem);
-  --step-4: clamp(2.45rem, 1.85rem + 2.7vw, 4.4rem);
-  --step-5: clamp(3rem, 2rem + 4.6vw, 6.6rem);
-  --step-6: clamp(3.6rem, 2rem + 7.5vw, 10rem);
-
-  --lh-tight: 0.95;
-  --lh-snug: 1.15;
-  --lh-body: 1.68;
-  --tracking-caps: 0.14em;
-  --measure: 68ch;
-
-  /* --- Raum (4px-Basis) --------------------------------------------------- */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-  --space-7: 3rem;
-  --space-8: 4.5rem;
-  --space-9: clamp(4.5rem, 3rem + 6vw, 8rem);
-  --space-10: clamp(6rem, 4rem + 9vw, 12rem);
-
-  --gutter: clamp(1rem, 0.5rem + 2.5vw, 2.5rem);
-  --container: 1320px;
-  --container-narrow: 760px;
-
-  /* --- Form & Bewegung ----------------------------------------------------- */
-  --radius-0: 0;          /* Standard: kantig. Editorial, nicht App-UI. */
-  --radius-1: 2px;
-  --radius-pill: 999px;
-  --hairline: 1px;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-1: 140ms;
-  --dur-2: 280ms;
-  --dur-3: 620ms;
-
-  /* --- Semantische Tokens: DUNKEL (Standard, "Kino") ---------------------- */
-  color-scheme: dark;
-  --bg: var(--c-ink-950);
-  --bg-raised: var(--c-ink-900);
-  --bg-sunken: #070706;
-  --surface: var(--c-ink-850);
-  --surface-2: var(--c-ink-800);
-  --fg: var(--c-paper-100);
-  --fg-strong: var(--c-paper-50);
-  --fg-muted: var(--c-stone-400);
-  --fg-subtle: var(--c-ink-600);
-  --line: rgb(243 239 230 / 0.11);
-  --line-strong: rgb(243 239 230 / 0.24);
-  --accent: var(--c-signal-500);
-  --accent-fg: var(--c-paper-50);
-  --highlight: var(--c-lime-300);
-  --highlight-fg: var(--c-ink-950);
-  --glow: var(--c-gold-400);
-  --selection: rgb(216 243 106 / 0.85);
-  --grain-opacity: 0.07;
-  --code-bg: #0f0f0d;
-}
-
-/* --- HELL ("Papier") – per Toggle oder System-Einstellung ---------------- */
-:root[data-theme='light'] {
   color-scheme: light;
-  --bg: var(--c-paper-100);
-  --bg-raised: var(--c-paper-50);
-  --bg-sunken: #e9e4d8;
-  --surface: #ebe6da;
-  --surface-2: #e2dccd;
-  --fg: #1a1916;
-  --fg-strong: var(--c-ink-950);
-  --fg-muted: #6b665c;
-  --fg-subtle: #a8a193;
-  --line: rgb(18 18 16 / 0.12);
-  --line-strong: rgb(18 18 16 / 0.28);
-  --accent: var(--c-signal-600);
-  --accent-fg: var(--c-paper-50);
-  --highlight: var(--c-lime-300);
-  --highlight-fg: var(--c-ink-950);
-  --glow: #c98f2e;
-  --selection: rgb(216 243 106 / 0.95);
-  --grain-opacity: 0.05;
-  --code-bg: var(--c-ink-900);
+
+  /* --- Fläche & Text: echtes Weiß, echtes Schwarz -------------------------- */
+  --white: #ffffff;
+  --ink: #121212;          /* Text, Linien in Aktion */
+  --ink-soft: #3b3b3b;     /* Fließtext-Nuancen */
+  --grey: #8c8c8c;         /* Metadaten, Sekundäres */
+  --grey-light: #b9b9b9;
+  --line: #e9e9e9;         /* Haarlinien */
+  --line-strong: #d2d2d2;
+  --placeholder: #f4f4f3;  /* NUR Bild-Platzhalter, nie Seitenhintergrund */
+
+  /* --- Naturtöne (Moodboard). Nie als Akzent für UI-Elemente, nur als
+         vollflächige Bühnen für Bilder/Karten oder Projektfarben. ------------ */
+  --walnut: #4a2a1d;       /* Nussbaum-Vertäfelung (Saint Laurent) */
+  --velvet: #d6b77c;       /* Goldsamt */
+  --marble: #1d2822;       /* grüner Marmor */
+  --cloud: #8e98a3;        /* Wolkenblau (State of Sage) */
+  --earth: #6b3a26;        /* Erde, Herbstlaub */
+  --cream: #efe9df;        /* Text auf Nussbaum */
+
+  /* --- Semantik --------------------------------------------------------- */
+  --bg: var(--white);
+  --fg: var(--ink);
+  --fg-muted: var(--grey);
+  --link: var(--ink);
+
+  /* --- Typografie --------------------------------------------------------
+     Serif (EB Garamond): Stimme – Headlines & Langform.
+     Sans (Jost, Futura-/Bauhaus-Linie): Struktur – Navigation, Metadaten. */
+  --serif: 'EB Garamond Variable', 'EB Garamond', 'Iowan Old Style', Georgia, serif;
+  --sans: 'Jost Variable', 'Jost', 'Futura', 'Avenir Next', system-ui, sans-serif;
+
+  --t-xs: 0.78rem;                                   /* Sans-Meta */
+  --t-s: 0.9rem;                                     /* Sans-UI */
+  --t-body: clamp(1.18rem, 1.1rem + 0.3vw, 1.36rem); /* Serif-Lesetext */
+  --t-m: clamp(1.45rem, 1.25rem + 0.7vw, 1.9rem);
+  --t-l: clamp(2rem, 1.5rem + 1.8vw, 3.2rem);
+  --t-xl: clamp(2.6rem, 1.7rem + 3.6vw, 5.4rem);
+  --t-xxl: clamp(3.2rem, 1.6rem + 6.4vw, 8.8rem);
+
+  --lh-display: 1.02;
+  --lh-body: 1.55;
+  --track-sans: 0.02em;
+  --track-caps: 0.16em;    /* nur Navigation & Fußzeile */
+  --measure: 34em;         /* Lesespalte in Serif-em ≈ 66 Zeichen */
+
+  /* --- Raum: großzügig. Weißraum ist das Gestaltungsmittel. ---------------- */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 1rem;
+  --s-4: 1.5rem;
+  --s-5: 2.5rem;
+  --s-6: 4rem;
+  --s-7: clamp(5rem, 3rem + 6vw, 9rem);
+  --s-8: clamp(7rem, 4rem + 10vw, 15rem);
+
+  --gutter: clamp(1.25rem, 0.5rem + 3vw, 3.5rem);
+  --wide: 1520px;
+
+  /* --- Bewegung: ruhig ----------------------------------------------------- */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --slow: 900ms;
+  --fast: 220ms;
 }

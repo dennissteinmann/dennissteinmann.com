@@ -1,13 +1,15 @@
-# Vom Artikel zum Social-Media-Content
+# Von der Exploration zum Social-Media-Content
 
-Prinzip: **Website first.** Der Artikel ist das Original, Social Media verteilt ihn.
+**Zentrale: `/studio/`** (noindex) – alle Kanäle, alle Explorationen, Verbreitungsstatus je Kanal.
+
+Prinzip: **Website first.** Die Exploration ist das Original, Social Media verteilt sie.
 Jeder Post verweist zurück auf die kanonische URL.
 
 ## Was automatisch entsteht (bei jedem Build)
 
 | Asset | URL | Format |
 |---|---|---|
-| Link-Vorschau (OG) | `/og/artikel/<slug>.png` | 1200×630 |
+| Link-Vorschau (OG) | `/og/explorationen/<slug>.png` | 1200×630 |
 | Carousel-Folien | `/social/<slug>/1.png … n.png` | 1080×1350 (LinkedIn/Instagram) |
 | Social-Kit | `/social/<slug>/` | Übersicht, Downloads, Post-Text zum Kopieren |
 
@@ -26,7 +28,7 @@ social:
     - title: Geliehene Reichweite
       text: Der Algorithmus entscheidet, wer deine Arbeit sieht.
     - title: Langform zuerst
-      text: Ein Artikel liefert Stoff für zehn Posts.
+      text: Eine Exploration liefert Stoff für zehn Posts.
   cta: Warum ich zuerst hier schreibe                         # letzte Folie
   caption: |                                                  # fertiger Post-Text (optional)
     …
@@ -34,13 +36,13 @@ social:
 
 ## Workflow
 
-1. Artikel schreiben → `draft: false` → pushen (live).
+1. Exploration schreiben → `draft: false` → pushen (live).
 2. `/social/<slug>/` öffnen → Folien herunterladen, Post-Text kopieren.
 3. Posten (LinkedIn-Dokument/Carousel, Instagram-Carousel); Link in Kommentar/Bio.
-4. Optional: Logbuch-Eintrag mit `article: <slug>`.
+4. In der Exploration eintragen: `distribution: [{ channel: linkedin, url: …, date: … }]` → Studio zeigt es, das Schema verknüpft Post und Original.
+5. Kanäle (Profile-URLs) pflegen: `CHANNELS` in `src/site.config.ts`.
 
 ## Design
 
-Folien nutzen dieselbe Palette & Typografie wie die Website (`src/lib/og.ts`):
-Cover dunkel mit Gold-Glow · Inhalt auf Papier-Creme mit orangefarbener Nummer ·
-Abschluss in Signal-Orange. Wappen + Wortmarke auf jeder Folie.
+Folien folgen dem Weißraum-Design (`src/lib/og.ts`): weiße Flächen, EB Garamond, Jost für
+Name/Zähler. Nur die letzte Folie steht auf Nussbaum (`--walnut`) mit cremefarbener Schrift.
