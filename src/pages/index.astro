@@ -4,68 +4,113 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import ExplorationList from '@/components/ExplorationList.astro';
 import ProjectCard from '@/components/ProjectCard.astro';
 import portrait from '@/assets/brand/portrait.jpg';
-import { SITE, PERSON } from '@/site.config';
-import { getExplorations, getProjects, getTopics, getPress } from '@/lib/content';
+import { SITE, PERSON, activeChannels } from '@/site.config';
+import { getExplorations, getProjects, getTopics, getMedia, getPress } from '@/lib/content';
 import { graph, personSchema, websiteSchema } from '@/lib/seo';
 
-const explorations = (await getExplorations()).slice(0, 5);
+const allExplorations = await getExplorations();
+const explorations = allExplorations.slice(0, 3);
 const projects = await getProjects();
-// Galerie: zuerst große & aktive Projekte mit Bild
+const topics = await getTopics();
+const media = await getMedia();
+const press = await getPress();
+const channels = activeChannels();
+
 const strip = projects
   .filter((p) => p.data.icon || p.data.cover)
   .sort((a, b) => ({ l: 0, m: 1, s: 2 })[a.data.size] - ({ l: 0, m: 1, s: 2 })[b.data.size] || a.data.order - b.data.order)
   .slice(0, 12);
-const topics = await getTopics();
-const press = await getPress();
+
+/** Das Verzeichnis: ein Ort, von dem aus alles auffindbar ist. */
+const directory = [
+  { label: 'Explorationen', href: '/explorationen/', count: allExplorations.length, desc: 'Langform: Theorien, Essays und Geschichten.' },
+  { label: 'Projekte', href: '/projekte/', count: projects.length, desc: 'Apps, Software, Plattformen und Unternehmen.' },
+  { label: 'Themen', href: '/themen/', count: topics.length, desc: 'Woran ich arbeite und wofür ich stehe.' },
+  { label: 'Medien', href: '/medien/', count: media.length, desc: 'Bilder, Videos, Auftritte und Dokumente.' },
+  { label: 'Presse', href: '/presse/', count: press.length, desc: 'Bio, Fotos, Fakten und Berichterstattung.' },
+  { label: 'Über', href: '/ueber/', count: null, desc: 'Werdegang, Haltung und Kontakt.' },
+] as const;
 ---
 
 <BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), await personSchema())}>
-  <section class="hero wrap">
-    <h1 class="display t-xxl hero__statement">
-      <span class="sr-only">{SITE.name}: </span>Ich denke öffentlich nach&nbsp;– und baue, was dabei <em>entsteht.</em>
+  <section class="wrap masthead">
+    <h1 class="mark masthead__name">
+      <span class="sr-only">{SITE.name} – </span>
+      <span>{PERSON.givenName}</span><span>{PERSON.familyName}</span>
     </h1>
-    <div class="hero__aside sans">
-      <p>{PERSON.name}<br /><span class="muted">{PERSON.jobTitle}</span></p>
-      <p class="muted">{explorations.length > 0 && <>Explorationen über </>}{topics.slice(0, 4).map((t, i) => <>{i > 0 && ', '}<a href={`/themen/${t.id}/`}>{t.data.title}</a></>)}.</p>
+    <div class="masthead__row">
+      <p class="masthead__lead" data-reveal>Ich baue Apps, Software und Marken. Diese Seite führt alles an einem Ort zusammen – Projekte, Explorationen, Medien und Presse.</p>
+      <div class="masthead__meta sans" data-reveal="80">
+        <p>{PERSON.jobTitle}<br /><span class="muted">{PERSON.homeLocation}</span></p>
+        <p class="masthead__contact">
+          <a class="plain" href="/kontakt/">Kontakt</a>
+          {channels.map((c) => <a class="plain" href={c.url} rel="me noopener">{c.name}</a>)}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {/* Dunkles Statement-Band. Sobald die KI-Atmosphäre (16:9, warm/filmisch) existiert,
+     wird dies zu <MediaBand src=… height="full" overlay label=…>. Siehe docs/MEDIA.md. */}
+  <section class="stage stage--ink film" aria-label="Haltung">
+    <p class="display film__line wrap" data-reveal>Gebaut, um gefunden zu werden – von Menschen <em>und</em> Maschinen.</p>
+  </section>
+
+  <nav class="wrap directory space-b" aria-label="Verzeichnis">
+    <ul role="list" class="directory__list">
+      {directory.map((d, i) => (
+        <li class="directory__item" data-reveal={String(i * 50)}>
+          <a href={d.href} class="directory__link plain">
+            <span class="khead directory__label">{d.label}</span>
+            <span class="directory__desc muted">{d.desc}</span>
+            <span class="meta directory__count">{d.count !== null ? d.count : '—'}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  <section class="stage stage--kraft space strip-wrap" aria-labelledby="projects-h">
+    <div class="wrap sec" data-reveal>
+      <h2 id="projects-h" class="khead sec__head">Projekte</h2>
+      <p class="sec__body sans">{projects.length} Apps, Websites, Plattformen und Unternehmen. <a href="/projekte/">Vollständige Liste →</a></p>
+    </div>
+    <div class="strip" tabindex="0" aria-label="Projektgalerie, horizontal scrollbar" data-reveal="80">
+      {strip.map((p) => <div class="strip__item"><ProjectCard project={p} sizes="(min-width: 900px) 26vw, 70vw" /></div>)}
     </div>
   </section>
 
   {explorations.length > 0 && (
     <section class="wrap space">
       <div class="sec">
-        <h2 class="display t-m sec__head">Explorationen</h2>
-        <div class="sec__body">
+        <h2 class="khead sec__head" data-reveal>Zuletzt geschrieben</h2>
+        <div class="sec__body" data-reveal="60">
           <ExplorationList items={explorations} />
-          <p class="sec__more"><a class="link" href="/explorationen/">Alle Explorationen</a></p>
+          <p class="sec__more"><a class="link" href="/explorationen/">Alle Explorationen ({allExplorations.length}) →</a></p>
         </div>
       </div>
     </section>
   )}
 
-  <section class="space strip-wrap" aria-labelledby="projects-h">
-    <div class="wrap sec">
-      <h2 id="projects-h" class="display t-m sec__head">Projekte</h2>
-      <p class="sec__body muted sans">{projects.length} Apps, Websites, Plattformen und Unternehmen. <a href="/projekte/">Alle ansehen</a></p>
-    </div>
-    <div class="strip" tabindex="0" aria-label="Projektgalerie, horizontal scrollbar">
-      {strip.map((p) => <div class="strip__item"><ProjectCard project={p} sizes="(min-width: 900px) 26vw, 70vw" /></div>)}
-    </div>
-  </section>
-
-  <section class="wrap space">
-    <div class="sec">
-      <h2 class="display t-m sec__head">Themen</h2>
-      <ul role="list" class="sec__body topics">
-        {topics.map((t) => <li><a class="display plain" href={`/themen/${t.id}/`}>{t.data.title}</a></li>)}
-      </ul>
+  <section class="stage stage--ink space" aria-labelledby="topics-h">
+    <div class="wrap sec" data-reveal>
+      <h2 id="topics-h" class="khead sec__head">Themen</h2>
+      <div class="sec__body">
+        <ul role="list" class="topics">
+          {topics.map((t, i) => (
+            <li data-reveal={String(i * 50)}><a class="display plain topics__link" href={`/themen/${t.id}/`}>{t.data.title}</a></li>
+          ))}
+        </ul>
+        <p class="sec__more"><a class="link" href="/themen/">Alle Themen →</a></p>
+      </div>
     </div>
   </section>
 
-  <section class="wrap space-l about">
-    <figure class="about__img">
-      <Image src={portrait} alt={`Porträt von ${PERSON.name}`} widths={[360, 560, 800]} sizes="(min-width: 900px) 28vw, 80vw" class="fade" />
+  <section class="wrap space about">
+    <figure class="about__img" data-reveal>
+      <Image src={portrait} alt={`Porträt von ${PERSON.name}`} widths={[360, 560, 800]} sizes="(min-width: 900px) 28vw, 80vw" />
     </figure>
-    <div class="about__text">
+    <div class="about__text" data-reveal="80">
       <p class="display t-l">{PERSON.description}</p>
       <p class="sans about__links">
         <a href="/ueber/">Über mich</a>
@@ -74,29 +119,61 @@ const press = await getPress();
       </p>
     </div>
   </section>
+
+  {/* Clay-Band: der einzige laute Farbmoment. */}
+  <section class="stage stage--clay contact" aria-labelledby="contact-h">
+    <div class="wrap contact__inner" data-reveal>
+      <h2 id="contact-h" class="mark contact__head">Lass uns<br />etwas bauen.</h2>
+      <p class="contact__links sans">
+        <a class="plain" href="/kontakt/">Kontakt aufnehmen →</a>
+        {channels.map((c) => <a class="plain" href={c.url} rel="me noopener">{c.name}</a>)}
+      </p>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .hero { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-top: clamp(6rem, 18vh, 14rem); padding-bottom: var(--s-7); align-items: end; }
-  .hero__statement { grid-column: 1 / span 10; max-width: 11.5em; }
-  .hero__aside { grid-column: 10 / span 3; margin-top: var(--s-6); display: grid; gap: var(--s-3); }
-  .hero__aside a { color: inherit; }
+  /* Kopf: gewaltige Wortmarke (Wang), darunter faktische Zeile & Kanäle. */
+  .masthead { padding-top: clamp(3rem, 9vh, 7rem); padding-bottom: var(--s-7); }
+  .masthead__name { font-size: clamp(2.1rem, 12.5vw, 8.5rem); letter-spacing: -0.02em; color: var(--ink); overflow-wrap: anywhere; }
+  .masthead__name span:not(.sr-only) { display: block; }
+  .masthead__row {
+    display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter);
+    margin-top: var(--s-5); align-items: start;
+  }
+  .masthead__lead { grid-column: 1 / span 6; font-family: var(--serif); font-size: var(--t-m); line-height: 1.3; color: var(--ink-soft); max-width: 22em; }
+  .masthead__meta { grid-column: 9 / span 4; display: grid; gap: var(--s-4); }
+  .masthead__meta a { color: var(--ink); }
+  .masthead__contact { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-4); }
+  .masthead__contact a { color: var(--grey); }
+  .masthead__contact a:hover { color: var(--ink); }
+
+  /* Verzeichnis: strenges Register, Grotesk-Caps, echte Zähler. */
+  .directory { padding-top: var(--s-7); }
+  .directory__item { border-top: 1px solid var(--line); }
+  .directory__item:last-child { border-bottom: 1px solid var(--line); }
+  .directory__link {
+    display: grid; grid-template-columns: 4fr 7fr 1fr; gap: var(--gutter);
+    align-items: baseline; padding-block: var(--s-4);
+  }
+  .directory__label { font-size: var(--t-m); transition: opacity var(--fast), transform var(--fast); }
+  .directory__desc { font-family: var(--serif); font-size: var(--t-body); }
+  .directory__count { text-align: right; font-variant-numeric: tabular-nums; color: var(--clay); }
+  .directory__link:hover .directory__label { opacity: 0.5; transform: translateX(0.4rem); }
 
   .sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); }
-  .sec__head { padding-top: var(--s-5); }
-  .sec__more { margin-top: var(--s-4); }
+  .sec__head { padding-top: 0; }
+  .sec__more { margin-top: var(--s-5); }
 
   .strip-wrap .sec { margin-bottom: var(--s-5); align-items: baseline; }
-  .strip-wrap .sec__head { padding-top: 0; }
   .strip { display: flex; gap: var(--s-3); overflow-x: auto; padding-inline: var(--gutter); scroll-snap-type: x mandatory; scrollbar-width: none; scroll-padding-inline: var(--gutter); }
   .strip::-webkit-scrollbar { display: none; }
   .strip__item { flex: 0 0 clamp(15rem, 26vw, 26rem); scroll-snap-align: start; }
   .strip__item :global(.pc__stage) { aspect-ratio: 4 / 5 !important; }
 
-  .topics { display: flex; flex-wrap: wrap; gap: 0 0.5em; font-size: var(--t-l); line-height: 1.25; }
-  .topics li:not(:last-child)::after { content: ','; color: var(--grey-light); }
-  .topics a { transition: opacity var(--fast); }
-  .topics a:hover { opacity: 0.5; }
+  .topics { display: flex; flex-direction: column; gap: var(--s-2); }
+  .topics__link { font-size: var(--t-l); line-height: 1.1; transition: opacity var(--fast), transform var(--fast); display: inline-block; }
+  .topics__link:hover { opacity: 0.6; transform: translateX(0.5rem); }
 
   .about { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: end; }
   .about__img { grid-column: 2 / span 4; }
@@ -105,10 +182,27 @@ const press = await getPress();
   .about__text .display { line-height: 1.15; }
   .about__links { display: flex; gap: var(--s-4); margin-top: var(--s-5); }
 
+  /* Dunkles Statement-Band (Platzhalter für Atmosphäre-Film) */
+  .film { padding-block: clamp(5rem, 16vh, 11rem); }
+  .film__line { font-size: var(--t-xl); line-height: 1.08; max-width: 18em; }
+
+  /* Clay-Kontaktband */
+  .contact { padding-block: var(--s-8); }
+  .contact__inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: var(--s-5); }
+  .contact__head { font-size: clamp(2.4rem, 7vw, 5.5rem); }
+  .contact__links { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); align-items: baseline; }
+  .contact__links a:first-child { font-size: var(--t-m); font-family: var(--serif); text-transform: none; letter-spacing: 0; }
+
   @media (max-width: 900px) {
-    .hero, .about, .sec { grid-template-columns: 1fr; }
-    .hero__statement, .hero__aside, .about__img, .about__text { grid-column: 1; }
+    .masthead__row, .about, .sec { grid-template-columns: 1fr; }
+    .masthead__lead, .masthead__meta, .about__img, .about__text { grid-column: 1; }
+    .masthead__meta { margin-top: var(--s-4); }
     .about__img { max-width: 70%; margin-bottom: var(--s-5); }
-    .sec__head { padding-top: 0; margin-bottom: var(--s-3); }
+    .sec__head { margin-bottom: var(--s-4); }
+  }
+  @media (max-width: 760px) {
+    .directory__link { grid-template-columns: 1fr auto; gap: var(--s-1) var(--s-3); }
+    .directory__desc { grid-column: 1 / -1; }
+    .directory__count { grid-row: 1; grid-column: 2; }
   }
 </style>

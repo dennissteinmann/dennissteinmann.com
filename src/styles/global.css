@@ -28,7 +28,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 main { flex: 1; }
-::selection { background: var(--ink); color: var(--white); }
+::selection { background: var(--ink); color: var(--bone); }
 
 a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 0.18em; text-decoration-color: var(--line-strong); transition: text-decoration-color var(--fast); }
 a:hover { text-decoration-color: var(--ink); }
@@ -63,10 +63,39 @@ a:hover { text-decoration-color: var(--ink); }
 .muted { color: var(--fg-muted); }
 .lead { font-size: var(--t-m); line-height: 1.35; max-width: 28em; }
 
+/* Grotesk-Stimme (v3 „Wang“): Wortmarke & Caps-Sektionstitel. */
+.mark { font-family: var(--grotesk); font-weight: 650; text-transform: uppercase; letter-spacing: var(--track-mark); line-height: 0.9; }
+.khead { font-family: var(--grotesk); font-weight: 600; text-transform: uppercase; letter-spacing: var(--track-head); line-height: 1.0; }
+
 /* Link-Varianten: Text, kein Button-Look */
 .link { font-family: var(--sans); font-size: var(--t-s); text-decoration: underline; text-decoration-color: var(--line-strong); }
 .link:hover { text-decoration-color: var(--ink); }
 .plain { text-decoration: none; }
+
+/* --- Farbbühnen (v3): vollflächige Naturtöne, Inhalt erbt passende Tokens.
+   Durch Umdefinieren der Semantik-Variablen passen sich Links, Meta &
+   Haarlinien automatisch an – keine Sonderregeln je Komponente nötig. ------ */
+.stage { background: var(--stage-bg); color: var(--stage-fg);
+  --bg: var(--stage-bg); --fg: var(--stage-fg); --ink: var(--stage-fg);
+  --ink-soft: var(--stage-fg); --fg-muted: var(--stage-muted); --grey: var(--stage-muted);
+  --link: var(--stage-fg); --line: var(--stage-line); --line-strong: var(--stage-line); }
+.stage ::selection { background: var(--stage-fg); color: var(--stage-bg); }
+/* Warme „Anthropic“-Bühnen: Bone & Kraft als ruhige Grundflächen, Clay als
+   einziger lauter Moment, Ink als dunkle Frontier-Fläche (Text/Medien). */
+.stage--bone  { --stage-bg: var(--bone-deep); --stage-fg: var(--ink);  --stage-muted: var(--grey); --stage-line: var(--line-strong); }
+.stage--kraft { --stage-bg: var(--kraft); --stage-fg: #2a2217; --stage-muted: rgba(26,23,17,0.6); --stage-line: rgba(26,23,17,0.2); }
+.stage--clay  { --stage-bg: var(--clay);  --stage-fg: var(--cream); --stage-muted: rgba(243,238,227,0.74); --stage-line: rgba(243,238,227,0.32); }
+.stage--ink   { --stage-bg: var(--coal);  --stage-fg: var(--cream); --stage-muted: rgba(243,238,227,0.6);  --stage-line: rgba(243,238,227,0.16); }
+/* Tiefe Naturtöne bleiben für bild-/videohinterlegte Bühnen verfügbar. */
+.stage--walnut { --stage-bg: var(--walnut); --stage-fg: var(--cream); --stage-muted: rgba(243,238,227,0.62); --stage-line: rgba(243,238,227,0.2); }
+.stage--marble { --stage-bg: var(--marble); --stage-fg: var(--cream); --stage-muted: rgba(243,238,227,0.6);  --stage-line: rgba(243,238,227,0.18); }
+
+/* --- Scroll-Einblendung: ruhiges Aufsteigen beim Eintritt --------------- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] { transition: opacity var(--med) var(--ease-out), transform var(--med) var(--ease-out); }
+  [data-reveal].is-hidden { opacity: 0; transform: translateY(var(--reveal-y)); }
+  [data-reveal].is-in { opacity: 1; transform: none; }
+}
 
 /* Trennlinie */
 .rule { border: 0; height: 1px; background: var(--line); }

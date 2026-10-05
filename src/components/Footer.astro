@@ -1,5 +1,5 @@
 ---
-import { NAV, FOOTER_NAV, SITE, activeChannels } from '@/site.config';
+import { NAV, FOOTER_NAV, SITE, PERSON, activeChannels } from '@/site.config';
 import Crest from './Crest.astro';
 
 const year = new Date().getFullYear();
@@ -11,7 +11,7 @@ const channels = activeChannels();
     <div class="footer__grid">
       <div class="footer__mark">
         <Crest size="2.6rem" />
-        <p class="footer__motto"><em>{SITE.motto}</em><br /><span class="meta">{SITE.mottoTranslation}</span></p>
+        <p class="footer__id"><span class="mark">{SITE.name}</span><br /><span class="meta">{PERSON.jobTitle} · {PERSON.homeLocation}</span></p>
       </div>
       <ul role="list" class="sans">
         {NAV.map((n) => <li><a class="plain" href={n.href}>{n.label}</a></li>)}
@@ -33,9 +33,10 @@ const channels = activeChannels();
   .footer { margin-top: var(--s-8); padding-block: var(--s-7) var(--s-4); }
   .footer__grid { display: grid; grid-template-columns: 6fr 2fr 2fr 2fr; gap: var(--gutter); }
   .footer__mark { display: flex; gap: var(--s-4); align-items: flex-start; }
-  .footer__motto { font-size: var(--t-m); line-height: 1.2; }
-  .footer ul { display: grid; gap: var(--s-1); align-content: start; }
-  .footer ul a { color: var(--grey); }
+  .footer__id .mark { font-size: var(--t-m); }
+  .footer__id .meta { display: inline-block; margin-top: var(--s-2); }
+  .footer ul { display: grid; gap: var(--s-2); align-content: start; }
+  .footer ul a { font-family: var(--grotesk); text-transform: uppercase; letter-spacing: var(--track-caps); font-size: var(--t-xs); color: var(--grey); }
   .footer ul a:hover { color: var(--ink); }
   .footer__base { margin-top: var(--s-7); }
   @media (max-width: 860px) { .footer__grid { grid-template-columns: 1fr 1fr; row-gap: var(--s-5); } .footer__mark { grid-column: 1 / -1; } }

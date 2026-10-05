@@ -10,8 +10,8 @@ import { Resvg } from '@resvg/resvg-js';
 
 const require = createRequire(import.meta.url);
 
-/** Spiegel von tokens.css (satori kennt keine CSS-Variablen). */
-export const C = { white: '#ffffff', ink: '#121212', grey: '#8c8c8c', line: '#e9e9e9', walnut: '#4a2a1d', cream: '#efe9df' };
+/** Spiegel von tokens.css (satori kennt keine CSS-Variablen). Warm, „Anthropic“. */
+export const C = { white: '#ffffff', bone: '#f5f3ec', ink: '#1a1711', grey: '#8c8578', line: '#e4ddce', clay: '#be5b3e', walnut: '#4a2a1d', cream: '#f3eee3' };
 
 type Font = { name: string; data: Buffer; weight: 400 | 500; style: 'normal' | 'italic' };
 let cache: Font[] | null = null;
@@ -21,8 +21,8 @@ async function loadFonts(): Promise<Font[]> {
   cache = [
     { name: 'Serif', data: await f('@fontsource/eb-garamond/files/eb-garamond-latin-400-normal.woff'), weight: 400, style: 'normal' },
     { name: 'Serif', data: await f('@fontsource/eb-garamond/files/eb-garamond-latin-400-italic.woff'), weight: 400, style: 'italic' },
-    { name: 'Sans', data: await f('@fontsource/jost/files/jost-latin-400-normal.woff'), weight: 400, style: 'normal' },
-    { name: 'Sans', data: await f('@fontsource/jost/files/jost-latin-500-normal.woff'), weight: 500, style: 'normal' },
+    { name: 'Sans', data: await f('@fontsource/archivo/files/archivo-latin-400-normal.woff'), weight: 400, style: 'normal' },
+    { name: 'Sans', data: await f('@fontsource/archivo/files/archivo-latin-500-normal.woff'), weight: 500, style: 'normal' },
   ];
   return cache;
 }
@@ -46,7 +46,7 @@ export const fit = (text: string, sizes: [number, number][]) => sizes.find(([max
 
 export function ogTemplate(o: { title: string; meta: string }) {
   const size = fit(o.title, [[30, 92], [55, 76], [80, 64], [999, 54]]);
-  return h('div', { width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: '64px 80px', backgroundColor: C.white, color: C.ink },
+  return h('div', { width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: '64px 80px', backgroundColor: C.bone, color: C.ink },
     h('div', { justifyContent: 'space-between', fontFamily: 'Sans', fontSize: 22, color: C.ink },
       h('div', {}, 'Dennis Steinmann'),
       h('div', { color: C.grey }, o.meta),
@@ -63,7 +63,7 @@ export function slideTemplate(o: { kind: 'cover' | 'content' | 'cta'; index: num
   const muted = dark ? 'rgba(239,233,223,0.6)' : C.grey;
   const top = h('div', { justifyContent: 'space-between', fontFamily: 'Sans', fontSize: 26, color: fg },
     h('div', {}, 'Dennis Steinmann'), h('div', { color: muted }, counter));
-  const base = { width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: '88px 92px', backgroundColor: dark ? C.walnut : C.white, color: fg };
+  const base = { width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: '88px 92px', backgroundColor: dark ? C.walnut : C.bone, color: fg };
 
   if (o.kind === 'cover') {
     const size = fit(o.title ?? '', [[30, 120], [55, 100], [80, 86], [999, 72]]);

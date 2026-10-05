@@ -39,12 +39,17 @@ npm run new exploration "Titel"   # auch: projekt | thema | log | medium | press
 ### 2. Design nur über Tokens (→ `docs/DESIGN.md`)
 - Farben, Schriften, Abstände, Radien, Animationen ausschließlich via `var(--…)` aus
   `src/styles/tokens.css`. Keine Hex-Werte, keine px-Schriftgrößen in Komponenten.
-- Stil „Weißraum“: echtes Weiß, Schwarz, viel Raum, Bauhaus-Raster, naturalistische Bilder.
-- Zwei Schriften: **EB Garamond** (Stimme: Titel, Text) und **Jost** (Struktur: Navigation, Meta).
-- **Verboten:** Akzentfarben in der UI (v. a. Orange), Creme-/Papier-Hintergründe,
-  Eyebrow-/Kicker-Texte, Status-Punkte/Live-Dots, Marquees, Filmkorn, Schatten, Verläufe,
-  Mono-Deko. Vollständige Liste: `docs/DESIGN.md` §2.
-- Farbe nur aus Bildern und Projektfarben (`color` im Projekt).
+- Stil „Daylight Technocracy“ (v3, Anthropic-warm): warmes **Bone**-Grundgerüst (`--bg`, kein
+  kaltes Weiß), **Grotesk** (Archivo) als Maschine (Wortmarke, Navigation, Titel – Caps, eng),
+  **EB Garamond** als menschliche Stimme (Leads, Langform). Farbe kommt primär aus **Fotografie/
+  Video** (`MediaBand`) und warmen Bühnen `.stage--bone/kraft/clay/ink`; Akzent `--clay` sparsam.
+- Zwei Schriften: **Archivo** (`--grotesk`/`--sans`) und **EB Garamond** (Serif-Stimme). Keine dritte.
+- **Erlaubt (v3):** warmes Bone + erdiges Clay/Terrakotta, Bild-/Video-Bühnen, ruhige Scroll-
+  Einblendungen (`[data-reveal]`) und Hover-Bewegung. Medien-Leitfaden: `docs/MEDIA.md`.
+- **Weiterhin verboten:** Neon-/grelles Orange („KI-Akzent“), Eyebrow-/Kicker-Texte, Status-/
+  Live-Dots, Marquees, Filmkorn, Schatten, UI-Verläufe/Glassmorphism, Mono-Deko, Emojis,
+  Icon-Libraries. (Bild-Overlay-Verlauf für Textlesbarkeit ist ok.) Vollständig: `docs/DESIGN.md` §2.
+- Farbe kommt aus Palette-Tokens, Medien und Projektfarben – nie frei erfunden/Neon.
 - Neue Seiten verwenden `BaseLayout` + `PageHeader`; Sektionen: Titel links, Inhalt rechts.
 
 ### 3. Jede Seite ist SEO- & KI-fähig (→ `docs/SEO.md`)

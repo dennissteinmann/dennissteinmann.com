@@ -32,15 +32,15 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
 </script>
 
 <style>
-  .header { position: relative; z-index: 50; }
-  .header__inner { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-4); padding-block: var(--s-4); }
-  .header__name { font-size: var(--t-s); color: var(--ink); letter-spacing: 0.01em; }
+  .header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .header__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); padding-block: var(--s-3); }
+  .header__name { font-family: var(--grotesk); font-weight: 650; text-transform: uppercase; letter-spacing: 0.04em; font-size: var(--t-s); color: var(--ink); }
 
   .header__nav ul { display: flex; gap: clamp(1rem, 2.2vw, 2.25rem); }
-  .header__nav a { font-size: var(--t-s); color: var(--grey); transition: color var(--fast); }
+  .header__nav a { font-family: var(--grotesk); text-transform: uppercase; letter-spacing: var(--track-caps); font-size: var(--t-xs); color: var(--grey); transition: color var(--fast); }
   .header__nav a:hover, .header__nav a[aria-current='page'] { color: var(--ink); }
 
-  .header__toggle { display: none; font-size: var(--t-s); }
+  .header__toggle { display: none; font-family: var(--grotesk); text-transform: uppercase; letter-spacing: var(--track-caps); font-size: var(--t-xs); }
 
   @media (max-width: 860px) {
     .header__toggle { display: block; }
@@ -51,7 +51,7 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
     }
     :global(.menu-open) .header__nav { opacity: 1; visibility: visible; }
     :global(.menu-open) body { overflow: hidden; }
-    .header__nav ul { flex-direction: column; gap: var(--s-2); }
-    .header__nav a { font-family: var(--serif); font-size: var(--t-xl); color: var(--ink); line-height: 1.05; }
+    .header__nav ul { flex-direction: column; gap: var(--s-3); }
+    .header__nav a { font-family: var(--grotesk); font-weight: 650; text-transform: uppercase; letter-spacing: var(--track-mark); font-size: var(--t-xl); color: var(--ink); line-height: 1.0; }
   }
 </style>

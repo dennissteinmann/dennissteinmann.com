@@ -1,0 +1,61 @@
+---
+/**
+ * Vollflächige Atmosphäre-Bühne: ein filmisches Bild oder Video, randlos.
+ * Trägt die Farbe der Seite (statt flacher UI-Farbe) – „Anthropic“-Haltung.
+ * Austausch gegen echte (KI-generierte) Assets: einfach `src`/`video` ersetzen,
+ * Seitenverhältnis & Bildausschnitt bleiben. Siehe docs/MEDIA.md.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+export interface Props {
+  src: ImageMetadata;
+  alt: string;
+  /** Optional: Video-URL (mp4/webm). Spielt stumm, loop, autoplay, inline. */
+  video?: string;
+  poster?: string;
+  /** Bildhöhe: 'full' (fast Vollbild), 'band' (ruhiger Streifen), 'short'. */
+  height?: 'full' | 'band' | 'short';
+  /** Optionaler Text über dem Bild (Grotesk-Caps, unten links). */
+  label?: string;
+  caption?: string;
+  /** true = wärmerer, dunklerer Verlauf unten für hellen Text. */
+  overlay?: boolean;
+  sizes?: string;
+}
+const { src, alt, video, poster, height = 'band', label, caption, overlay = false, sizes = '100vw' } = Astro.props;
+---
+
+<figure class:list={['mb', `mb--${height}`, overlay && 'mb--overlay']}>
+  <div class="mb__frame">
+    {video ? (
+      <video class="mb__media" autoplay muted loop playsinline poster={poster} aria-label={alt}>
+        <source src={video} />
+      </video>
+    ) : (
+      <Image class="mb__media" src={src} alt={alt} widths={[768, 1280, 1920, 2400]} sizes={sizes} />
+    )}
+    {label && <figcaption class="mb__label khead">{label}</figcaption>}
+  </div>
+  {caption && <figcaption class="mb__caption meta wrap">{caption}</figcaption>}
+</figure>
+
+<style>
+  .mb { margin: 0; }
+  .mb__frame { position: relative; width: 100%; overflow: hidden; background: var(--placeholder); }
+  .mb--full .mb__frame  { height: min(84vh, 56rem); }
+  .mb--band .mb__frame  { height: clamp(18rem, 46vh, 34rem); }
+  .mb--short .mb__frame { height: clamp(12rem, 30vh, 22rem); }
+  .mb__media { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* Warme, ruhige Tönung – kein Filmkorn, nur ein Hauch Tiefe. */
+  .mb--overlay .mb__frame::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to top, rgba(26,23,17,0.55), rgba(26,23,17,0.08) 42%, transparent 70%);
+  }
+  .mb__label {
+    position: absolute; left: var(--gutter); bottom: var(--gutter); z-index: 1;
+    color: var(--cream); font-size: var(--t-m); max-width: 24ch;
+  }
+  .mb__caption { margin-top: var(--s-2); color: var(--grey); }
+</style>

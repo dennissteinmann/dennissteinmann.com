@@ -9,9 +9,9 @@ export const SITE = {
   lang: 'de',
   locale: 'de_DE',
   description:
-    'Dennis Steinmann denkt öffentlich nach – in Explorationen über Technologie, Unternehmertum, KI und Marken. Dazu alle Projekte, Medien und Presse an einem Ort.',
-  /** Ein Satz, der auf der Startseite steht. */
-  statement: 'Ich denke öffentlich nach – und baue, was dabei entsteht.',
+    'Dennis Steinmann ist Unternehmer und Produktentwickler aus Deutschland. Diese Seite bündelt seine Projekte, Explorationen, Medien und Presse an einem Ort.',
+  /** Identitätszeile (Startseite & Standard-OG-Bild). Faktisch, kein Pathos. */
+  statement: 'Unternehmer und Produktentwickler aus Deutschland.',
   motto: 'Gradatim Ferociter',
   mottoTranslation: 'Schritt für Schritt, mit Entschlossenheit.',
   startYear: 2026,
@@ -26,9 +26,9 @@ export const PERSON = {
   name: 'Dennis Steinmann',
   givenName: 'Dennis',
   familyName: 'Steinmann',
-  jobTitle: 'Unternehmer, Produktentwickler und Autor',
+  jobTitle: 'Unternehmer und Produktentwickler',
   description:
-    'Dennis Steinmann ist Unternehmer aus Deutschland. Er entwickelt Apps, Software und Marken und schreibt öffentlich über Technologie, Unternehmertum und künstliche Intelligenz.',
+    'Dennis Steinmann ist Unternehmer und Produktentwickler aus Deutschland. Er baut Apps, Software und Marken und schreibt über Technologie, Unternehmertum und künstliche Intelligenz.',
   homeLocation: 'Deutschland',
   nationality: 'Deutsch',
 };

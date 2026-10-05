@@ -4,6 +4,57 @@ Neue Einträge oben anfügen. Format: Datum · Entscheidung · Begründung · Ko
 
 ---
 
+### 2026-10-05 · v3-Feinschliff: „Anthropic-warm“ + Medien tragen die Farbe
+**Begründung:** Dennis hat „Serif und Braun“ hinterfragt und auf Anthropics Launch-Sprache
+verwiesen (warm, filmisch, naturalistisch). Entscheidungen: **Serif bleibt** (Anthropic paart
+selbst Serif + Grotesk). **Braun raus** als dominante Fläche. Grund wird **warmes Bone** statt
+Weiß, Akzent ist **Clay/Terrakotta** (ein lauter Moment, kein Dauerton). **Farbe kommt aus
+Medien** (Fotografie/Video), nicht aus flachen UI-Blöcken. Medienquelle: **KI-generiert**
+(Midjourney/Flux + Runway/Veo), von Dennis erzeugt. **Konsequenz:**
+- `tokens.css`: neue warme Grundpalette (`--bone`, `--kraft`, `--clay`, warmes `--ink`/`--coal`,
+  warme Greys/Lines). `--bg` = Bone. Das v3-Verbot „kein Cremegrund / kein Orange“ ist damit
+  **bewusst aufgehoben** (warmes Bone-Grund + erdiges Clay sind jetzt Kern, Neon-Orange bleibt tabu).
+- Neue warme Bühnen `.stage--bone/kraft/clay/ink` (Startseite: Projekte=kraft, Themen=ink,
+  Kontakt=clay). Tiefe Naturtöne (walnut/marble) bleiben nur für bild-/videohinterlegte Bühnen.
+  Bug behoben: `.stage--ink` nutzt `--coal` (nicht `--ink`, das auf Bühnen umdefiniert wird).
+- Neue Komponente **`MediaBand`** (`src/components/MediaBand.astro`) für randlose Bild-/Video-Bänder.
+- **`docs/MEDIA.md`** neu: Art-Direction, Palette-Lock, Slot-Specs und ein **KI-Prompt-Pack**,
+  damit generierte Assets konsistent sind und als Drop-in einrasten.
+- OG-Palette (`src/lib/og.ts`) auf Bone/Clay umgestellt.
+- Startseiten-Hero ist vorerst ein dunkles Text-Band (`.film`); wird zu `MediaBand`, sobald die
+  KI-Atmosphäre existiert. Projekt-Cover/Medien-Galerie: Assets stehen noch aus.
+
+### 2026-10-05 · Designsystem v3 „Daylight Technocracy“ (ersetzt v2 „Weißraum“)
+**Begründung:** Vorgabe von Dennis: „100 % Wang“ (strenges, institutionelles Modehaus-Gefühl)
+**plus** mehr Farbe, mehr Bewegung, mehr zu sehen, „AI-Frontier“ und „naturalistische
+Technokratie“. Gewählte Synthese (von drei vorgelegten Richtungen): **„Daylight Technocracy“** –
+weißes Grundgerüst bleibt (hell, lesbar, vertrauenswürdig), aber mit voller Wucht an Farbe/Leben.
+**Konsequenz:**
+- **Schrift:** Jost → **Archivo** (Grotesk) als `--sans`/`--grotesk`. EB Garamond bleibt als
+  Serif-Stimme für Langform/Leads. Wortmarke & Struktur sind jetzt Grotesk-Caps.
+- **Farbe:** Die Naturtöken werden von reinen Bild-Bühnen zu **aktiven, vollflächigen
+  Farbbühnen** (`.stage--walnut/marble/velvet/cloud`). Das lockert das alte v2-Verbot
+  „keine Farbe in der UI“. Neon/Orange (der „KI-Look“) bleibt verboten.
+- **Bewegung:** Scroll-Einblendungen (`[data-reveal]`) + Hover-Verschiebungen neu erlaubt;
+  `prefers-reduced-motion` respektiert. Lockert v2 „Bewegung: ruhig“ (bleibt ruhig, aber vorhanden).
+- **Startseite:** riesige Wortmarke → Register → Farbbühnen (Projekte walnut, Themen marble) →
+  Porträt. Doku: `docs/DESIGN.md` §7 + aktualisierte §2/§3; `CLAUDE.md` §2 angepasst.
+- **Offen:** OG-/Social-Vorlagen (`src/lib/og.ts`) nutzen Archivo für „Sans“, Titel noch Serif –
+  ein Grotesk-Caps-Redesign der Bildvorlagen steht aus. v2-Moodboard-Tabelle bleibt gültig
+  (gleiche Referenzen, schärfer interpretiert).
+
+### 2026-10-05 · Startseite als Verzeichnis, Ton entpathetisiert
+**Begründung:** Vorgabe: Die Seite soll zuerst eine vertrauenswürdige Zentrale sein, von der
+aus alles auffindbar ist („Visitenkarte“ + Register), mit klarer, institutioneller, nüchterner
+Sprache statt poetischem Ton. **Konsequenz:**
+- Startseite (`src/pages/index.astro`) = Kopf (Name als Marke + faktische Rolle/Kanäle) →
+  **Verzeichnis** aller Bereiche mit echten Zählern → Beleg (Explorationen, Projekte, Porträt).
+- `SITE.statement` ist jetzt eine faktische Identitätszeile statt eines Leitsatzes.
+- Das Motto *Gradatim Ferociter* verschwindet aus dem Footer (Chrome); in Dennis’ eigenen
+  Texten (Exploration „warum-diese-website“, `ueber.mdx`, Thema Unternehmertum) bleibt es –
+  das ist bewusste Autoren-Entscheidung, keine UI-Deko.
+- Neue Copy-Regel in `docs/DESIGN.md` §6.
+
 ### 2026-10-04 · Redesign „Weißraum“ (Designsystem v2)
 **Begründung:** Feedback: v1 wirkte wie typisches KI-Webdesign (Orange-Akzent, Papier-Hintergrund,
 Eyebrows, Status-Dots). Neues Moodboard (Sebastian Wolf, State of Sage, Saint Laurent):

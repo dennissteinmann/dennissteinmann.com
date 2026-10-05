@@ -6,36 +6,57 @@
 :root {
   color-scheme: light;
 
-  /* --- Fläche & Text: echtes Weiß, echtes Schwarz -------------------------- */
-  --white: #ffffff;
-  --ink: #121212;          /* Text, Linien in Aktion */
-  --ink-soft: #3b3b3b;     /* Fließtext-Nuancen */
-  --grey: #8c8c8c;         /* Metadaten, Sekundäres */
-  --grey-light: #b9b9b9;
-  --line: #e9e9e9;         /* Haarlinien */
-  --line-strong: #d2d2d2;
-  --placeholder: #f4f4f3;  /* NUR Bild-Platzhalter, nie Seitenhintergrund */
+  /* --- Fläche & Text: warmes „Anthropic“-Licht. Kein kaltes Weiß. ---------
+     Grund ist warmes Bone/Elfenbein, Text warmes Fast-Schwarz. Farbe kommt
+     primär aus Fotografie/Video – die UI bleibt warm-neutral. --------------- */
+  --white: #ffffff;        /* echtes Weiß nur für Karten/Objekt-Bühnen */
+  --bone: #f5f3ec;         /* warmer Seitengrund (ersetzt Weiß als --bg) */
+  --bone-deep: #ece7da;    /* leicht tiefere Bone-Bühne */
+  --kraft: #d9c6a9;        /* warmer Tan/Kraft – warme Bühne */
+  --ink: #1a1711;          /* warmes Fast-Schwarz: Text, Linien in Aktion */
+  --coal: #1a1711;         /* identisch, aber auf Bühnen NICHT umdefiniert (für .stage--ink-Fläche) */
+  --ink-soft: #46403a;     /* Fließtext-Nuancen, warm */
+  --grey: #8c8578;         /* Metadaten, warmes Taupe */
+  --grey-light: #b7afa1;
+  --line: #e4ddce;         /* warme Haarlinie */
+  --line-strong: #d2c8b6;
+  --placeholder: #efe9dc;  /* NUR Bild-Platzhalter (warm) */
 
-  /* --- Naturtöne (Moodboard). Nie als Akzent für UI-Elemente, nur als
-         vollflächige Bühnen für Bilder/Karten oder Projektfarben. ------------ */
-  --walnut: #4a2a1d;       /* Nussbaum-Vertäfelung (Saint Laurent) */
+  /* --- Akzent: Anthropic-Clay. Bewusst sparsam – ein Moment, kein Dauerton.
+         Erdiges Terrakotta, KEIN Neon-Orange. ---------------------------- */
+  --clay: #be5b3e;         /* Terrakotta-Akzent (Bänder, Zähler, Hover) */
+  --clay-soft: #cc785c;    /* hellere Clay-Variante */
+
+  /* --- Naturtöne (Moodboard). Tiefe Bühnen hinter Bild/Video. ------------ */
+  --walnut: #4a2a1d;       /* Nussbaum */
   --velvet: #d6b77c;       /* Goldsamt */
   --marble: #1d2822;       /* grüner Marmor */
-  --cloud: #8e98a3;        /* Wolkenblau (State of Sage) */
-  --earth: #6b3a26;        /* Erde, Herbstlaub */
-  --cream: #efe9df;        /* Text auf Nussbaum */
+  --cloud: #8e98a3;        /* Wolkenblau */
+  --earth: #6b3a26;        /* Erde */
+  --cream: #f3eee3;        /* Text auf dunklen Bühnen */
 
   /* --- Semantik --------------------------------------------------------- */
-  --bg: var(--white);
+  --bg: var(--bone);
   --fg: var(--ink);
   --fg-muted: var(--grey);
   --link: var(--ink);
 
-  /* --- Typografie --------------------------------------------------------
-     Serif (EB Garamond): Stimme – Headlines & Langform.
-     Sans (Jost, Futura-/Bauhaus-Linie): Struktur – Navigation, Metadaten. */
+  /* --- Farbflächen (v3): Naturtöne werden zu aktiven Bühnen. Nie Neon,
+         nie Orange-„KI-Look“ – Farbe kommt aus Erde, Stein, Pflanze, Gold.
+         Jede Bühne definiert bg/fg/muted/line für Inhalte darauf. --------- */
+  --stage-bg: transparent;
+  --stage-fg: var(--ink);
+  --stage-muted: var(--grey);
+  --stage-line: var(--line);
+
+  /* --- Typografie (v3: „Daylight Technocracy“) ---------------------------
+     Grotesk (Archivo): die Maschine – Wortmarke, Navigation, Titel, Struktur.
+                        Großbuchstaben, enge Laufweite. Das „Wang“-Skelett.
+     Serif (EB Garamond): die Stimme – Langform, Leads, Zitate. Das Menschliche.
+     Zwei Welten, bewusst nebeneinander = naturalistische Technokratie. */
   --serif: 'EB Garamond Variable', 'EB Garamond', 'Iowan Old Style', Georgia, serif;
-  --sans: 'Jost Variable', 'Jost', 'Futura', 'Avenir Next', system-ui, sans-serif;
+  --sans: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
+  --grotesk: var(--sans);
 
   --t-xs: 0.78rem;                                   /* Sans-Meta */
   --t-s: 0.9rem;                                     /* Sans-UI */
@@ -48,7 +69,9 @@
   --lh-display: 1.02;
   --lh-body: 1.55;
   --track-sans: 0.02em;
-  --track-caps: 0.16em;    /* nur Navigation & Fußzeile */
+  --track-caps: 0.14em;    /* Navigation, Meta, Labels (Grotesk-Großbuchstaben) */
+  --track-mark: -0.01em;   /* große Wortmarke: eng, fast berührend */
+  --track-head: 0.04em;    /* Grotesk-Sektionstitel in Caps */
   --measure: 34em;         /* Lesespalte in Serif-em ≈ 66 Zeichen */
 
   /* --- Raum: großzügig. Weißraum ist das Gestaltungsmittel. ---------------- */
@@ -64,8 +87,11 @@
   --gutter: clamp(1.25rem, 0.5rem + 3vw, 3.5rem);
   --wide: 1520px;
 
-  /* --- Bewegung: ruhig ----------------------------------------------------- */
+  /* --- Bewegung (v3): lebendig, aber nie zappelig. Alles aus Ruhe heraus. -- */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --slow: 900ms;
+  --med: 560ms;
   --fast: 220ms;
+  --reveal-y: 1.75rem;     /* Startversatz für Scroll-Einblendungen */
 }

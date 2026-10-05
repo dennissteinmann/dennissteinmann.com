@@ -1,7 +1,7 @@
 ---
 import '@fontsource-variable/eb-garamond';
 import '@fontsource-variable/eb-garamond/wght-italic.css';
-import '@fontsource-variable/jost';
+import '@fontsource-variable/archivo';
 import '@/styles/global.css';
 
 import SEO, { type Props as SEOProps } from '@/components/SEO.astro';
@@ -32,5 +32,30 @@ const seo = Astro.props;
       <slot />
     </main>
     <Footer />
+
+    <script>
+      // Scroll-Einblendung: Elemente mit [data-reveal] steigen ruhig auf.
+      // Respektiert prefers-reduced-motion und funktioniert ohne JS (sichtbar).
+      const items = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (items.length && !reduce && 'IntersectionObserver' in window) {
+        for (const el of items) el.classList.add('is-hidden');
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (!e.isIntersecting) continue;
+              const el = e.target as HTMLElement;
+              const d = el.dataset.reveal;
+              if (d) el.style.transitionDelay = `${d}ms`;
+              el.classList.add('is-in');
+              el.classList.remove('is-hidden');
+              io.unobserve(el);
+            }
+          },
+          { rootMargin: '0px 0px -12% 0px', threshold: 0.1 },
+        );
+        for (const el of items) io.observe(el);
+      }
+    </script>
   </body>
 </html>
