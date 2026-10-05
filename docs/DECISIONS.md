@@ -4,6 +4,21 @@ Neue Einträge oben anfügen. Format: Datum · Entscheidung · Begründung · Ko
 
 ---
 
+### 2026-10-05 · Git-basiertes CMS (Sveltia) + kuratierte Startseite
+**Begründung:** Dennis will Inhalte (v. a. Projekte & Unternehmen) einfach und „diskret"
+pflegen, ohne die MDX-Struktur von Hand zu kennen. Außerdem: weniger erklärende „Warum"-Copy,
+einfachere Landing, die zu den wichtigen Stücken führt (Referenzen: tiffanydevos.be,
+askmidnight.com). **Konsequenz:**
+- **Sveltia CMS** unter `public/admin/` (noindex, in `robots.txt` gesperrt). Git-basiert, kein
+  Server/DB, kein Vendor-Lock-in – passt zum Astro-/Repo-Prinzip. Speichern = Commit = Deploy.
+  Lokaler Modus funktioniert ohne jede Einrichtung; „von überall" via GitHub-OAuth optional.
+  Mapping aller Collections in `public/admin/config.yml`. Doku: `docs/CMS.md`.
+- **Projekte & Unternehmen = eine Collection**, `kind` unterscheidet (kein zweites Verzeichnis).
+- Neues Feld `featured` (Projekt) → Startseite zeigt hervorgehobene Projekte zuerst.
+- Startseiten-Copy entschlackt: Missions-/„Warum"-Band entfernt, Lead auf faktische Rolle
+  gekürzt, Themen-Beschreibung neutralisiert. Volle Landing-Vereinfachung + Innenseiten-
+  Redesign (askmidnight-Geist in warmer Palette) = nächster Schritt.
+
 ### 2026-10-05 · v3-Feinschliff: „Anthropic-warm“ + Medien tragen die Farbe
 **Begründung:** Dennis hat „Serif und Braun“ hinterfragt und auf Anthropics Launch-Sprache
 verwiesen (warm, filmisch, naturalistisch). Entscheidungen: **Serif bleibt** (Anthropic paart

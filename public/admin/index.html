@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Nicht öffentlich: kein Index, kein Crawling. Auch in robots.txt gesperrt. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Studio · Inhalte</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <!--
+      Sveltia CMS – git-basiert, kein Server, keine Datenbank. Inhalte bleiben
+      als MDX im Repo; Speichern = Commit = automatisches Deploy (deploy.yml).
+
+      ZWEI BETRIEBSARTEN (siehe docs/CMS.md):
+      1) Lokal, ohne jede Einrichtung: `npm run dev` → http://localhost:4321/admin/
+         → „Work with Local Repository“ wählen (Chrome/Edge). Danach committen & pushen.
+      2) Von überall (Browser/Handy): GitHub-Login über config.yml → base_url.
+
+      Version bewusst gepinnt (Reproduzierbarkeit). Update = Versionsnummer erhöhen.
+    -->
+    <script src="https://cdn.jsdelivr.net/npm/@sveltia/cms@0.111.0/dist/sveltia-cms.js" type="module"></script>
+  </body>
+</html>

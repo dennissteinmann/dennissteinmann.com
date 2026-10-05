@@ -1,0 +1,236 @@
+# Sveltia/Decap CMS – Konfiguration. Spiegelt src/content.config.ts.
+# Speichern = Commit in dieses Repo = automatisches Deploy (deploy.yml).
+# Doku & Einrichtung: docs/CMS.md
+
+backend:
+  name: github
+  repo: dennissteinmann/dennissteinmann.com
+  branch: main
+  # NUR für Bearbeiten „von überall" nötig (nicht für den lokalen Modus).
+  # URL des OAuth-Helfers (sveltia-cms-auth, Cloudflare Worker) – siehe docs/CMS.md:
+  base_url: https://BITTE-SETZEN.workers.dev
+
+# Saubere, stabile Slugs (der „URL-Vertrag" – Slugs nie ändern).
+slug:
+  encoding: ascii
+  clean_accents: true
+
+# Standard-Upload-Ort (Collections mit co-lokalen Bildern überschreiben das).
+media_folder: public/media
+public_folder: /media
+
+site_url: https://dennissteinmann.com
+display_url: https://dennissteinmann.com
+
+collections:
+  # ── PROJEKTE & UNTERNEHMEN (eine Collection, „Art" unterscheidet) ──────────
+  - name: projects
+    label: Projekte & Unternehmen
+    label_singular: Projekt
+    description: Apps, Software, Websites, Unternehmen, Plattformen, Medien, Forschung.
+    folder: src/content/projects
+    path: '{{fields.slug}}/index'
+    extension: mdx
+    format: frontmatter
+    create: true
+    media_folder: ''
+    public_folder: ''
+    identifier_field: title
+    summary: '{{fields.title}} · {{fields.kind}} · {{fields.status}}'
+    sortable_fields: [order, started, title]
+    fields:
+      - { name: title, label: Titel, widget: string }
+      - { name: slug, label: Slug (URL – wird nie geändert), widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'kleinbuchstaben-mit-bindestrichen'] }
+      - { name: kind, label: Art, widget: select, options: [app, software, website, unternehmen, medien, plattform, forschung] }
+      - { name: status, label: Status, widget: select, options: [idee, aktiv, pausiert, abgeschlossen, verkauft], default: aktiv }
+      - { name: featured, label: Auf Startseite hervorheben, widget: boolean, default: false }
+      - { name: description, label: Meta-Description (70–165 Zeichen), widget: string, pattern: ['^.{70,165}$', '70 bis 165 Zeichen'] }
+      - { name: summary, label: Kurzfassung (min. 60 Zeichen), widget: text }
+      - { name: role, label: Rolle, widget: string, required: false }
+      - { name: started, label: Start, widget: datetime, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - { name: ended, label: Ende (optional), widget: datetime, required: false, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - { name: url, label: Website (optional), widget: string, required: false }
+      - name: links
+        label: Weitere Links (App Store, Repo …)
+        widget: list
+        required: false
+        summary: '{{fields.label}}'
+        fields:
+          - { name: label, widget: string }
+          - { name: url, widget: string }
+      - { name: icon, label: Icon/Logo (quadratisch), widget: image, required: false }
+      - { name: cover, label: Cover-Bild, widget: image, required: false }
+      - { name: coverAlt, label: Cover-Alt-Text, widget: string, required: false }
+      - { name: color, label: Markenfarbe des Projekts, widget: color, allow_input: true, required: false }
+      - { name: size, label: Kartengröße, widget: select, options: [s, m, l], default: m }
+      - { name: topics, label: Themen, widget: relation, collection: topics, value_field: '{{slug}}', search_fields: [title], display_fields: [title], multiple: true, required: false }
+      - name: documents
+        label: Dokumente (PDF, Decks …)
+        widget: list
+        required: false
+        summary: '{{fields.title}}'
+        fields:
+          - { name: title, widget: string }
+          - { name: href, label: Pfad/URL, widget: string }
+          - { name: kind, widget: string, default: PDF }
+          - { name: date, widget: datetime, required: false, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+          - { name: description, widget: text, required: false }
+      - { name: order, label: Reihenfolge (klein = vorne), widget: number, default: 100, value_type: int }
+      - { name: draft, label: Entwurf (nicht live), widget: boolean, default: true }
+      - { name: body, label: Beschreibung/Text, widget: markdown, required: false }
+
+  # ── EXPLORATIONEN (Langform) ────────────────────────────────────────────────
+  - name: explorations
+    label: Explorationen
+    label_singular: Exploration
+    folder: src/content/explorations
+    path: '{{fields.slug}}/index'
+    extension: mdx
+    format: frontmatter
+    create: true
+    media_folder: ''
+    public_folder: ''
+    identifier_field: title
+    summary: '{{fields.title}} · {{fields.kind}}'
+    fields:
+      - { name: title, label: Titel, widget: string }
+      - { name: slug, label: Slug (URL – nie ändern), widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'kleinbuchstaben-mit-bindestrichen'] }
+      - { name: description, label: Meta-Description (70–165 Zeichen), widget: string, pattern: ['^.{70,165}$', '70 bis 165 Zeichen'] }
+      - { name: summary, label: Kernaussage (min. 120 Zeichen – wichtigstes KI-Feld), widget: text }
+      - { name: kind, label: Art, widget: select, options: [essay, theorie, geschichte, analyse, anleitung, notiz], default: essay }
+      - { name: stage, label: Reife, widget: select, options: [keimling, wachsend, ausgereift], default: keimling }
+      - { name: pubDate, label: Veröffentlicht, widget: datetime, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - { name: updated, label: Aktualisiert (optional), widget: datetime, required: false, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - { name: draft, label: Entwurf, widget: boolean, default: true }
+      - { name: cover, label: Cover, widget: image, required: false }
+      - { name: coverAlt, label: Cover-Alt-Text, widget: string, required: false }
+      - { name: topics, label: Themen (erstes = Hauptthema), widget: relation, collection: topics, value_field: '{{slug}}', search_fields: [title], display_fields: [title], multiple: true, min: 1, max: 5 }
+      - { name: projects, label: Verknüpfte Projekte, widget: relation, collection: projects, value_field: '{{slug}}', search_fields: [title], display_fields: [title], multiple: true, required: false }
+      - { name: keyTakeaways, label: Kernaussagen, widget: list, required: false, field: { name: point, widget: string } }
+      - name: faq
+        label: FAQ
+        widget: list
+        required: false
+        fields:
+          - { name: q, label: Frage, widget: string }
+          - { name: a, label: Antwort, widget: text }
+      - name: sources
+        label: Quellen
+        widget: list
+        required: false
+        fields:
+          - { name: title, widget: string }
+          - { name: url, widget: string }
+      - { name: body, label: Text, widget: markdown }
+
+  # ── THEMEN (Experten-Hubs) ──────────────────────────────────────────────────
+  - name: topics
+    label: Themen
+    label_singular: Thema
+    folder: src/content/topics
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{fields.slug}}'
+    identifier_field: title
+    fields:
+      - { name: title, label: Titel, widget: string }
+      - { name: slug, label: Slug (URL – nie ändern), widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'kleinbuchstaben-mit-bindestrichen'] }
+      - { name: description, label: Meta-Description (70–165 Zeichen), widget: string, pattern: ['^.{70,165}$', '70 bis 165 Zeichen'] }
+      - { name: definition, label: Neutrale Definition (1 Satz), widget: text }
+      - { name: position, label: Deine Position/These (zitierfähig), widget: text }
+      - { name: since, label: Seit Jahr (optional), widget: number, required: false, value_type: int }
+      - { name: sameAs, label: Wikipedia/Wikidata-URL (optional), widget: string, required: false }
+      - name: faq
+        label: FAQ
+        widget: list
+        required: false
+        fields:
+          - { name: q, widget: string }
+          - { name: a, widget: text }
+      - { name: order, label: Reihenfolge, widget: number, default: 100, value_type: int }
+      - { name: body, label: Text, widget: markdown, required: false }
+
+  # ── MEDIEN ──────────────────────────────────────────────────────────────────
+  - name: media
+    label: Medien
+    label_singular: Medium
+    folder: src/content/media
+    extension: mdx
+    format: frontmatter
+    create: true
+    media_folder: ''
+    public_folder: ''
+    identifier_field: title
+    summary: '{{fields.title}} · {{fields.kind}}'
+    fields:
+      - { name: title, label: Titel, widget: string }
+      - { name: kind, label: Art, widget: select, options: [foto, video, podcast, vortrag, interview, dokument] }
+      - { name: date, label: Datum, widget: datetime, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - { name: image, label: Bild, widget: image, required: false }
+      - { name: imageAlt, label: Alt-Text, widget: string, required: false }
+      - { name: href, label: Datei/Link (optional), widget: string, required: false }
+      - { name: source, label: Quelle (optional), widget: string, required: false }
+      - { name: project, label: Projekt (optional), widget: relation, collection: projects, value_field: '{{slug}}', search_fields: [title], display_fields: [title], required: false }
+      - { name: draft, label: Entwurf, widget: boolean, default: true }
+      - { name: body, label: Text, widget: markdown, required: false }
+
+  # ── PRESSE ──────────────────────────────────────────────────────────────────
+  - name: press
+    label: Presse
+    label_singular: Presse-Eintrag
+    folder: src/content/press
+    extension: mdx
+    format: frontmatter
+    create: true
+    identifier_field: title
+    summary: '{{fields.outlet}} · {{fields.title}}'
+    fields:
+      - { name: outlet, label: Medium/Outlet, widget: string }
+      - { name: title, label: Schlagzeile, widget: string }
+      - { name: date, label: Datum, widget: datetime, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - { name: url, label: Link (optional), widget: string, required: false }
+      - { name: archive, label: Archiv-Kopie /presse/… (optional), widget: string, required: false }
+      - { name: project, label: Projekt (optional), widget: relation, collection: projects, value_field: '{{slug}}', search_fields: [title], display_fields: [title], required: false }
+      - { name: draft, label: Entwurf, widget: boolean, default: true }
+      - { name: body, label: Notiz/Zitat, widget: markdown, required: false }
+
+  # ── LOGBUCH ─────────────────────────────────────────────────────────────────
+  - name: log
+    label: Logbuch
+    label_singular: Log-Eintrag
+    folder: src/content/log
+    extension: mdx
+    format: frontmatter
+    create: true
+    identifier_field: title
+    summary: '{{fields.date}} · {{fields.title}}'
+    fields:
+      - { name: date, label: Datum, widget: datetime, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - { name: title, label: Was ist passiert, widget: string }
+      - { name: project, label: Projekt (optional), widget: relation, collection: projects, value_field: '{{slug}}', search_fields: [title], display_fields: [title], required: false }
+      - { name: exploration, label: Exploration (optional), widget: relation, collection: explorations, value_field: '{{slug}}', search_fields: [title], display_fields: [title], required: false }
+      - { name: draft, label: Entwurf, widget: boolean, default: false }
+      - { name: body, label: Text, widget: markdown, required: false }
+
+  # ── SEITEN (Impressum, Kontakt, Über …) ─────────────────────────────────────
+  - name: pages
+    label: Seiten
+    label_singular: Seite
+    folder: src/content/pages
+    extension: mdx
+    format: frontmatter
+    create: true
+    slug: '{{fields.slug}}'
+    identifier_field: title
+    fields:
+      - { name: title, label: Titel, widget: string }
+      - { name: slug, label: Slug (URL), widget: string, pattern: ['^[a-z0-9]+(?:-[a-z0-9]+)*$', 'kleinbuchstaben-mit-bindestrichen'] }
+      - { name: description, label: Meta-Description (70–165 Zeichen), widget: string, pattern: ['^.{70,165}$', '70 bis 165 Zeichen'] }
+      - { name: cover, label: Cover (optional), widget: image, required: false }
+      - { name: coverAlt, label: Cover-Alt-Text, widget: string, required: false }
+      - { name: updated, label: Aktualisiert (optional), widget: datetime, required: false, date_format: YYYY-MM-DD, time_format: false, format: YYYY-MM-DD }
+      - { name: schemaType, label: Seitentyp, widget: select, options: [WebPage, AboutPage, ContactPage, ProfilePage], default: WebPage }
+      - { name: noindex, label: Nicht indexieren, widget: boolean, default: false }
+      - { name: draft, label: Entwurf, widget: boolean, default: false }
+      - { name: body, label: Inhalt, widget: markdown }

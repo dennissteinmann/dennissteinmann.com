@@ -18,14 +18,17 @@ const channels = activeChannels();
 
 const strip = projects
   .filter((p) => p.data.icon || p.data.cover)
-  .sort((a, b) => ({ l: 0, m: 1, s: 2 })[a.data.size] - ({ l: 0, m: 1, s: 2 })[b.data.size] || a.data.order - b.data.order)
+  .sort((a, b) =>
+    Number(b.data.featured) - Number(a.data.featured) ||
+    ({ l: 0, m: 1, s: 2 })[a.data.size] - ({ l: 0, m: 1, s: 2 })[b.data.size] ||
+    a.data.order - b.data.order)
   .slice(0, 12);
 
 /** Das Verzeichnis: ein Ort, von dem aus alles auffindbar ist. */
 const directory = [
   { label: 'Explorationen', href: '/explorationen/', count: allExplorations.length, desc: 'Langform: Theorien, Essays und Geschichten.' },
   { label: 'Projekte', href: '/projekte/', count: projects.length, desc: 'Apps, Software, Plattformen und Unternehmen.' },
-  { label: 'Themen', href: '/themen/', count: topics.length, desc: 'Woran ich arbeite und wofür ich stehe.' },
+  { label: 'Themen', href: '/themen/', count: topics.length, desc: 'Schwerpunkte und Expertise.' },
   { label: 'Medien', href: '/medien/', count: media.length, desc: 'Bilder, Videos, Auftritte und Dokumente.' },
   { label: 'Presse', href: '/presse/', count: press.length, desc: 'Bio, Fotos, Fakten und Berichterstattung.' },
   { label: 'Über', href: '/ueber/', count: null, desc: 'Werdegang, Haltung und Kontakt.' },
@@ -39,7 +42,7 @@ const directory = [
       <span>{PERSON.givenName}</span><span>{PERSON.familyName}</span>
     </h1>
     <div class="masthead__row">
-      <p class="masthead__lead" data-reveal>Ich baue Apps, Software und Marken. Diese Seite führt alles an einem Ort zusammen – Projekte, Explorationen, Medien und Presse.</p>
+      <p class="masthead__lead" data-reveal>Unternehmer und Produktentwickler. Ich baue Apps, Software und Marken.</p>
       <div class="masthead__meta sans" data-reveal="80">
         <p>{PERSON.jobTitle}<br /><span class="muted">{PERSON.homeLocation}</span></p>
         <p class="masthead__contact">
@@ -48,12 +51,6 @@ const directory = [
         </p>
       </div>
     </div>
-  </section>
-
-  {/* Dunkles Statement-Band. Sobald die KI-Atmosphäre (16:9, warm/filmisch) existiert,
-     wird dies zu <MediaBand src=… height="full" overlay label=…>. Siehe docs/MEDIA.md. */}
-  <section class="stage stage--ink film" aria-label="Haltung">
-    <p class="display film__line wrap" data-reveal>Gebaut, um gefunden zu werden – von Menschen <em>und</em> Maschinen.</p>
   </section>
 
   <nav class="wrap directory space-b" aria-label="Verzeichnis">
@@ -149,7 +146,7 @@ const directory = [
   .masthead__contact a:hover { color: var(--ink); }
 
   /* Verzeichnis: strenges Register, Grotesk-Caps, echte Zähler. */
-  .directory { padding-top: var(--s-7); }
+  .directory { padding-top: 0; }
   .directory__item { border-top: 1px solid var(--line); }
   .directory__item:last-child { border-bottom: 1px solid var(--line); }
   .directory__link {
@@ -181,10 +178,6 @@ const directory = [
   .about__text { grid-column: 7 / span 5; }
   .about__text .display { line-height: 1.15; }
   .about__links { display: flex; gap: var(--s-4); margin-top: var(--s-5); }
-
-  /* Dunkles Statement-Band (Platzhalter für Atmosphäre-Film) */
-  .film { padding-block: clamp(5rem, 16vh, 11rem); }
-  .film__line { font-size: var(--t-xl); line-height: 1.08; max-width: 18em; }
 
   /* Clay-Kontaktband */
   .contact { padding-block: var(--s-8); }

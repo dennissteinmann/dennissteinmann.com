@@ -104,6 +104,8 @@ const projects = defineCollection({
       color: hex.optional(),
       /** Kartengröße im Projekt-Raster */
       size: z.enum(['s', 'm', 'l']).default('m'),
+      /** Auf der Startseite als „wichtiges Stück" hervorheben (kuratiert). */
+      featured: z.boolean().default(false),
       topics: z.array(reference('topics')).default([]),
       documents,
       order: z.number().default(100),

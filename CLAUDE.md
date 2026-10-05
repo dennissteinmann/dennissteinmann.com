@@ -90,7 +90,8 @@ src/
   components/           UI-Bausteine; components/mdx/ = in MDX ohne Import nutzbar
   layouts/BaseLayout    <html>, <head>, Header, Footer
   pages/                Routen (inkl. sitemap.xml, robots.txt, llms.txt, rss.xml, og/, social/, studio/)
-docs/                   DESIGN, SEO, CONTENT, SOCIAL, DEPLOYMENT, DECISIONS, moodboard/
+docs/                   DESIGN, SEO, CONTENT, SOCIAL, MEDIA, CMS, DEPLOYMENT, DECISIONS, moodboard/
+public/admin/           Sveltia CMS (git-basiert, noindex) – Inhalte pflegen, siehe docs/CMS.md
 scripts/                new.mjs (Content-CLI), check-dist.mjs (SEO-Check)
 ```
 

@@ -82,6 +82,7 @@ started: ${today}
 # coverAlt: …
 # color: "#e8e4dc"
 size: m # s | m | l
+featured: false # true = auf der Startseite hervorheben
 topics: []
 # documents:
 #   - { title: Pitch Deck, href: /dokumente/${slug}/pitch.pdf, kind: PDF }
