@@ -88,8 +88,11 @@ server {
   rewrite ^([^.]*[^/])$ $1/ permanent;
 
   # HTML-Seiten & Verzeichnis-Index
+  # HTML immer revalidieren (304 bei unverändert) – sonst zeigen Browser nach einem
+  # Deploy tagelang die alte Version (fehlender Cache-Header = heuristisches Caching).
   location / {
     try_files $uri $uri/index.html $uri/ =404;
+    add_header Cache-Control "no-cache" always;
     add_header X-Content-Type-Options nosniff always;
     add_header Referrer-Policy strict-origin-when-cross-origin always;
     # HSTS optional (erst aktivieren, wenn dauerhaft nur HTTPS gewünscht):
@@ -131,6 +134,10 @@ server {
 ```
 
 **Hinweise:**
+- **Nach dem Deploy noch die alte Version sichtbar?** (1) Privates Fenster bzw. harter
+  Reload (Cmd+Shift+R). (2) In CloudPanel → Site → *Varnish Cache*: leeren bzw. für diese
+  Site deaktivieren – Varnish gehört zur PHP-Vorlage und hält HTML sonst tagelang.
+  (3) Prüfen, ob dieser Vhost (mit `Cache-Control "no-cache"` für HTML) wirklich aktiv ist.
 - Ist die Site in CloudPanel als PHP-Typ angelegt, kann dieser Vhost trotzdem eingesetzt
   werden (der `:8080`-PHP-Block entfällt ersatzlos). Sauberer ist der Typ *Static*.
 - Zeigt `{{root}}` nicht auf das Deploy-Ziel, `REMOTE_PATH` in `deploy.yml` angleichen.
