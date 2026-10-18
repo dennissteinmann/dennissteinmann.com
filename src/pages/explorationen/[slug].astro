@@ -84,28 +84,28 @@ const jsonLd = graph(
 
       {d.keyTakeaways?.length && (
         <section class="block" aria-labelledby="kt">
-          <h2 id="kt" class="display t-m">Kurz gesagt</h2>
+          <h2 id="kt" class="khead">Kurz gesagt</h2>
           <ol class="takeaways">{d.keyTakeaways.map((t) => <li>{t}</li>)}</ol>
         </section>
       )}
 
       {d.faq?.length && (
         <section class="block" aria-labelledby="faq">
-          <h2 id="faq" class="display t-m">Fragen</h2>
+          <h2 id="faq" class="khead">Fragen</h2>
           <dl class="faq">{d.faq.map((f) => <div><dt>{f.q}</dt><dd>{f.a}</dd></div>)}</dl>
         </section>
       )}
 
       {d.sources.length > 0 && (
         <section class="block" aria-labelledby="src">
-          <h2 id="src" class="display t-m">Quellen</h2>
+          <h2 id="src" class="khead">Quellen</h2>
           <ol class="sources sans">{d.sources.map((s) => <li><a href={s.url} rel="noopener">{s.title}</a></li>)}</ol>
         </section>
       )}
 
       {d.changelog.length > 0 && (
         <section class="block" aria-labelledby="log">
-          <h2 id="log" class="display t-m">Entwicklung dieses Gedankens</h2>
+          <h2 id="log" class="khead">Entwicklung dieses Gedankens</h2>
           <ol class="changelog meta">{d.changelog.map((c) => <li><time datetime={isoDate(c.date)}>{formatDate(c.date)}</time> — {c.note}</li>)}</ol>
         </section>
       )}
@@ -123,7 +123,7 @@ const jsonLd = graph(
 
   {related.length > 0 && (
     <section class="wrap space">
-      <h2 class="display t-m related__h">Weiterdenken</h2>
+      <h2 class="khead related__h">Weiterdenken</h2>
       <ExplorationList items={related} />
     </section>
   )}
@@ -133,6 +133,7 @@ const jsonLd = graph(
 
 <style>
   .head { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-top: var(--s-7); padding-bottom: var(--s-6); align-items: end; }
+  .head::after { content: ''; grid-column: 1 / -1; margin-top: var(--s-5); height: 5px; border-top: 2px solid var(--fg); border-bottom: 1px solid var(--fg); }
   .head__title { grid-column: 1 / span 9; max-width: 13em; }
   .head__meta { grid-column: 10 / span 3; display: grid; gap: 0.15rem; }
   .head__meta a { color: inherit; }
@@ -140,34 +141,35 @@ const jsonLd = graph(
   .cover { margin-bottom: var(--s-6); }
   .cover :global(img) { width: 100%; max-height: 82vh; object-fit: cover; }
 
-  .body > * { max-width: var(--measure); margin-inline: auto; }
+  /* Eine Lesespalte für alles (Kurzfassung, Inhalt, Text): 34em in Lesegröße. */
+  .body { display: grid; grid-template-columns: minmax(0, var(--measure)); justify-content: center; font-size: var(--t-body); }
   .summary { font-size: var(--t-m); line-height: 1.4; padding-block: var(--s-5) var(--s-6); }
-  .toc { margin-bottom: var(--s-6); }
+  .toc { margin-bottom: var(--s-6); padding-block: var(--s-3); border-block: 1px solid var(--line); }
   .toc ol { display: grid; gap: 0.2rem; counter-reset: toc; }
   .toc li { counter-increment: toc; }
-  .toc li::before { content: counter(toc) '  '; color: var(--grey-light); }
-  .toc a { color: var(--grey); }
+  .toc li::before { content: counter(toc) '  '; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .toc a { color: var(--fg-muted); }
   .toc a:hover { color: var(--ink); }
 
-  .body > .prose > :global(p:first-child::first-letter) { font-size: 3.4em; float: left; line-height: 0.85; padding: 0.06em 0.08em 0 0; }
+  .body > .prose > :global(p:first-child::first-letter) { font-size: 3.6em; float: left; line-height: 0.82; padding: 0.06em 0.1em 0 0; color: var(--navy); }
 
   .block { margin-top: var(--s-7); }
-  .block h2 { margin-bottom: var(--s-4); }
+  .block h2 { margin-bottom: var(--s-4); padding-bottom: var(--s-2); border-bottom: 1px solid var(--line); }
   .takeaways { padding-left: 1.2em; display: grid; gap: var(--s-2); }
-  .takeaways li::marker { font-family: var(--sans); font-size: 0.75em; color: var(--grey); }
+  .takeaways li::marker { font-family: var(--sans); font-size: 0.75em; color: var(--accent); }
   .faq { display: grid; gap: var(--s-4); }
   .faq dt { font-style: italic; }
   .faq dd { margin: var(--s-1) 0 0; color: var(--ink-soft); }
   .sources { padding-left: 1.2em; display: grid; gap: var(--s-1); }
   .changelog { display: grid; gap: var(--s-1); }
 
-  .author { display: flex; align-items: center; gap: var(--s-3); margin-top: var(--s-7) !important; padding-top: var(--s-5); border-top: 1px solid var(--line); }
-  .author :global(.author__img) { width: 72px; height: 72px; object-fit: cover; border-radius: 50%; }
+  .author { display: flex; align-items: center; gap: var(--s-3); margin-top: var(--s-7) !important; padding-top: var(--s-5); border-top: 2px solid var(--fg); }
+  .author :global(.author__img) { width: 72px; height: 72px; object-fit: cover; }
   .author a { text-decoration: none; }
   .projects { margin-top: var(--s-4) !important; }
   .projects a { color: inherit; }
 
-  .related__h { margin-bottom: var(--s-4); }
+  .related__h { margin-bottom: var(--s-5); padding-bottom: var(--s-2); border-bottom: 1px solid var(--line); }
 
   @media (max-width: 900px) {
     .head { grid-template-columns: 1fr; }

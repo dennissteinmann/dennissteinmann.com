@@ -2,13 +2,14 @@
 @import './prose.css';
 
 /* --- Reset ------------------------------------------------------------- */
-*, *::before, *::after { box-sizing: border-box; }
+/* Keine Rundungen (v4): auch Browser-Standardformen werden rechtwinklig. */
+*, *::before, *::after { box-sizing: border-box; border-radius: var(--radius); }
 * { margin: 0; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 5rem; }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 img, picture, video, svg { display: block; max-width: 100%; height: auto; }
-input, button, textarea, select { font: inherit; color: inherit; }
-button { cursor: pointer; background: none; border: 0; padding: 0; }
+input, button, textarea, select { font: inherit; color: inherit; border-radius: var(--radius); }
+button { cursor: pointer; background: none; border: 0; padding: 0; -webkit-appearance: none; appearance: none; }
 h1, h2, h3, h4 { text-wrap: balance; font-weight: 400; }
 p, li { text-wrap: pretty; }
 ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
@@ -28,11 +29,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 main { flex: 1; }
-::selection { background: var(--ink); color: var(--bone); }
+::selection { background: var(--navy); color: var(--ivory); }
 
-a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 0.18em; text-decoration-color: var(--line-strong); transition: text-decoration-color var(--fast); }
-a:hover { text-decoration-color: var(--ink); }
-:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px; }
+a { color: var(--link); text-decoration-thickness: 1px; text-underline-offset: 0.2em; text-decoration-color: var(--line-strong); transition: text-decoration-color var(--fast), color var(--fast); }
+a:hover { text-decoration-color: currentColor; }
+:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
 
 /* --- Layout -------------------------------------------------------------- */
 .wrap { width: 100%; max-width: var(--wide); margin-inline: auto; padding-inline: var(--gutter); }
@@ -40,68 +41,90 @@ a:hover { text-decoration-color: var(--ink); }
 .space-b { padding-bottom: var(--s-7); }
 .space-l { padding-block: var(--s-8); }
 
-/* Bauhaus-Raster: 12 Spalten, Inhalte werden bewusst asymmetrisch gesetzt */
+/* Raster: 12 Spalten. Sektionen: Titel links (3/12), Inhalt rechts (9/12). */
 .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); }
 .col-text { grid-column: 4 / span 6; }
 .col-left { grid-column: 1 / span 3; }
 .col-wide { grid-column: 1 / -1; }
+.sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); align-items: baseline; }
 @media (max-width: 900px) {
-  .grid { grid-template-columns: 1fr; }
+  .grid, .sec { grid-template-columns: 1fr; }
   .col-text, .col-left, .col-wide { grid-column: 1; }
+  .sec { row-gap: var(--s-4); }
 }
 
 /* --- Typografie ---------------------------------------------------------- */
-.display { font-family: var(--serif); font-weight: 400; line-height: var(--lh-display); letter-spacing: -0.012em; }
+.display { font-family: var(--serif); font-weight: 400; line-height: var(--lh-display); letter-spacing: -0.005em; }
 .display em { font-style: italic; }
-.t-xxl { font-size: var(--t-xxl); letter-spacing: -0.025em; }
-.t-xl { font-size: var(--t-xl); letter-spacing: -0.02em; }
+.t-xxl { font-size: var(--t-xxl); letter-spacing: -0.015em; }
+.t-xl { font-size: var(--t-xl); letter-spacing: -0.01em; }
 .t-l { font-size: var(--t-l); }
 .t-m { font-size: var(--t-m); line-height: 1.2; }
-.sans { font-family: var(--sans); font-size: var(--t-s); letter-spacing: var(--track-sans); line-height: 1.45; }
+.sans { font-family: var(--sans); font-size: var(--t-s); letter-spacing: var(--track-sans); line-height: 1.5; }
 .meta { font-family: var(--sans); font-size: var(--t-xs); letter-spacing: var(--track-sans); color: var(--fg-muted); line-height: 1.5; }
 .caps { text-transform: uppercase; letter-spacing: var(--track-caps); }
 .muted { color: var(--fg-muted); }
 .lead { font-size: var(--t-m); line-height: 1.35; max-width: 28em; }
+/* Etikett: kleine, weit gesperrte Grotesk-Versalien (Navigation, Spaltenköpfe). */
+.label { font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps); line-height: 1.5; }
 
-/* Grotesk-Stimme (v3 „Wang“): Wortmarke & Caps-Sektionstitel. */
-.mark { font-family: var(--grotesk); font-weight: 650; text-transform: uppercase; letter-spacing: var(--track-mark); line-height: 0.9; }
-.khead { font-family: var(--grotesk); font-weight: 600; text-transform: uppercase; letter-spacing: var(--track-head); line-height: 1.0; }
+/* Haus-Stimme (v4 „Kontor“): Garamond-Versalien, gesperrt – wie graviert. */
+.mark { font-family: var(--serif); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-mark); line-height: 1.05; }
+.khead { font-family: var(--serif); font-weight: 500; font-size: var(--t-caps); text-transform: uppercase; letter-spacing: var(--track-head); line-height: 1.4; }
 
-/* Link-Varianten: Text, kein Button-Look */
-.link { font-family: var(--sans); font-size: var(--t-s); text-decoration: underline; text-decoration-color: var(--line-strong); }
-.link:hover { text-decoration-color: var(--ink); }
+/* Link-Varianten: Text, kein Button-Look. `.link` = Etikett mit Messing-Unterstrich. */
+.link {
+  font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps);
+  text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 0.55em;
+}
+.link:hover { text-decoration-color: currentColor; }
 .plain { text-decoration: none; }
 
-/* --- Farbbühnen (v3): vollflächige Naturtöne, Inhalt erbt passende Tokens.
-   Durch Umdefinieren der Semantik-Variablen passen sich Links, Meta &
-   Haarlinien automatisch an – keine Sonderregeln je Komponente nötig. ------ */
+/* --- Bühnen: vollflächige Hausfarben, Inhalt erbt passende Tokens.
+   Durch Umdefinieren der Semantik-Variablen passen sich Links, Meta,
+   Haarlinien und Messing automatisch an – keine Sonderregeln je Komponente.
+   Bühnen-Werte NUR aus Primitiven (--c-*), sonst entstehen Zyklen
+   (z. B. --grey → --stage-muted → --grey) und die Werte werden ungültig. */
 .stage { background: var(--stage-bg); color: var(--stage-fg);
   --bg: var(--stage-bg); --fg: var(--stage-fg); --ink: var(--stage-fg);
   --ink-soft: var(--stage-fg); --fg-muted: var(--stage-muted); --grey: var(--stage-muted);
-  --link: var(--stage-fg); --line: var(--stage-line); --line-strong: var(--stage-line); }
+  --link: var(--stage-fg); --line: var(--stage-line); --line-strong: var(--stage-line);
+  --accent: var(--stage-accent); --brass: var(--stage-accent); }
 .stage ::selection { background: var(--stage-fg); color: var(--stage-bg); }
-/* Warme „Anthropic“-Bühnen: Bone & Kraft als ruhige Grundflächen, Clay als
-   einziger lauter Moment, Ink als dunkle Frontier-Fläche (Text/Medien). */
-.stage--bone  { --stage-bg: var(--bone-deep); --stage-fg: var(--ink);  --stage-muted: var(--grey); --stage-line: var(--line-strong); }
-.stage--kraft { --stage-bg: var(--kraft); --stage-fg: #2a2217; --stage-muted: rgba(26,23,17,0.6); --stage-line: rgba(26,23,17,0.2); }
-.stage--clay  { --stage-bg: var(--clay);  --stage-fg: var(--cream); --stage-muted: rgba(243,238,227,0.74); --stage-line: rgba(243,238,227,0.32); }
-.stage--ink   { --stage-bg: var(--coal);  --stage-fg: var(--cream); --stage-muted: rgba(243,238,227,0.6);  --stage-line: rgba(243,238,227,0.16); }
-/* Tiefe Naturtöne bleiben für bild-/videohinterlegte Bühnen verfügbar. */
-.stage--walnut { --stage-bg: var(--walnut); --stage-fg: var(--cream); --stage-muted: rgba(243,238,227,0.62); --stage-line: rgba(243,238,227,0.2); }
-.stage--marble { --stage-bg: var(--marble); --stage-fg: var(--cream); --stage-muted: rgba(243,238,227,0.6);  --stage-line: rgba(243,238,227,0.18); }
+/* Papier: ruhige, tiefere Fläche (z. B. Projektauswahl). */
+.stage--paper { --stage-bg: var(--c-paper-deep); --stage-fg: var(--c-ink); --stage-muted: var(--c-grey); --stage-line: var(--c-line-strong); --stage-accent: var(--c-brass); }
+/* Marineblau: die Hausfarbe – Themen, Kontakt, Fußzeile. */
+.stage--navy {
+  --stage-bg: var(--c-navy); --stage-fg: var(--c-ivory); --stage-accent: var(--c-brass-light);
+  --stage-muted: color-mix(in srgb, var(--c-ivory) 70%, var(--c-navy));
+  --stage-line: color-mix(in srgb, var(--c-ivory) 20%, var(--c-navy));
+}
 
-/* --- Scroll-Einblendung: ruhiges Aufsteigen beim Eintritt --------------- */
+/* Register: Schlüssel-Wert-Tabelle wie ein Registerauszug (Fakten, Projektdaten). */
+.ledger { display: grid; border-top: 2px solid var(--fg); }
+.ledger > div { display: grid; grid-template-columns: minmax(7rem, 2fr) 5fr; gap: var(--s-3); padding-block: var(--s-2); border-bottom: 1px solid var(--line); align-items: baseline; }
+.ledger dt { font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps); color: var(--fg-muted); }
+.ledger dd { margin: 0; }
+
+/* --- Linien ---------------------------------------------------------------- */
+.rule { border: 0; height: 1px; background: var(--line); }
+/* Zierlinie wie im Briefkopf: kräftig über fein. Markiert Kopf und Abschluss. */
+.rule--double { height: 5px; background: none; border-top: 2px solid var(--fg); border-bottom: 1px solid var(--fg); }
+/* Kurze Messinglinie unter der Wortmarke. */
+.rule--brass { width: 4.5rem; background: var(--accent); }
+
+/* Marineblaue Bühne direkt vor der Fußzeile: nahtlos, nur eine Haarlinie. */
+main:has(> .stage--navy:last-child) + .footer { margin-top: 0; border-top: 1px solid var(--stage-line); }
+
+/* --- Scroll-Einblendung: ruhiges Erscheinen beim Eintritt --------------- */
 @media (prefers-reduced-motion: no-preference) {
   [data-reveal] { transition: opacity var(--med) var(--ease-out), transform var(--med) var(--ease-out); }
   [data-reveal].is-hidden { opacity: 0; transform: translateY(var(--reveal-y)); }
   [data-reveal].is-in { opacity: 1; transform: none; }
 }
 
-/* Trennlinie */
-.rule { border: 0; height: 1px; background: var(--line); }
-
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.skip-link { position: absolute; left: var(--s-3); top: -100px; z-index: 200; background: var(--ink); color: var(--white); padding: var(--s-2) var(--s-3); font-family: var(--sans); font-size: var(--t-s); }
+.skip-link { position: absolute; left: var(--s-3); top: -100px; z-index: 200; background: var(--navy); color: var(--ivory); padding: var(--s-2) var(--s-3); font-family: var(--sans); font-size: var(--t-s); }
 .skip-link:focus { top: var(--s-3); }
 
 /* Ruhiges Einblenden von Bildern */

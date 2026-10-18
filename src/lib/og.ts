@@ -1,17 +1,22 @@
 /**
  * Bildgenerator für OG-Bilder (1200×630) und Social-Carousels (1080×1350).
  * satori → SVG → resvg → PNG, zur Build-Zeit. Gleiche Haltung wie die
- * Website: Weiß, Schwarz, Serif, viel Raum. Siehe docs/SOCIAL.md.
+ * Website (v4 „Kontor“): Marineblau, Papier, Messing, gravierte Versalien,
+ * Wappen. Rechtwinklig, ohne Verläufe. Siehe docs/SOCIAL.md.
  */
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
+import crestSvg from '@/assets/brand/crest.svg?raw';
 
 const require = createRequire(import.meta.url);
 
-/** Spiegel von tokens.css (satori kennt keine CSS-Variablen). Warm, „Anthropic“. */
-export const C = { white: '#ffffff', bone: '#f5f3ec', ink: '#1a1711', grey: '#8c8578', line: '#e4ddce', clay: '#be5b3e', walnut: '#4a2a1d', cream: '#f3eee3' };
+/** Spiegel von tokens.css (satori kennt keine CSS-Variablen). */
+export const C = {
+  white: '#ffffff', paper: '#f6f3eb', ink: '#14181f', inkSoft: '#3a3f48', grey: '#67645d', line: '#dcd5c6',
+  navy: '#152238', brass: '#7d5f33', brassLight: '#c2a36b', ivory: '#f3efe5', ivoryMuted: '#b0b1b1',
+};
 
 type Font = { name: string; data: Buffer; weight: 400 | 500; style: 'normal' | 'italic' };
 let cache: Font[] | null = null;
@@ -20,6 +25,7 @@ async function loadFonts(): Promise<Font[]> {
   const f = (p: string) => fs.readFile(require.resolve(p));
   cache = [
     { name: 'Serif', data: await f('@fontsource/eb-garamond/files/eb-garamond-latin-400-normal.woff'), weight: 400, style: 'normal' },
+    { name: 'Serif', data: await f('@fontsource/eb-garamond/files/eb-garamond-latin-500-normal.woff'), weight: 500, style: 'normal' },
     { name: 'Serif', data: await f('@fontsource/eb-garamond/files/eb-garamond-latin-400-italic.woff'), weight: 400, style: 'italic' },
     { name: 'Sans', data: await f('@fontsource/archivo/files/archivo-latin-400-normal.woff'), weight: 400, style: 'normal' },
     { name: 'Sans', data: await f('@fontsource/archivo/files/archivo-latin-500-normal.woff'), weight: 500, style: 'normal' },
@@ -42,51 +48,85 @@ export const pngResponse = (png: Uint8Array) =>
   new Response(png as unknown as BodyInit, { headers: { 'Content-Type': 'image/png' } });
 export const fit = (text: string, sizes: [number, number][]) => sizes.find(([max]) => text.length <= max)?.[1] ?? sizes.at(-1)![1];
 
+/* Bausteine ----------------------------------------------------------------- */
+
+/** Das Wappen als Bild in beliebiger Farbe (Seitenverhältnis 28:36). */
+const crest = (color: string, height: number): Node => ({
+  type: 'img',
+  props: {
+    src: `data:image/svg+xml;base64,${Buffer.from(crestSvg.replace('fill="currentColor"', `fill="${color}"`)).toString('base64')}`,
+    width: Math.round(height * 0.78), height, style: {},
+  },
+});
+/** Wortmarke: Garamond-Versalien, gesperrt – wie auf der Website. */
+const wordmark = (color: string, size: number) =>
+  h('div', { fontFamily: 'Serif', fontWeight: 500, fontSize: size, letterSpacing: size * 0.18, textTransform: 'uppercase', color }, 'Dennis Steinmann');
+/** Etikett: kleine, gesperrte Grotesk-Versalien. */
+const label = (text: string, color: string, size: number) =>
+  h('div', { fontFamily: 'Sans', fontWeight: 500, fontSize: size, letterSpacing: size * 0.16, textTransform: 'uppercase', color }, text);
+/** Zierlinie wie im Briefkopf: kräftig über fein. */
+const doubleRule = (color: string) =>
+  h('div', { width: '100%', height: 6, borderTop: `2px solid ${color}`, borderBottom: `1px solid ${color}` });
+
 /* Vorlagen ---------------------------------------------------------------- */
 
 export function ogTemplate(o: { title: string; meta: string }) {
-  const size = fit(o.title, [[30, 92], [55, 76], [80, 64], [999, 54]]);
-  return h('div', { width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: '64px 80px', backgroundColor: C.bone, color: C.ink },
-    h('div', { justifyContent: 'space-between', fontFamily: 'Sans', fontSize: 22, color: C.ink },
-      h('div', {}, 'Dennis Steinmann'),
-      h('div', { color: C.grey }, o.meta),
+  const size = fit(o.title, [[30, 84], [55, 70], [80, 60], [999, 52]]);
+  return h('div', { width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: '60px 80px', backgroundColor: C.navy, color: C.ivory },
+    h('div', { flexDirection: 'column', gap: 26 },
+      h('div', { justifyContent: 'space-between', alignItems: 'center' },
+        h('div', { alignItems: 'center', gap: 22 }, crest(C.brassLight, 58), wordmark(C.ivory, 24)),
+        label(o.meta, C.ivoryMuted, 15),
+      ),
+      doubleRule(C.ivory),
     ),
-    h('div', { fontFamily: 'Serif', fontSize: size, lineHeight: 1.04, letterSpacing: -1, maxWidth: 980 }, o.title),
-    h('div', { fontFamily: 'Sans', fontSize: 20, color: C.grey }, 'dennissteinmann.com'),
+    h('div', { fontFamily: 'Serif', fontSize: size, lineHeight: 1.08, maxWidth: 980 }, o.title),
+    h('div', { flexDirection: 'column', gap: 20 },
+      h('div', { width: 72, height: 2, backgroundColor: C.brassLight }),
+      label('dennissteinmann.com', C.ivoryMuted, 15),
+    ),
   );
 }
 
 export function slideTemplate(o: { kind: 'cover' | 'content' | 'cta'; index: number; total: number; title?: string; text?: string; url?: string }) {
   const counter = `${o.index} / ${o.total}`;
   const dark = o.kind === 'cta';
-  const fg = dark ? C.cream : C.ink;
-  const muted = dark ? 'rgba(239,233,223,0.6)' : C.grey;
-  const top = h('div', { justifyContent: 'space-between', fontFamily: 'Sans', fontSize: 26, color: fg },
-    h('div', {}, 'Dennis Steinmann'), h('div', { color: muted }, counter));
-  const base = { width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: '88px 92px', backgroundColor: dark ? C.walnut : C.bone, color: fg };
+  const fg = dark ? C.ivory : C.ink;
+  const muted = dark ? C.ivoryMuted : C.grey;
+  const accent = dark ? C.brassLight : C.brass;
+  const top = h('div', { flexDirection: 'column', gap: 30 },
+    h('div', { justifyContent: 'space-between', alignItems: 'center' },
+      h('div', { alignItems: 'center', gap: 22 }, crest(dark ? C.brassLight : C.navy, 54), wordmark(fg, 24)),
+      label(counter, muted, 20),
+    ),
+    doubleRule(fg),
+  );
+  const base = { width: '100%', height: '100%', flexDirection: 'column', justifyContent: 'space-between', padding: '84px 92px', backgroundColor: dark ? C.navy : C.paper, color: fg };
+  const foot = (text: string) => h('div', { flexDirection: 'column', gap: 22 },
+    h('div', { width: 80, height: 2, backgroundColor: accent }), label(text, muted, 20));
 
   if (o.kind === 'cover') {
-    const size = fit(o.title ?? '', [[30, 120], [55, 100], [80, 86], [999, 72]]);
+    const size = fit(o.title ?? '', [[30, 112], [55, 94], [80, 80], [999, 68]]);
     return h('div', base, top,
-      h('div', { fontFamily: 'Serif', fontSize: size, lineHeight: 1.0, letterSpacing: -2 }, o.title ?? ''),
-      h('div', { fontFamily: 'Sans', fontSize: 24, color: muted }, 'Eine Exploration von Dennis Steinmann'),
+      h('div', { fontFamily: 'Serif', fontSize: size, lineHeight: 1.04, letterSpacing: -1 }, o.title ?? ''),
+      foot('Eine Exploration von Dennis Steinmann'),
     );
   }
   if (o.kind === 'cta') {
     return h('div', base, top,
       h('div', { flexDirection: 'column', gap: 36 },
-        h('div', { fontFamily: 'Serif', fontStyle: 'italic', fontSize: 96, lineHeight: 1.0, letterSpacing: -1.5 }, o.title ?? 'Weiterdenken'),
+        h('div', { fontFamily: 'Serif', fontStyle: 'italic', fontSize: 92, lineHeight: 1.04, letterSpacing: -1 }, o.title ?? 'Weiterdenken'),
         o.text ? h('div', { fontFamily: 'Serif', fontSize: 38, lineHeight: 1.35, maxWidth: 820 }, o.text) : null,
       ),
-      h('div', { fontFamily: 'Sans', fontSize: 26, color: muted }, o.url ?? 'dennissteinmann.com'),
+      foot(o.url ?? 'dennissteinmann.com'),
     );
   }
   const textSize = fit(o.text ?? '', [[90, 60], [160, 50], [999, 42]]);
   return h('div', base, top,
     h('div', { flexDirection: 'column', gap: 36 },
-      o.title ? h('div', { fontFamily: 'Serif', fontSize: fit(o.title, [[24, 84], [45, 70], [999, 58]]), lineHeight: 1.04, letterSpacing: -1 }, o.title) : null,
-      o.text ? h('div', { fontFamily: 'Serif', fontStyle: o.title ? 'normal' : 'italic', fontSize: o.title ? 40 : textSize, lineHeight: 1.3, color: o.title ? '#3b3b3b' : C.ink }, o.text) : null,
+      o.title ? h('div', { fontFamily: 'Serif', fontSize: fit(o.title, [[24, 84], [45, 70], [999, 58]]), lineHeight: 1.06, letterSpacing: -0.5 }, o.title) : null,
+      o.text ? h('div', { fontFamily: 'Serif', fontStyle: o.title ? 'normal' : 'italic', fontSize: o.title ? 40 : textSize, lineHeight: 1.3, color: o.title ? C.inkSoft : C.ink }, o.text) : null,
     ),
-    h('div', { fontFamily: 'Sans', fontSize: 24, color: muted }, 'dennissteinmann.com'),
+    foot('dennissteinmann.com'),
   );
 }

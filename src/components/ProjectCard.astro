@@ -5,13 +5,15 @@
  *  website/software/plattform → Bildschirm-Ausschnitt (cover) oder Domain als Typografie
  *  unternehmen  → reine Typografie, Name als Wortmarke
  *  medien/forschung → Hochformat wie ein Buch- oder Plakatcover
- * Projektfarbe (`color`) gehört dem Projekt – die Website selbst bleibt schwarz/weiß.
+ * `uniform` setzt alle Varianten auf ein gemeinsames Hochformat (Raster, Register).
+ * Projektfarbe (`color`) gehört dem Projekt – die Website selbst bleibt Papier/Tinte.
+ * Rechtwinklig, ohne Schatten (docs/DESIGN.md §2).
  */
 import { Image } from 'astro:assets';
 import { type Project, PROJECT_KIND_LABELS, STATUS_LABELS, projectYears } from '@/lib/content';
 
-export interface Props { project: Project; headingLevel?: 'h2' | 'h3'; sizes?: string }
-const { project, headingLevel: H = 'h3', sizes = '(min-width: 900px) 40vw, 90vw' } = Astro.props;
+export interface Props { project: Project; headingLevel?: 'h2' | 'h3'; sizes?: string; uniform?: boolean }
+const { project, headingLevel: H = 'h3', sizes = '(min-width: 900px) 40vw, 90vw', uniform = false } = Astro.props;
 const d = project.data;
 const href = `/projekte/${project.id}/`;
 const domain = d.url ? new URL(d.url).hostname.replace(/^www\./, '') : undefined;
@@ -23,7 +25,7 @@ const statusNote = d.status === 'aktiv' ? '' : ` · ${STATUS_LABELS[d.status]}`;
 const style = d.color ? `--pc:${d.color}` : '';
 ---
 
-<article class:list={['pc', `pc--${variant}`, { 'pc--colored': !!d.color, 'pc--draft': d.draft }]} style={style}>
+<article class:list={['pc', `pc--${variant}`, { 'pc--colored': !!d.color, 'pc--draft': d.draft, 'pc--uniform': uniform }]} style={style}>
   <a href={href} class="pc__stage plain" aria-label={d.title} tabindex="-1">
     {variant === 'object' && (
       d.icon
@@ -35,9 +37,9 @@ const style = d.color ? `--pc:${d.color}` : '';
         ? <Image src={d.cover} alt={d.coverAlt ?? ''} widths={[480, 800, 1200]} sizes={sizes} class="pc__img" />
         : d.icon
           ? <Image src={d.icon} alt="" width={200} height={200} class="pc__icon pc__icon--flat" />
-          : <span class="pc__domain display">{domain ?? d.title}</span>
+          : <span class="pc__domain display">{(domain ?? d.title).split('.').map((part, i) => <>{i > 0 && <>.<wbr /></>}{part}</>)}</span>
     )}
-    {variant === 'type' && <span class="pc__word display">{d.title}</span>}
+    {variant === 'type' && <span class="pc__word mark">{d.title}</span>}
     {variant === 'cover' && (
       d.cover
         ? <Image src={d.cover} alt={d.coverAlt ?? ''} widths={[400, 700]} sizes={sizes} class="pc__img" />
@@ -52,37 +54,40 @@ const style = d.color ? `--pc:${d.color}` : '';
 
 <style>
   .pc { --pc: var(--placeholder); display: flex; flex-direction: column; gap: var(--s-3); }
-  .pc__stage { position: relative; display: grid; place-items: center; overflow: hidden; background: var(--pc); transition: opacity var(--fast); }
-  .pc__stage:hover { opacity: 0.94; }
-  .pc__stage :global(img.pc__img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1.4s var(--ease); }
-  .pc:hover .pc__stage :global(img.pc__img) { transform: scale(1.025); }
+  .pc__stage { position: relative; display: grid; place-items: center; overflow: hidden; background: var(--pc); outline: 1px solid var(--line); outline-offset: -1px; }
+  .pc__stage :global(img.pc__img) { width: 100%; height: 100%; object-fit: cover; transition: transform 1.6s var(--ease); }
+  .pc:hover .pc__stage :global(img.pc__img) { transform: scale(1.015); }
 
-  /* App: Objekt auf farbiger Fläche */
+  /* App: Objekt auf farbiger Fläche – rechtwinklig, ohne Schatten */
   .pc--object .pc__stage { aspect-ratio: 1; }
-  .pc__stage :global(.pc__icon) { width: 34%; height: auto; border-radius: 22.5%; box-shadow: 0 1.5rem 3rem -1.5rem rgb(0 0 0 / 0.35); transition: transform var(--slow) var(--ease); }
-  .pc:hover .pc__stage :global(.pc__icon) { transform: translateY(-4px); }
-  .pc__stage :global(.pc__icon--flat) { box-shadow: none; width: 28%; }
+  .pc__stage :global(.pc__icon) { width: 34%; height: auto; }
+  .pc__stage :global(.pc__icon--flat) { width: 28%; }
   .pc__glyph { font-size: clamp(4rem, 10vw, 9rem); color: var(--white); mix-blend-mode: difference; }
   .pc--object:not(.pc--colored) .pc__glyph { color: var(--ink); mix-blend-mode: normal; }
 
   /* Website/Software: Bildschirm */
   .pc--screen .pc__stage { aspect-ratio: 16 / 10; }
-  .pc__domain { font-size: clamp(1.6rem, 2.6vw, 2.6rem); padding: var(--s-4); text-align: center; }
-  .pc--screen:not(.pc--colored) .pc__stage, .pc--type .pc__stage { background: var(--white); outline: 1px solid var(--line); outline-offset: -1px; }
+  .pc__domain { font-size: clamp(1.4rem, 2.2vw, 2.2rem); padding: var(--s-4); text-align: center; overflow-wrap: break-word; min-width: 0; max-width: 100%; }
+  .pc--screen:not(.pc--colored) .pc__stage, .pc--type:not(.pc--colored) .pc__stage { background: var(--white); }
   .pc--colored .pc__domain { color: var(--white); }
 
-  /* Unternehmen: Wortmarke */
+  /* Unternehmen: Wortmarke in gesperrten Versalien, wie ein Firmenschild */
   .pc--type .pc__stage { aspect-ratio: 5 / 3; }
-  .pc__word { font-size: clamp(1.8rem, 3.2vw, 3.4rem); letter-spacing: -0.02em; padding: var(--s-4); text-align: center; line-height: 1; }
-  .pc--type.pc--colored .pc__stage { outline: 0; }
+  .pc__word { font-size: clamp(1.1rem, 1.7vw, 1.6rem); padding: var(--s-4); text-align: center; line-height: 1.3; color: var(--ink); }
   .pc--type.pc--colored .pc__word { color: var(--white); }
 
   /* Medien/Forschung: Cover im Hochformat */
   .pc--cover .pc__stage { aspect-ratio: 3 / 4; place-items: end start; }
-  .pc__booktitle { font-size: clamp(1.6rem, 2.4vw, 2.4rem); line-height: 1.05; padding: var(--s-4); color: var(--white); font-style: italic; }
-  .pc--cover:not(.pc--colored) .pc__stage { background: var(--marble); }
+  .pc__booktitle { font-size: clamp(1.5rem, 2.2vw, 2.2rem); line-height: 1.08; padding: var(--s-4); color: var(--ivory); font-style: italic; }
+  .pc--cover:not(.pc--colored) .pc__stage { background: var(--navy); }
 
-  .pc__title { font-family: var(--serif); font-size: var(--t-m); line-height: 1.15; }
-  .pc__caption .meta { margin-top: 0.15rem; }
+  /* Register-Format: gemeinsames Hochformat für Raster und Galerien */
+  .pc--uniform .pc__stage { aspect-ratio: 4 / 5; }
+  .pc--uniform .pc__domain { font-size: clamp(1.05rem, 0.8rem + 0.9vw, 1.6rem); padding: var(--s-3); }
+
+  .pc__title { font-family: var(--serif); font-size: var(--t-body); line-height: 1.25; }
+  .pc__title a { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.2em; }
+  .pc:hover .pc__title a { text-decoration-color: var(--accent); }
+  .pc__caption .meta { margin-top: 0.2rem; }
   .pc--draft { opacity: 0.55; }
 </style>

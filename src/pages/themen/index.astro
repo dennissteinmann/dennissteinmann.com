@@ -23,7 +23,7 @@ const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/themen/' }]
           <a href={`/themen/${t.id}/`} class="plain topics__link">
             <span class="display t-xl topics__name">{t.data.title}</span>
             <span class="topics__position">{t.data.position}</span>
-            <span class="meta">{count(t.id)} Einträge{t.data.since && ` · seit ${t.data.since}`}</span>
+            <span class="meta topics__count">{count(t.id)} Einträge{t.data.since && ` · seit ${t.data.since}`}</span>
           </a>
         </li>
       ))}
@@ -32,11 +32,11 @@ const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/themen/' }]
 </BaseLayout>
 
 <style>
-  .topics li { border-top: 1px solid var(--line); }
+  .topics li { border-bottom: 1px solid var(--line); }
   .topics__link { display: grid; grid-template-columns: 6fr 4fr 2fr; gap: var(--gutter); padding-block: var(--s-5); align-items: baseline; }
-  .topics__name { line-height: 1; transition: opacity var(--fast); }
-  .topics__position { color: var(--grey); font-style: italic; }
-  .topics__link .meta { text-align: right; }
-  .topics__link:hover .topics__name { opacity: 0.5; }
-  @media (max-width: 900px) { .topics__link { grid-template-columns: 1fr; gap: var(--s-2); } .topics__link .meta { text-align: left; } }
+  .topics__name { line-height: 1.05; text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 0.14em; transition: text-decoration-color var(--fast); }
+  .topics__position { color: var(--fg-muted); font-style: italic; }
+  .topics__count { text-align: right; font-variant-numeric: tabular-nums; }
+  .topics__link:hover .topics__name { text-decoration-color: var(--accent); }
+  @media (max-width: 900px) { .topics__link { grid-template-columns: 1fr; gap: var(--s-2); } .topics__count { text-align: left; } }
 </style>

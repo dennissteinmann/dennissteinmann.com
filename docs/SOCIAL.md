@@ -44,5 +44,6 @@ social:
 
 ## Design
 
-Folien folgen dem Weißraum-Design (`src/lib/og.ts`): weiße Flächen, EB Garamond, Jost für
-Name/Zähler. Nur die letzte Folie steht auf Nussbaum (`--walnut`) mit cremefarbener Schrift.
+Folien folgen dem Designsystem v4 „Kontor“ (`src/lib/og.ts`): Papierflächen, EB Garamond,
+Kopfzeile mit Wappen, gesperrter Wortmarke und Zierlinie, Archivo-Etiketten für Zähler und Fuß.
+Die letzte Folie und alle OG-Bilder stehen auf Marineblau mit Elfenbein-Schrift und Messing.

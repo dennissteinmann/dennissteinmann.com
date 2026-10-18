@@ -20,7 +20,7 @@ const done = (e: (typeof items)[number], ch: string) => e.data.distribution.find
   <PageHeader title="Studio" lead="Vom Gedanken zum Post. Jede Exploration, jeder Kanal, ein Blick." />
 
   <section class="wrap space">
-    <h2 class="display t-m sec-h">Kanäle</h2>
+    <h2 class="khead sec-h">Kanäle</h2>
     <ul role="list" class="channels sans">
       {CHANNELS.map((c) => (
         <li>{c.url ? <a href={c.url} rel="noopener">{c.name}</a> : <span class="muted">{c.name} – URL fehlt in site.config.ts</span>}</li>
@@ -29,7 +29,7 @@ const done = (e: (typeof items)[number], ch: string) => e.data.distribution.find
   </section>
 
   <section class="wrap space">
-    <h2 class="display t-m sec-h">Verbreitung</h2>
+    <h2 class="khead sec-h">Verbreitung</h2>
     <div class="table-wrap">
       <table class="matrix sans">
         <thead>

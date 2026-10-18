@@ -15,7 +15,7 @@ const { items, headingLevel: H = 'h3', showSummary = true } = Astro.props;
           <H class="display xl__title">{e.data.title}</H>
           {showSummary && <p class="xl__summary">{e.data.description}</p>}
         </div>
-        <span class="meta xl__kind">{KIND_LABELS[e.data.kind]}{e.data.draft && ' · Entwurf'}</span>
+        <span class="label xl__kind">{KIND_LABELS[e.data.kind]}{e.data.draft && ' · Entwurf'}</span>
       </a>
     </li>
   ))}
@@ -25,10 +25,11 @@ const { items, headingLevel: H = 'h3', showSummary = true } = Astro.props;
   .xl__item { border-top: 1px solid var(--line); }
   .xl__item:last-child { border-bottom: 1px solid var(--line); }
   .xl__link { display: grid; grid-template-columns: 3fr 7fr 2fr; gap: var(--gutter); padding-block: var(--s-5); align-items: baseline; }
-  .xl__title { font-size: var(--t-l); line-height: 1.08; transition: opacity var(--fast); }
-  .xl__summary { margin-top: var(--s-2); color: var(--grey); font-size: var(--t-body); max-width: 32em; }
-  .xl__kind { text-align: right; }
-  .xl__link:hover .xl__title { opacity: 0.55; }
+  .xl__title { font-size: var(--t-l); line-height: 1.1; text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 0.16em; transition: text-decoration-color var(--fast); }
+  .xl__summary { margin-top: var(--s-3); color: var(--fg-muted); font-size: var(--t-body); max-width: 32em; }
+  .xl__date { font-variant-numeric: tabular-nums; }
+  .xl__kind { text-align: right; color: var(--fg-muted); }
+  .xl__link:hover .xl__title { text-decoration-color: var(--accent); }
   @media (max-width: 760px) {
     .xl__link { grid-template-columns: 1fr; gap: var(--s-2); }
     .xl__kind { text-align: left; }

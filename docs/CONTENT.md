@@ -57,7 +57,7 @@ Neue Explorationen, Projekte und Seiten starten als `draft: true` → lokal sich
 | `icon` | quadratisches Logo/App-Icon (`./icon.png`, ≥ 512 px) |
 | `cover` | Screenshot/Bild (`./cover.jpg`, ~1800 px, JPG) |
 | `color` | Markenfarbe des Projekts `#rrggbb` – färbt nur dessen Karte |
-| `size` | `s` · `m` · `l` – Gewicht im Projektfeld |
+| `size` | `s` · `m` · `l` – Reihenfolge in der Startseiten-Auswahl (`l` zuerst) |
 | `links` | `- { label: App Store, url: … }` |
 | `documents` | Dateien für Projekte ohne eigene Website, siehe unten |
 | `order` | kleiner = weiter vorn |

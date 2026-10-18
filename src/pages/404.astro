@@ -2,14 +2,16 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 ---
 
-<BaseLayout title="Nicht gefunden" description="Diese Seite existiert nicht (mehr). Über die Navigation findest du alle Explorationen, Projekte, Themen und Medien von Dennis Steinmann." noindex>
+<BaseLayout title="Seite nicht gefunden" description="Diese Seite existiert nicht (mehr). Über die Navigation sind alle Explorationen, Projekte, Themen und Medien von Dennis Steinmann erreichbar." noindex>
   <section class="wrap nf">
-    <h1 class="display t-xxl">Hier ist <em>nichts.</em></h1>
-    <p class="lead">Nur Weißraum. Vielleicht weiter bei den <a href="/explorationen/">Explorationen</a> oder den <a href="/projekte/">Projekten</a>.</p>
+    <h1 class="display t-xl">Seite nicht gefunden</h1>
+    <hr class="rule rule--double" />
+    <p class="lead">Die angeforderte Seite existiert nicht oder nicht mehr. Weiter zur <a href="/">Startseite</a>, zu den <a href="/explorationen/">Explorationen</a> oder zu den <a href="/projekte/">Projekten</a>.</p>
   </section>
 </BaseLayout>
 
 <style>
-  .nf { padding-block: clamp(6rem, 22vh, 16rem) var(--s-7); }
+  .nf { padding-block: clamp(6rem, 18vh, 12rem) var(--s-7); }
+  .nf .rule--double { margin-top: var(--s-5); }
   .nf .lead { margin-top: var(--s-5); }
 </style>

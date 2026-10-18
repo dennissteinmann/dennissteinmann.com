@@ -1,7 +1,7 @@
 ---
 /**
  * Vollflächige Atmosphäre-Bühne: ein filmisches Bild oder Video, randlos.
- * Trägt die Farbe der Seite (statt flacher UI-Farbe) – „Anthropic“-Haltung.
+ * Fotografie trägt Atmosphäre und Farbe; die UI bleibt Papier/Tinte/Marineblau.
  * Austausch gegen echte (KI-generierte) Assets: einfach `src`/`video` ersetzen,
  * Seitenverhältnis & Bildausschnitt bleiben. Siehe docs/MEDIA.md.
  */
@@ -48,14 +48,14 @@ const { src, alt, video, poster, height = 'band', label, caption, overlay = fals
   .mb--short .mb__frame { height: clamp(12rem, 30vh, 22rem); }
   .mb__media { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  /* Warme, ruhige Tönung – kein Filmkorn, nur ein Hauch Tiefe. */
+  /* Ruhige Abdunklung für Textlesbarkeit – kein Filmkorn, keine Effekte. */
   .mb--overlay .mb__frame::after {
     content: ''; position: absolute; inset: 0; pointer-events: none;
-    background: linear-gradient(to top, rgba(26,23,17,0.55), rgba(26,23,17,0.08) 42%, transparent 70%);
+    background: linear-gradient(to top, var(--scrim), transparent 65%);
   }
   .mb__label {
     position: absolute; left: var(--gutter); bottom: var(--gutter); z-index: 1;
-    color: var(--cream); font-size: var(--t-m); max-width: 24ch;
+    color: var(--ivory); font-size: var(--t-caps); max-width: 32ch;
   }
-  .mb__caption { margin-top: var(--s-2); color: var(--grey); }
+  .mb__caption { margin-top: var(--s-2); color: var(--fg-muted); }
 </style>
