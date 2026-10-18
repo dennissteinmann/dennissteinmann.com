@@ -1,5 +1,5 @@
 ---
-/** Kopf jeder Übersichts-/Unterseite: viel Luft, ein Titel, optional ein Satz. */
+/** Kopf jeder Übersichts-/Unterseite: Titel (+ ein Satz), Brotkrumen, Zierlinie. */
 import Breadcrumbs from './Breadcrumbs.astro';
 import type { Crumb } from '@/lib/seo';
 
@@ -12,11 +12,13 @@ const { title, lead, crumbs } = Astro.props;
   {lead && <p class="lead ph__lead">{lead}</p>}
   <slot />
   {crumbs && <Breadcrumbs crumbs={crumbs} />}
+  <hr class="rule rule--double ph__rule" />
 </header>
 
 <style>
-  .ph { padding-top: var(--s-7); padding-bottom: var(--s-6); }
+  .ph { padding-top: var(--s-7); padding-bottom: var(--s-3); }
   .ph h1 { max-width: 14em; }
   .ph__lead { margin-top: var(--s-4); color: var(--ink-soft); }
   .ph :global(.breadcrumbs) { margin-top: var(--s-5); }
+  .ph__rule { margin-top: var(--s-4); }
 </style>

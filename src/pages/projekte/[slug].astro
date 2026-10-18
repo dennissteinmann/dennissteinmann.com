@@ -55,7 +55,7 @@ const jsonLd = graph(websiteSchema(), breadcrumbSchema(crumbs), {
     <div class="head__text">
       <h1 class="display t-xl">{d.title}</h1>
       <p class="lead">{d.summary}</p>
-      <dl class="facts sans">
+      <dl class="ledger facts">
         <div><dt>Art</dt><dd>{PROJECT_KIND_LABELS[d.kind]}</dd></div>
         <div><dt>Status</dt><dd>{STATUS_LABELS[d.status]}</dd></div>
         {d.role && <div><dt>Rolle</dt><dd>{d.role}</dd></div>}
@@ -77,7 +77,7 @@ const jsonLd = graph(websiteSchema(), breadcrumbSchema(crumbs), {
 
   {d.documents.length > 0 && (
     <section class="wrap space sec">
-      <h2 class="display t-m">Dokumente</h2>
+      <h2 class="khead">Dokumente</h2>
       <ul role="list" class="docs">
         {d.documents.map((doc) => (
           <li>
@@ -93,12 +93,12 @@ const jsonLd = graph(websiteSchema(), breadcrumbSchema(crumbs), {
   )}
 
   {explorations.length > 0 && (
-    <section class="wrap space"><h2 class="display t-m sec-h">Explorationen</h2><ExplorationList items={explorations} /></section>
+    <section class="wrap space"><h2 class="khead sec-h">Explorationen</h2><ExplorationList items={explorations} /></section>
   )}
 
   {(media.length > 0 || press.length > 0) && (
     <section class="wrap space sec">
-      <h2 class="display t-m">Medien & Presse</h2>
+      <h2 class="khead">Medien & Presse</h2>
       <ul role="list" class="docs">
         {press.map((p) => <li><span class="docs__title">{p.data.outlet}: „{p.data.title}“</span> <span class="meta">{formatDate(p.data.date)}</span></li>)}
         {media.map((m) => <li><span class="docs__title">{m.data.title}</span> <span class="meta">{formatDate(m.data.date)}</span></li>)}
@@ -107,13 +107,13 @@ const jsonLd = graph(websiteSchema(), breadcrumbSchema(crumbs), {
   )}
 
   {log.length > 0 && (
-    <section class="wrap space"><h2 class="display t-m sec-h">Logbuch</h2><LogList entries={log} headingLevel="h3" /></section>
+    <section class="wrap space"><h2 class="khead sec-h">Logbuch</h2><LogList entries={log} headingLevel="h3" /></section>
   )}
 
   {siblings.length > 0 && (
     <section class="wrap space">
-      <h2 class="display t-m sec-h">Weitere {PROJECT_KIND_LABELS[d.kind] === 'App' ? 'Apps' : 'Projekte dieser Art'}</h2>
-      <div class="siblings">{siblings.map((p) => <ProjectCard project={p} />)}</div>
+      <h2 class="khead sec-h">Weitere {PROJECT_KIND_LABELS[d.kind] === 'App' ? 'Apps' : 'Projekte dieser Art'}</h2>
+      <div class="siblings">{siblings.map((p) => <ProjectCard project={p} uniform sizes="(min-width: 900px) 30vw, 45vw" />)}</div>
     </section>
   )}
 
@@ -126,26 +126,22 @@ const jsonLd = graph(websiteSchema(), breadcrumbSchema(crumbs), {
   .head__card :global(.pc__caption) { display: none; }
   .head__text { grid-column: 6 / span 7; }
   .head__text .lead { margin-top: var(--s-4); }
-  .facts { margin-top: var(--s-5); display: grid; gap: var(--s-1); }
-  .facts div { display: grid; grid-template-columns: 7rem 1fr; gap: var(--s-3); padding-block: var(--s-1); border-top: 1px solid var(--line); }
-  .facts dt { color: var(--grey); }
-  .facts dd { margin: 0; }
+  .facts { margin-top: var(--s-6); }
   .cover { margin-top: var(--s-7); }
   .cover :global(img) { width: 100%; max-height: 80vh; object-fit: cover; }
   .body { margin-left: calc((100% - var(--measure)) * 0.42); }
-  .sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); }
-  .sec-h { margin-bottom: var(--s-4); }
+  .sec-h { margin-bottom: var(--s-5); padding-bottom: var(--s-2); border-bottom: 1px solid var(--line); }
   .docs { display: grid; }
   .docs li { padding-block: var(--s-3); border-top: 1px solid var(--line); }
   .docs__link { display: flex; justify-content: space-between; gap: var(--s-4); align-items: baseline; }
   .docs__title { font-size: var(--t-body); }
-  .docs__link:hover .docs__title { text-decoration: underline; }
+  .docs__link:hover .docs__title { text-decoration: underline; text-decoration-color: var(--accent); }
   .siblings { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gutter); }
   @media (max-width: 900px) {
-    .head, .sec { grid-template-columns: 1fr; }
+    .head { grid-template-columns: 1fr; }
     .head__card, .head__text { grid-column: 1; }
     .head__card { max-width: 60%; margin-bottom: var(--s-5); }
     .body { margin-left: 0; }
-    .siblings { grid-template-columns: 1fr 1fr; }
+    .siblings { grid-template-columns: 1fr 1fr; row-gap: var(--s-5); }
   }
 </style>

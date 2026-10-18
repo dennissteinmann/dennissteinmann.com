@@ -4,6 +4,37 @@ Neue Einträge oben anfügen. Format: Datum · Entscheidung · Begründung · Ko
 
 ---
 
+### 2026-10-18 · Designsystem v4 „Kontor“ (ersetzt v3 „Daylight Technocracy“)
+**Begründung:** Vorgabe von Dennis: Die Seite soll „extrem vertrauenswürdig“ und mit hohem
+Status wirken, mit deutschem Market-Fit – wie die Website eines privaten Industrie-Clubs oder
+des Übersee-Clubs Hamburg. **Keine Rundungen.** v3 (Anthropic-warm: Bone, Terrakotta,
+Grotesk-Wortmarke im Modehaus-Stil, „Lass uns etwas bauen“) las sich eher nach Startup/Studio
+als nach Institution. **Konsequenz:**
+- **Palette:** Elfenbein-Papier (`--paper`), Blauschwarz (`--ink`), **Marineblau** als Hausfarbe
+  (`--navy`), **Messing** als einziger Akzent (`--brass`). Clay/Kraft/Bone-Bühnen entfallen;
+  neue Bühnen `.stage--paper` und `.stage--navy`. Grautöne auf WCAG AA angehoben (alt: 3.3:1).
+- **Primitive Farb-Tokens (`--c-*`):** Bühnen leiten ihre Werte nur noch aus Primitiven ab.
+  Behebt einen latenten Fehler: `.stage--bone` referenzierte `--ink/--grey/--line-strong`, die
+  `.stage` selbst umdefiniert – ein CSS-Variablen-Zyklus, der die Werte ungültig machte.
+- **Typografie:** EB Garamond wird zur Haus-Stimme: Wortmarke und Sektionstitel als gesperrte
+  Versalien (`.mark`, `.khead`, wie graviert). Archivo nur noch für Funktion (`.label`,
+  Navigation, Meta). Schriften bleiben dieselben zwei (EB Garamond hat im Subset keine echten
+  Kapitälchen → Versalien + Sperrung).
+- **Form:** keine Rundungen (Reset `border-radius: var(--radius)` = 0), keine Schatten – App-Icons
+  und Autorenbild jetzt rechtwinklig. **CI-Prüfung** in `scripts/check-dist.mjs`.
+- **Ornament:** Wappen in Kopfzeile, Startseite (groß, zentriert), Fußzeile (Messing), Favicon
+  und OG-Bildern. Zierlinie (`.rule--double`) unter Briefkopf und Seitenköpfen. Faktentabellen
+  als Registerauszug (`.ledger`). Porträt im Passepartout.
+- **Startseite:** zentrierter Briefkopf → Verzeichnis → „Ausgewählte Projekte“ (strenges 4er-
+  Raster statt horizontaler Leiste) → Explorationen → Themen (Marineblau) → Über → Kontakt
+  (Marineblau, geht in die Fußzeile über). **Projektfeld** (`/projekte/`, Themen) als
+  gleichmäßiges Katalograster statt asymmetrischer Versatz-Anordnung.
+- **Ton:** Interface in Sie-Form (Kontakt-Seite, 404, „Über“-Zwischentitel). „Lass uns etwas
+  bauen.“ → „Für Anfragen, Presse und Zusammenarbeit.“ Hover-Verschiebungen entfallen.
+- **OG/Social** (`src/lib/og.ts`), Favicon und App-Icons auf Marineblau/Elfenbein/Messing.
+- Nebenbei: `scripts/check-dist.mjs` übersprang `/admin/` (Sveltia, noindex) nicht – seit dem
+  CMS-Commit schlug der SEO-Schritt in CI fehl. Jetzt ausgenommen wie `/404.html`.
+
 ### 2026-10-05 · Git-basiertes CMS (Sveltia) + kuratierte Startseite
 **Begründung:** Dennis will Inhalte (v. a. Projekte & Unternehmen) einfach und „diskret"
 pflegen, ohne die MDX-Struktur von Hand zu kennen. Außerdem: weniger erklärende „Warum"-Copy,

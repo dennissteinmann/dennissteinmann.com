@@ -39,17 +39,20 @@ npm run new exploration "Titel"   # auch: projekt | thema | log | medium | press
 ### 2. Design nur über Tokens (→ `docs/DESIGN.md`)
 - Farben, Schriften, Abstände, Radien, Animationen ausschließlich via `var(--…)` aus
   `src/styles/tokens.css`. Keine Hex-Werte, keine px-Schriftgrößen in Komponenten.
-- Stil „Daylight Technocracy“ (v3, Anthropic-warm): warmes **Bone**-Grundgerüst (`--bg`, kein
-  kaltes Weiß), **Grotesk** (Archivo) als Maschine (Wortmarke, Navigation, Titel – Caps, eng),
-  **EB Garamond** als menschliche Stimme (Leads, Langform). Farbe kommt primär aus **Fotografie/
-  Video** (`MediaBand`) und warmen Bühnen `.stage--bone/kraft/clay/ink`; Akzent `--clay` sparsam.
+- Stil „Kontor“ (v4, hanseatisch – Privatclub/Handelshaus): Elfenbein-**Papier** (`--paper`),
+  Blauschwarz-**Tinte** (`--ink`), **Marineblau** als Hausfarbe (`.stage--navy`, Fußzeile),
+  **Messing** (`--brass`) als einziger Akzent. **EB Garamond** ist die Haus-Stimme (Wortmarke &
+  Sektionstitel als gesperrte Versalien `.mark`/`.khead`, Titel, Langform); **Archivo** nur für
+  Funktion (Navigation, Meta, `.label`). Wappen als Signet, Zierlinie `.rule--double`.
+  Medien-Leitfaden: `docs/MEDIA.md`.
 - Zwei Schriften: **Archivo** (`--grotesk`/`--sans`) und **EB Garamond** (Serif-Stimme). Keine dritte.
-- **Erlaubt (v3):** warmes Bone + erdiges Clay/Terrakotta, Bild-/Video-Bühnen, ruhige Scroll-
-  Einblendungen (`[data-reveal]`) und Hover-Bewegung. Medien-Leitfaden: `docs/MEDIA.md`.
-- **Weiterhin verboten:** Neon-/grelles Orange („KI-Akzent“), Eyebrow-/Kicker-Texte, Status-/
-  Live-Dots, Marquees, Filmkorn, Schatten, UI-Verläufe/Glassmorphism, Mono-Deko, Emojis,
-  Icon-Libraries. (Bild-Overlay-Verlauf für Textlesbarkeit ist ok.) Vollständig: `docs/DESIGN.md` §2.
+- **Keine Rundungen, keine Schatten** – nirgends. CI bricht ab (`scripts/check-dist.mjs`).
+- **Verboten:** Neon/gesättigte UI-Farben, Eyebrow-/Kicker-Texte, Status-/Live-Dots, Marquees,
+  Filmkorn, UI-Verläufe/Glassmorphism, Mono-Deko, Emojis, Icon-Libraries, Buttons mit
+  Rahmen/Füllung, Hover-Verschiebungen, Duzen im Interface (Sie-Form). Bild-Abdunklung
+  (`--scrim`) für Textlesbarkeit ist ok. Vollständig: `docs/DESIGN.md` §2.
 - Farbe kommt aus Palette-Tokens, Medien und Projektfarben – nie frei erfunden/Neon.
+  Bühnen-Werte nur aus Primitiven `--c-*` (sonst CSS-Variablen-Zyklus).
 - Neue Seiten verwenden `BaseLayout` + `PageHeader`; Sektionen: Titel links, Inhalt rechts.
 
 ### 3. Jede Seite ist SEO- & KI-fähig (→ `docs/SEO.md`)

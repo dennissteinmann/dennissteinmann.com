@@ -28,7 +28,7 @@ const shortBio = `${PERSON.name} ist ${PERSON.jobTitle} aus ${PERSON.homeLocatio
   <PageHeader title="Presse" lead="Alles für Berichte, Interviews und Anfragen – Biografie, Fakten und Fotos." crumbs={crumbs} />
 
   <section class="wrap space sec">
-    <h2 class="display t-m">Kurzbiografie</h2>
+    <h2 class="khead">Kurzbiografie</h2>
     <div>
       <p class="t-m bio">{shortBio}</p>
       <p class="meta copy-hint">Frei zur Verwendung, gerne mit Link auf {SITE.url.replace('https://', '')}.</p>
@@ -36,8 +36,8 @@ const shortBio = `${PERSON.name} ist ${PERSON.jobTitle} aus ${PERSON.homeLocatio
   </section>
 
   <section class="wrap space sec">
-    <h2 class="display t-m">Fakten</h2>
-    <dl class="facts">
+    <h2 class="khead">Fakten</h2>
+    <dl class="ledger facts">
       <div><dt>Name</dt><dd>{PERSON.name}</dd></div>
       <div><dt>Tätigkeit</dt><dd>{PERSON.jobTitle}</dd></div>
       <div><dt>Herkunft</dt><dd>{PERSON.homeLocation}</dd></div>
@@ -49,7 +49,7 @@ const shortBio = `${PERSON.name} ist ${PERSON.jobTitle} aus ${PERSON.homeLocatio
   </section>
 
   <section class="wrap space sec">
-    <h2 class="display t-m">Pressefotos</h2>
+    <h2 class="khead">Pressefotos</h2>
     <div class="photos">
       <figure>
         <Image src={portrait} alt={`Pressefoto ${PERSON.name}`} widths={[400, 700]} sizes="(min-width: 900px) 30vw, 80vw" />
@@ -59,7 +59,7 @@ const shortBio = `${PERSON.name} ist ${PERSON.jobTitle} aus ${PERSON.homeLocatio
   </section>
 
   <section class="wrap space sec">
-    <h2 class="display t-m">Berichterstattung</h2>
+    <h2 class="khead">Berichterstattung</h2>
     {press.length === 0 ? <p class="muted">Noch keine Einträge.</p> : (
       <ol role="list" class="coverage">
         {press.map((p) => (
@@ -74,25 +74,21 @@ const shortBio = `${PERSON.name} ist ${PERSON.jobTitle} aus ${PERSON.homeLocatio
   </section>
 
   <section class="wrap space sec">
-    <h2 class="display t-m">Kontakt</h2>
+    <h2 class="khead">Kontakt</h2>
     <p>Anfragen bitte über die <a href="/kontakt/">Kontaktseite</a>.</p>
   </section>
 </BaseLayout>
 
 <style>
-  .sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); border-top: 1px solid var(--line); }
+  .sec + .sec { border-top: 1px solid var(--line); }
   .bio { max-width: 30em; line-height: 1.4; }
   .copy-hint { margin-top: var(--s-3); }
-  .facts { display: grid; max-width: 44em; }
-  .facts div { display: grid; grid-template-columns: 9rem 1fr; gap: var(--s-3); padding-block: var(--s-2); border-bottom: 1px solid var(--line); }
-  .facts dt { font-family: var(--sans); font-size: var(--t-s); color: var(--grey); padding-top: 0.2em; }
-  .facts dd { margin: 0; }
-  .photos figure { max-width: 22rem; }
+  .facts { max-width: 44em; }
+  .photos figure { max-width: 22rem; padding: var(--s-3); border: 1px solid var(--line-strong); background: var(--paper-deep); }
   .photos :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
   .photos figcaption { margin-top: var(--s-2); }
   .photos figcaption a { color: inherit; }
   .coverage { display: grid; gap: var(--s-5); }
   .coverage__title { font-size: var(--t-m); line-height: 1.25; }
   .coverage .meta a { color: inherit; }
-  @media (max-width: 900px) { .sec { grid-template-columns: 1fr; } }
 </style>

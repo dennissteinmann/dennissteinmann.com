@@ -1,80 +1,98 @@
 /* ==========================================================================
-   DESIGN TOKENS v2 – "Weißraum". Einzige Quelle für Farbe, Typo, Raum.
+   DESIGN TOKENS v4 – „Kontor“. Einzige Quelle für Farbe, Typo, Raum.
+   Hanseatisch: Büttenpapier, Tinte, Marineblau, Messing. Keine Rundungen.
    Begründung: docs/DESIGN.md. In Komponenten nur var(--…) verwenden.
    ========================================================================== */
 
 :root {
   color-scheme: light;
 
-  /* --- Fläche & Text: warmes „Anthropic“-Licht. Kein kaltes Weiß. ---------
-     Grund ist warmes Bone/Elfenbein, Text warmes Fast-Schwarz. Farbe kommt
-     primär aus Fotografie/Video – die UI bleibt warm-neutral. --------------- */
-  --white: #ffffff;        /* echtes Weiß nur für Karten/Objekt-Bühnen */
-  --bone: #f5f3ec;         /* warmer Seitengrund (ersetzt Weiß als --bg) */
-  --bone-deep: #ece7da;    /* leicht tiefere Bone-Bühne */
-  --kraft: #d9c6a9;        /* warmer Tan/Kraft – warme Bühne */
-  --ink: #1a1711;          /* warmes Fast-Schwarz: Text, Linien in Aktion */
-  --coal: #1a1711;         /* identisch, aber auf Bühnen NICHT umdefiniert (für .stage--ink-Fläche) */
-  --ink-soft: #46403a;     /* Fließtext-Nuancen, warm */
-  --grey: #8c8578;         /* Metadaten, warmes Taupe */
-  --grey-light: #b7afa1;
-  --line: #e4ddce;         /* warme Haarlinie */
-  --line-strong: #d2c8b6;
-  --placeholder: #efe9dc;  /* NUR Bild-Platzhalter (warm) */
+  /* --- Grundfarben (Primitive) – werden NIE umdefiniert. --------------------
+     Nur hier und in Bühnen-Definitionen (global.css) verwenden. Komponenten
+     nutzen die Rollen-Tokens darunter, die Bühnen passend umdefinieren. */
+  --c-white: #ffffff;
+  --c-paper: #f6f3eb;       /* Elfenbein wie gutes Briefpapier */
+  --c-paper-deep: #ece6d9;
+  --c-ink: #14181f;         /* Blauschwarz wie Tinte */
+  --c-ink-soft: #3a3f48;
+  --c-grey: #67645d;        /* 5.3:1 auf Papier (AA) */
+  --c-grey-light: #a39d91;  /* nur dekorativ, nie für Lesetext */
+  --c-line: #dcd5c6;
+  --c-line-strong: #b8b0a0;
+  --c-placeholder: #ebe6da;
+  --c-navy: #152238;        /* hanseatisches Marineblau */
+  --c-navy-deep: #0f1a2c;
+  --c-brass: #7d5f33;       /* Messing auf Papier (5.3:1) */
+  --c-brass-light: #c2a36b; /* Messing auf Marineblau (6.6:1) */
+  --c-ivory: #f3efe5;       /* Text auf Marineblau */
 
-  /* --- Akzent: Anthropic-Clay. Bewusst sparsam – ein Moment, kein Dauerton.
-         Erdiges Terrakotta, KEIN Neon-Orange. ---------------------------- */
-  --clay: #be5b3e;         /* Terrakotta-Akzent (Bänder, Zähler, Hover) */
-  --clay-soft: #cc785c;    /* hellere Clay-Variante */
+  /* --- Fläche & Text: Büttenpapier und Tinte ------------------------------- */
+  --white: var(--c-white);         /* nur Objekt-Bühnen (Projektkarten) */
+  --paper: var(--c-paper);         /* Seitengrund */
+  --paper-deep: var(--c-paper-deep); /* tiefere Papierbühne, Passepartout */
+  --ink: var(--c-ink);             /* Text, starke Linien */
+  --ink-soft: var(--c-ink-soft);   /* Fließtext-Nuancen */
+  --grey: var(--c-grey);           /* Metadaten */
+  --grey-light: var(--c-grey-light);
+  --line: var(--c-line);           /* Haarlinie */
+  --line-strong: var(--c-line-strong);
+  --placeholder: var(--c-placeholder); /* NUR Bild-Platzhalter */
 
-  /* --- Naturtöne (Moodboard). Tiefe Bühnen hinter Bild/Video. ------------ */
-  --walnut: #4a2a1d;       /* Nussbaum */
-  --velvet: #d6b77c;       /* Goldsamt */
-  --marble: #1d2822;       /* grüner Marmor */
-  --cloud: #8e98a3;        /* Wolkenblau */
-  --earth: #6b3a26;        /* Erde */
-  --cream: #f3eee3;        /* Text auf dunklen Bühnen */
+  /* --- Institutionsfarben: Marineblau & Messing --------------------------
+     Marineblau ist die Hausfarbe (Bühnen, Fußzeile, Wappen). Messing ist der
+     einzige Akzent – Zierlinien, Zähler, aktive Navigation. Nie flächig. */
+  --navy: var(--c-navy);
+  --navy-deep: var(--c-navy-deep);
+  --brass: var(--c-brass);
+  --brass-light: var(--c-brass-light);
+  --ivory: var(--c-ivory);
 
   /* --- Semantik --------------------------------------------------------- */
-  --bg: var(--bone);
+  --bg: var(--paper);
   --fg: var(--ink);
   --fg-muted: var(--grey);
   --link: var(--ink);
+  --accent: var(--brass);
+  /* Abdunklung über Bildern, nur für Textlesbarkeit (MediaBand). */
+  --scrim: color-mix(in srgb, var(--c-navy-deep) 62%, transparent);
 
-  /* --- Farbflächen (v3): Naturtöne werden zu aktiven Bühnen. Nie Neon,
-         nie Orange-„KI-Look“ – Farbe kommt aus Erde, Stein, Pflanze, Gold.
-         Jede Bühne definiert bg/fg/muted/line für Inhalte darauf. --------- */
+  /* --- Bühnen: jede definiert bg/fg/muted/line/accent für Inhalte darauf. */
   --stage-bg: transparent;
-  --stage-fg: var(--ink);
-  --stage-muted: var(--grey);
-  --stage-line: var(--line);
+  --stage-fg: var(--c-ink);
+  --stage-muted: var(--c-grey);
+  --stage-line: var(--c-line);
+  --stage-accent: var(--c-brass);
 
-  /* --- Typografie (v3: „Daylight Technocracy“) ---------------------------
-     Grotesk (Archivo): die Maschine – Wortmarke, Navigation, Titel, Struktur.
-                        Großbuchstaben, enge Laufweite. Das „Wang“-Skelett.
-     Serif (EB Garamond): die Stimme – Langform, Leads, Zitate. Das Menschliche.
-     Zwei Welten, bewusst nebeneinander = naturalistische Technokratie. */
-  --serif: 'EB Garamond Variable', 'EB Garamond', 'Iowan Old Style', Georgia, serif;
+  /* --- Form: keine Rundungen. Nirgends. Ecken sind rechtwinklig. -------- */
+  --radius: 0;
+
+  /* --- Typografie (v4: „Kontor“) -----------------------------------------
+     Serif (EB Garamond): die Stimme des Hauses – Wortmarke und Sektionstitel
+                          als gesperrte Versalien (wie graviert), Titel, Langform.
+     Grotesk (Archivo):   nur Funktion – Navigation, Meta, Etiketten. Klein,
+                          Versalien, weit gesperrt. Nie für Überschriften. */
+  --serif: 'EB Garamond Variable', 'EB Garamond', Garamond, 'Iowan Old Style', Georgia, serif;
   --sans: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
   --grotesk: var(--sans);
 
-  --t-xs: 0.78rem;                                   /* Sans-Meta */
-  --t-s: 0.9rem;                                     /* Sans-UI */
-  --t-body: clamp(1.18rem, 1.1rem + 0.3vw, 1.36rem); /* Serif-Lesetext */
-  --t-m: clamp(1.45rem, 1.25rem + 0.7vw, 1.9rem);
-  --t-l: clamp(2rem, 1.5rem + 1.8vw, 3.2rem);
-  --t-xl: clamp(2.6rem, 1.7rem + 3.6vw, 5.4rem);
-  --t-xxl: clamp(3.2rem, 1.6rem + 6.4vw, 8.8rem);
+  --t-xs: 0.75rem;                                    /* Etiketten (Caps) */
+  --t-s: 0.875rem;                                    /* Sans-UI */
+  --t-caps: 0.95rem;                                  /* Garamond-Versalien (Sektionstitel) */
+  --t-body: clamp(1.15rem, 1.08rem + 0.3vw, 1.32rem); /* Serif-Lesetext */
+  --t-m: clamp(1.4rem, 1.22rem + 0.65vw, 1.8rem);
+  --t-l: clamp(1.9rem, 1.45rem + 1.6vw, 2.9rem);
+  --t-xl: clamp(2.4rem, 1.6rem + 3vw, 4.6rem);
+  --t-xxl: clamp(2.8rem, 1.5rem + 5.4vw, 7rem);
 
-  --lh-display: 1.02;
-  --lh-body: 1.55;
-  --track-sans: 0.02em;
-  --track-caps: 0.14em;    /* Navigation, Meta, Labels (Grotesk-Großbuchstaben) */
-  --track-mark: -0.01em;   /* große Wortmarke: eng, fast berührend */
-  --track-head: 0.04em;    /* Grotesk-Sektionstitel in Caps */
+  --lh-display: 1.08;
+  --lh-body: 1.6;
+  --track-sans: 0.01em;
+  --track-caps: 0.16em;    /* Archivo-Etiketten: Navigation, Meta in Caps */
+  --track-mark: 0.12em;    /* Wortmarke: Garamond-Versalien, gesperrt */
+  --track-head: 0.2em;     /* Sektionstitel: kleine Garamond-Versalien */
   --measure: 34em;         /* Lesespalte in Serif-em ≈ 66 Zeichen */
 
-  /* --- Raum: großzügig. Weißraum ist das Gestaltungsmittel. ---------------- */
+  /* --- Raum: großzügig, ruhig. ----------------------------------------- */
   --s-1: 0.25rem;
   --s-2: 0.5rem;
   --s-3: 1rem;
@@ -85,13 +103,13 @@
   --s-8: clamp(7rem, 4rem + 10vw, 15rem);
 
   --gutter: clamp(1.25rem, 0.5rem + 3vw, 3.5rem);
-  --wide: 1520px;
+  --wide: 1440px;
 
-  /* --- Bewegung (v3): lebendig, aber nie zappelig. Alles aus Ruhe heraus. -- */
+  /* --- Bewegung: still. Einblenden ja, Verschieben kaum. ----------------- */
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --slow: 900ms;
-  --med: 560ms;
-  --fast: 220ms;
-  --reveal-y: 1.75rem;     /* Startversatz für Scroll-Einblendungen */
+  --med: 700ms;
+  --fast: 200ms;
+  --reveal-y: 0.75rem;     /* Startversatz für Scroll-Einblendungen */
 }

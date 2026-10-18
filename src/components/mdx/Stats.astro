@@ -17,5 +17,5 @@ const { items } = Astro.props;
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: var(--s-4); margin-block: 2.4em; }
   .stats__item { display: flex; flex-direction: column-reverse; justify-content: flex-end; padding-top: var(--s-3); border-top: 1px solid var(--ink); }
   .stats dd { font-family: var(--serif); font-size: var(--t-l); line-height: 1; letter-spacing: -0.02em; font-variant-numeric: lining-nums tabular-nums; margin: 0; }
-  .stats dt { font-family: var(--sans); font-size: var(--t-xs); color: var(--grey); margin-top: var(--s-2); }
+  .stats dt { font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps); color: var(--fg-muted); margin-top: var(--s-2); }
 </style>

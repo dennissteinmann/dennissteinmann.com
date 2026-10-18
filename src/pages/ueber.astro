@@ -27,7 +27,8 @@ const jsonLd = graph(websiteSchema(), await personSchema(), breadcrumbSchema(cru
     <figure class="about__img"><Image src={portrait} alt={`Porträt von ${PERSON.name}`} widths={[360, 600, 900]} sizes="(min-width: 900px) 33vw, 90vw" loading="eager" /></figure>
     <div class="about__text">
       <h1 class="display t-xl">{PERSON.name}</h1>
-      <p class="lead">{PERSON.jobTitle}</p>
+      <p class="label role">{PERSON.jobTitle} · {PERSON.homeLocation}</p>
+      <hr class="rule rule--double" />
       <div class="prose"><Content components={mdxComponents} /></div>
       <p class="meta topics">Themen: {topics.map((t, i) => <>{i > 0 && ', '}<a href={`/themen/${t.id}/`}>{t.data.title}</a></>)}</p>
       <Image src={signature} alt="" width={240} class="sign" />
@@ -38,11 +39,12 @@ const jsonLd = graph(websiteSchema(), await personSchema(), breadcrumbSchema(cru
 
 <style>
   .about { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-top: var(--s-7); align-items: start; }
-  .about__img { grid-column: 1 / span 4; position: sticky; top: var(--s-5); }
+  .about__img { grid-column: 1 / span 4; position: sticky; top: calc(var(--s-6) + var(--s-3)); padding: var(--s-3); border: 1px solid var(--line-strong); background: var(--paper-deep); }
   .about__img :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
   .about__text { grid-column: 6 / span 7; }
-  .about__text .lead { margin-top: var(--s-2); color: var(--grey); }
-  .about__text .prose { margin-top: var(--s-6); }
+  .about__text .role { margin-top: var(--s-4); color: var(--ink-soft); }
+  .about__text .rule--double { margin-top: var(--s-4); }
+  .about__text .prose { margin-top: var(--s-5); }
   .topics { margin-top: var(--s-6); }
   .topics a { color: inherit; }
   .about :global(.sign) { margin-top: var(--s-6); width: 200px; filter: invert(1); opacity: 0.85; }

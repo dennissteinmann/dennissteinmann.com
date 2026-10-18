@@ -1,15 +1,15 @@
 # Medien – Art Direction & KI-Asset-Pipeline
 
-Die visuelle Kraft von v3 „Daylight Technocracy“ kommt aus **Fotografie und Video**, nicht aus
-flacher UI-Farbe. Diese Datei ist der verbindliche Leitfaden, damit alle Assets wie **eine
-einzige Kampagne** wirken – im Geist von Anthropics Produkt-Launches: warm, filmisch,
-industriell-abstrakt, ruhig. Quelle laut `docs/DECISIONS.md` (2026-10-05): **KI-generiert**
+Im Designsystem v4 „Kontor“ (`docs/DESIGN.md`) trägt die UI nur Papier, Tinte, Marineblau und
+Messing – **Fotografie und Video** liefern Atmosphäre. Diese Datei ist der verbindliche
+Leitfaden, damit alle Assets wie **eine einzige Serie** wirken: hanseatisch, ruhig, gediegen –
+wie die Bildwelt eines Privatclubs oder Handelshauses, nie wie eine Werbekampagne. Quelle laut `docs/DECISIONS.md` (2026-10-05): **KI-generiert**
 (Midjourney/Flux für Stills, Runway/Veo für Bewegung), von Dennis erzeugt, hier eingepflegt.
 
 ## 1. Die Haltung (der „Look“)
 
 **Ja:** warmes, weiches Licht (golden hour, Nordlicht, Studio-Bounce); industrielle & architek-
-tonische Oberflächen (Beton, gebürsteter Stahl, Glas, Ton, Leinen, Papier); abstrakte Makro-
+tonische Oberflächen (Backstein, dunkles Holz, Messing, Stein, Glas, Leinen, Papier, Wasser); abstrakte Makro-
 Texturen; weite, ruhige Kompositionen mit viel Luft; naturalistische Farbe, die zur Palette passt;
 35mm-/Mittelformat-Filmlook, feines, organisches Korn, flacher Kontrast.
 
@@ -26,15 +26,14 @@ Die Assets sollen in dieser Welt liegen (= `tokens.css`):
 
 | Rolle | Hex | In Prompts als |
 |---|---|---|
-| Bone (Grund) | `#f5f3ec` | „warm bone / ivory“ |
-| Kraft (Tan) | `#d9c6a9` | „kraft tan, sand“ |
-| Clay (Akzent) | `#be5b3e` | „terracotta / clay“ |
-| Coal (Tiefe) | `#1a1711` | „warm near-black“ |
-| Walnut | `#4a2a1d` | „walnut brown“ |
-| Cream (Text) | `#f3eee3` | — |
+| Papier (Grund) | `#f6f3eb` | „ivory paper“ |
+| Tinte (Tiefe) | `#14181f` | „blue-black ink“ |
+| Marineblau (Hausfarbe) | `#152238` | „deep navy, hanseatic blue“ |
+| Messing (Akzent) | `#7d5f33` / `#c2a36b` | „aged brass“ |
+| Elfenbein (Text auf Marineblau) | `#f3efe5` | — |
 
-Immer anhängen: *„muted earthy palette, warm bone and terracotta and warm near-black, no neon,
-no saturated primaries“*.
+Immer anhängen: *„restrained hanseatic palette, deep navy, ivory, aged brass, dark wood, warm
+stone, no neon, no saturated primaries“*.
 
 ## 3. Slots, Formate, Ablage
 
@@ -55,8 +54,8 @@ hellen Text, `label` und `caption`. Videos laufen stumm/loop/autoplay/inline.
 **Basis-Template (Midjourney v7 / Flux):**
 ```
 <motiv>, <licht>, <oberfläche/textur>, wide calm composition, generous negative space,
-shot on 35mm film, fine organic grain, soft low contrast, muted earthy palette —
-warm bone #f5f3ec, kraft tan, terracotta #be5b3e, warm near-black #1a1711 —
+shot on medium format film, soft low contrast, restrained hanseatic palette —
+ivory #f6f3eb, deep navy #152238, aged brass #7d5f33, blue-black #14181f —
 no neon, no text, no logos, no people's faces, editorial, cinematic, architectural
 --ar 16:9 --style raw --v 7
 ```
@@ -64,13 +63,13 @@ no neon, no text, no logos, no people's faces, editorial, cinematic, architectur
 
 **Fertige Prompts (konsistente Serie):**
 1. *Hero:* „vast concrete interior, shaft of warm golden light across a bare wall, dust in air …“ `--ar 16:9`
-2. *Hero alt:* „close macro of brushed steel meeting warm clay plaster, soft directional light …“ `--ar 16:9`
-3. *Technokratie:* „rows of matte server-like monoliths in a bone-white hall, long calm perspective …“ `--ar 16:9`
+2. *Hero alt:* „harbour at dusk, cranes and warehouse brick in navy haze, calm water, long exposure …“ `--ar 16:9`
+3. *Kontor:* „quiet merchant's office, dark wood panelling, brass lamp, ivory paper on a desk, north light …“ `--ar 16:9`
 4. *Natur/Frontier:* „fog over dark pine ridge at dawn, muted, filmic, vast sky, negative space …“ `--ar 16:9`
-5. *Cover-Textur:* „macro of folded warm linen and kraft paper, terracotta shadow, studio bounce …“ `--ar 4:5`
-6. *Material:* „single terracotta clay form on bone seamless, soft shadow, product-still calm …“ `--ar 4:5`
+5. *Cover-Textur:* „macro of laid ivory paper with deckled edge and a brass detail, soft studio light …“ `--ar 4:5`
+6. *Material:* „navy wool, brushed brass and dark walnut, close still life, calm, no logos …“ `--ar 4:5`
 7. *Video (Runway/Veo):* „slow 8s dolly across a sunlit concrete hall, dust motes, warm, filmic,
-   locked-off calm, muted earthy palette, no text“ — Export stumm, 1080p+, als Loop schneiden.
+   locked-off calm, restrained hanseatic palette, no text“ — Export stumm, 1080p+, als Loop schneiden.
 
 Für Wiedererkennung: **eine** dieser Prompt-Familien je Durchgang wählen, Seed/Stil konstant
 halten. Lieber 6 Bilder aus einer Welt als 20 aus sechs.

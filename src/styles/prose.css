@@ -1,5 +1,5 @@
 /* ==========================================================================
-   PROSE – Langform. Serif, ruhige Zeilen, viel Luft. Wie ein gutes Buch.
+   PROSE – Langform. Serif, ruhige Zeilen, viel Luft. Wie ein gut gesetztes Buch.
    ========================================================================== */
 
 .prose { max-width: var(--measure); font-size: var(--t-body); line-height: var(--lh-body); color: var(--ink); hanging-punctuation: first; }
@@ -7,12 +7,13 @@
 
 .prose h2 { font-size: var(--t-l); line-height: 1.1; letter-spacing: -0.01em; margin-top: 2.4em; scroll-margin-top: 5rem; }
 .prose h3 { font-size: var(--t-m); line-height: 1.2; font-style: italic; margin-top: 2em; scroll-margin-top: 5rem; }
-.prose h4 { font-family: var(--sans); font-size: var(--t-s); font-weight: 500; margin-top: 2em; }
+.prose h4 { font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps); margin-top: 2.4em; }
 .prose h2 + *, .prose h3 + *, .prose h4 + * { margin-top: 0.7em; }
 
 .prose a { text-decoration-color: var(--grey-light); }
 .prose a:hover { text-decoration-color: var(--ink); }
 .prose strong { font-weight: 600; }
+.prose abbr { letter-spacing: 0.04em; }
 .prose em { font-style: italic; }
 
 .prose ul, .prose ol { padding-left: 1.2em; }
@@ -20,18 +21,19 @@
 .prose ul > li::marker { content: '–  '; color: var(--grey); }
 .prose ol > li::marker { font-family: var(--sans); font-size: 0.8em; color: var(--grey); }
 
-.prose blockquote { margin-block: 2.2em; font-size: var(--t-l); line-height: 1.15; font-style: italic; letter-spacing: -0.01em; }
+.prose blockquote { margin-block: 2.2em; padding-left: var(--s-4); border-left: 1px solid var(--accent); font-size: var(--t-l); line-height: 1.15; font-style: italic; letter-spacing: -0.01em; }
 .prose blockquote cite, .prose blockquote footer { display: block; margin-top: 0.8em; font-family: var(--sans); font-size: var(--t-xs); font-style: normal; color: var(--grey); letter-spacing: 0; }
 
 .prose hr { border: 0; margin-block: 3em; text-align: center; }
-.prose hr::after { content: '*'; color: var(--grey); font-size: var(--t-m); }
+.prose hr::after { content: '*  *  *'; white-space: pre; color: var(--accent); font-size: var(--t-body); letter-spacing: 0.2em; }
 
 .prose code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.78em; }
 .prose pre { font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 0.8rem; line-height: 1.65; padding: var(--s-4); overflow-x: auto; border: 1px solid var(--line); background: var(--white) !important; }
 
 .prose table { width: 100%; border-collapse: collapse; font-family: var(--sans); font-size: var(--t-s); font-variant-numeric: tabular-nums; }
-.prose th { font-weight: 500; text-align: left; color: var(--grey); }
+.prose th { font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps); text-align: left; color: var(--grey); }
 .prose th, .prose td { padding: 0.7em 0.8em 0.7em 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.prose thead th { border-bottom-color: var(--ink); }
 
 .prose img { width: 100%; }
 .prose figure { margin-block: 3em; }
