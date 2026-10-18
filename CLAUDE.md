@@ -103,6 +103,6 @@ scripts/                new.mjs (Content-CLI), check-dist.mjs (SEO-Check)
 - `src/site.config.ts` → `CHANNELS`: echte Profil-URLs (LinkedIn, Instagram, …)
 - Importierte Projekte prüfen (59 Stück, Quelle als Kommentar im MDX; Entwürfe ergänzen)
 - Themen-Positionen in eigenen Worten schärfen (`src/content/topics/*.mdx`)
-- `src/content/pages/impressum.mdx`, `kontakt.mdx`, `datenschutz.mdx`: echte Angaben
+- `src/content/pages/datenschutz.mdx`: Hoster eintragen, juristisch prüfen (Impressum & Kontakt-E-Mail gepflegt)
 - `src/content/pages/ueber.mdx`: Text in eigenen Worten
 - GitHub-Secrets für Deploy setzen (`docs/DEPLOYMENT.md`)
