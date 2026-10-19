@@ -89,12 +89,12 @@ const jsonLd = graph(
   .head::after { content: ''; display: block; margin-top: var(--s-6); height: 5px; border-top: 2px solid var(--fg); border-bottom: 1px solid var(--fg); }
   .definition { margin-top: var(--s-5); max-width: 30em; font-size: var(--t-m); line-height: 1.4; color: var(--ink-soft); margin-left: calc(100% / 12 * 3); }
   .position { padding-left: calc(100% / 12 * 3); }
-  .position__text { font-style: italic; max-width: 22em; padding-left: var(--s-5); border-left: 1px solid var(--accent); }
+  .position__text { font-weight: var(--w-light); max-width: 22em; padding-left: var(--s-5); border-left: 1px solid var(--accent); }
   .position__text footer { margin-top: var(--s-4); font-style: normal; }
   .body { margin-left: calc(100% / 12 * 3); }
   .sec-h { margin-bottom: var(--s-5); padding-bottom: var(--s-2); border-bottom: 1px solid var(--line); }
   .faq { display: grid; gap: var(--s-4); max-width: var(--measure); }
-  .faq dt { font-style: italic; }
+  .faq dt { font-weight: var(--w-medium); }
   .faq dd { margin: var(--s-1) 0 0; color: var(--ink-soft); }
   @media (max-width: 900px) { .definition, .body { margin-left: 0; } .position { padding-left: var(--gutter); } }
 </style>

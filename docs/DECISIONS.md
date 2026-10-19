@@ -4,6 +4,22 @@ Neue Einträge oben anfügen. Format: Datum · Entscheidung · Begründung · Ko
 
 ---
 
+### 2026-10-19 · Designsystem v5 „Weißes Kontor“: keine Serifen, Bauhaus-Schrift, mehr Weiß
+**Begründung:** Vorgabe von Dennis: „No serifs, font style Bauhaus. More white.“ Die
+institutionelle Struktur von v4 (Wappen, Zierlinie, Register, Sie-Form, keine Rundungen) bleibt;
+Schrift und Grund werden modernisiert. **Konsequenz:**
+- **Eine Schrift: Jost** (geometrische Grotesk in der Futura-/Bauhaus-Tradition, variabel, über
+  `@fontsource` selbst gehostet, war bereits Abhängigkeit). EB Garamond und Archivo entfallen –
+  auch als npm-Pakete. Token `--font` ersetzt `--serif`/`--sans`/`--grotesk`; Gewichte als
+  Tokens (`--w-light/regular/medium`). Hierarchie nur über Größe, Gewicht, Versalien, Sperrung.
+- **Kursive** nur noch für semantische Betonung (`em`); Leads/Zitate in Light statt kursiv.
+  Initiale (Drop Cap) in Explorationen entfällt (Buchsatz-Mittel, passt nicht zur Grotesk).
+- **Weiß:** `--paper` = `#ffffff`, Grautöne und Linien neutral statt warm (alle AA). Startseite:
+  Projekte und Themen ohne Farbbühne; nur Kontakt + Fußzeile bleiben marineblau. Weiße Sektionen
+  werden durch eine feine Tintenlinie geordnet (`.sec--ruled`). Größere Abstände (`--s-7/8`).
+- **CI:** `scripts/check-dist.mjs` bricht jetzt auch bei Serifenschriften im gebauten CSS ab.
+- OG-/Social-Bilder (`src/lib/og.ts`) in Jost; Folien auf Weiß.
+
 ### 2026-10-18 · Designsystem v4 „Kontor“ (ersetzt v3 „Daylight Technocracy“)
 **Begründung:** Vorgabe von Dennis: Die Seite soll „extrem vertrauenswürdig“ und mit hohem
 Status wirken, mit deutschem Market-Fit – wie die Website eines privaten Industrie-Clubs oder

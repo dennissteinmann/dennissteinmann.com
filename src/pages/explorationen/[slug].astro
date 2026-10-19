@@ -143,7 +143,7 @@ const jsonLd = graph(
 
   /* Eine Lesespalte für alles (Kurzfassung, Inhalt, Text): 34em in Lesegröße. */
   .body { display: grid; grid-template-columns: minmax(0, var(--measure)); justify-content: center; font-size: var(--t-body); }
-  .summary { font-size: var(--t-m); line-height: 1.4; padding-block: var(--s-5) var(--s-6); }
+  .summary { font-size: var(--t-m); font-weight: var(--w-light); line-height: 1.45; padding-block: var(--s-5) var(--s-6); }
   .toc { margin-bottom: var(--s-6); padding-block: var(--s-3); border-block: 1px solid var(--line); }
   .toc ol { display: grid; gap: 0.2rem; counter-reset: toc; }
   .toc li { counter-increment: toc; }
@@ -151,14 +151,13 @@ const jsonLd = graph(
   .toc a { color: var(--fg-muted); }
   .toc a:hover { color: var(--ink); }
 
-  .body > .prose > :global(p:first-child::first-letter) { font-size: 3.6em; float: left; line-height: 0.82; padding: 0.06em 0.1em 0 0; color: var(--navy); }
 
   .block { margin-top: var(--s-7); }
   .block h2 { margin-bottom: var(--s-4); padding-bottom: var(--s-2); border-bottom: 1px solid var(--line); }
   .takeaways { padding-left: 1.2em; display: grid; gap: var(--s-2); }
-  .takeaways li::marker { font-family: var(--sans); font-size: 0.75em; color: var(--accent); }
+  .takeaways li::marker { font-family: var(--font); font-size: 0.75em; color: var(--accent); }
   .faq { display: grid; gap: var(--s-4); }
-  .faq dt { font-style: italic; }
+  .faq dt { font-weight: var(--w-medium); }
   .faq dd { margin: var(--s-1) 0 0; color: var(--ink-soft); }
   .sources { padding-left: 1.2em; display: grid; gap: var(--s-1); }
   .changelog { display: grid; gap: var(--s-1); }

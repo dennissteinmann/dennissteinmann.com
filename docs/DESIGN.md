@@ -1,21 +1,20 @@
-# Designsystem v4 – „Kontor“
+# Designsystem v5 – „Weißes Kontor“
 
-Hanseatisch, institutionell, ruhig. Die Seite soll wirken wie das Haus eines privaten
-Industrie- oder Überseeclubs, einer Privatbank oder eines alten Hamburger Handelshauses:
-**Büttenpapier, Tinte, Marineblau, Messing. Gravierte Garamond-Versalien, Wappen,
-Zierlinien, strenge Register. Keine Rundungen.** Vertrauen entsteht durch Ordnung,
-Zurückhaltung und Fakten – nicht durch Effekte. Alle Werte:
-[`src/styles/tokens.css`](../src/styles/tokens.css). Medien-Leitfaden:
-[`docs/MEDIA.md`](MEDIA.md). Begründung & Abgrenzung zu v3 „Daylight Technocracy“:
-`docs/DECISIONS.md` (2026-10-18). Mechanik siehe §7.
+Institutionell und ruhig wie das Haus eines privaten Industrie- oder Überseeclubs – gesetzt
+in der Sprache des Bauhaus: **reines Weiß, eine geometrische Grotesk (Jost), Tinte,
+Marineblau, Messing. Gesperrte Versalien, Wappen, Zierlinien, strenge Register. Keine
+Serifen, keine Rundungen.** Vertrauen entsteht durch Ordnung, Weißraum und Fakten – nicht
+durch Effekte. Alle Werte: [`src/styles/tokens.css`](../src/styles/tokens.css).
+Medien-Leitfaden: [`docs/MEDIA.md`](MEDIA.md). Begründung: `docs/DECISIONS.md`
+(2026-10-19 v5, 2026-10-18 v4). Mechanik siehe §7.
 
 ## 1. Referenzen
 
 | Referenz | Was wir daraus nehmen |
 |---|---|
-| Übersee-Club Hamburg, private Industrie-Clubs | Marineblau + Elfenbein, Wappen als Signet, Versalien-Wortmarke, nüchterne Register statt Werbung |
+| Übersee-Club Hamburg, private Industrie-Clubs | Marineblau als Hausfarbe, Wappen als Signet, Versalien-Wortmarke, nüchterne Register statt Werbung |
 | Hamburger Privatbanken & Handelshäuser (Briefkopf, Geschäftsbericht) | Zierlinie (kräftig über fein), Registerauszug-Tabellen, Sie-Form, „Stand“-Angaben |
-| Gravur, Messingschild, Visitenkarte | Gesperrte Garamond-Versalien für Name und Sektionstitel, Messing als einziger Akzent |
+| Bauhaus-Typografie (Futura, Bayer), Schweizer Raster | Eine geometrische Grotesk, Versalien mit Sperrung, viel Weiß, Linien als Ordnung, keine Ornamentschrift |
 | `docs/moodboard/v1/wappen.jpg` | Wappen (Löwe, Kreuz, Lilien) als zentrales Signet: Kopfzeile, Startseite, Fußzeile, Favicon, OG |
 
 ## 2. Verbote (verbindlich)
@@ -25,7 +24,9 @@ Diese Muster sind unerwünscht – sie wirken laut, billig oder nach „typische
 - ❌ **Rundungen jeder Art** (`border-radius` ≠ 0) – auch nicht für Bilder, Avatare, Icons,
   Buttons. Ecken sind rechtwinklig. Wird in CI geprüft (`scripts/check-dist.mjs`).
 - ❌ **Schatten** (`box-shadow`) – ebenfalls in CI geprüft.
-- ❌ Neon-/grelles Orange, gesättigte UI-Farben. Farbe = Marineblau, Messing, Papier, Tinte.
+- ❌ **Serifenschriften** – nirgends, auch nicht für Zitate oder Langform. Eine Schrift: Jost.
+  Wird in CI geprüft. Kursive nur für semantische Betonung (`em`), nie als Stilmittel.
+- ❌ Neon-/grelles Orange, gesättigte UI-Farben. Farbe = Weiß, Tinte, Marineblau, Messing.
 - ❌ Eyebrow-/Kicker-Texte über Überschriften („KAPITEL 01“, „● LIVE“ …)
 - ❌ Status-Punkte, pulsierende Dots, Marquees, Filmkorn, Mono-Schrift-Deko
 - ❌ Nummerierte Section-Heads, Buttons mit Rahmen/Füllung (Links bleiben Text)
@@ -42,38 +43,43 @@ Unterstreichungen bei Hover. `prefers-reduced-motion` wird respektiert.
 1. **Ordnung schafft Vertrauen.** Symmetrischer Briefkopf auf der Startseite, darunter strenge
    Register. Projekte in einem gleichmäßigen Katalograster (`ProjectField`), nicht verstreut.
 2. **Raster.** 12 Spalten. Sektionen: Titel links (3/12), Inhalt rechts (9/12) – Utility `.sec`.
-3. **Zwei Stimmen.** **EB Garamond** ist die Stimme des Hauses: Wortmarke und Sektionstitel als
-   gesperrte Versalien (`.mark`, `.khead`), Titel, Leads, Langform. **Archivo** ist nur Funktion:
-   Navigation, Meta, Etiketten (`.label`, `.meta`) – klein, Versalien, weit gesperrt. Nie für
-   Überschriften. Eine dritte Schrift gibt es nicht.
-4. **Papier & Tinte, Marineblau als Hausfarbe.** Grund ist Elfenbein (`--paper`), Text
-   Blauschwarz (`--ink`). Marineblau erscheint als vollflächige Bühne (Themen, Kontakt,
-   Fußzeile). Messing (`--brass`) ist der einzige Akzent – Zähler, Zierlinien, aktive Navigation.
-5. **Linien statt Flächen.** Haarlinien gliedern Register; die **Zierlinie** (`.rule--double`,
+3. **Eine Schrift.** **Jost** (geometrische Grotesk, Futura-Tradition) für alles. Hierarchie
+   nur über Größe, Gewicht (`--w-light/regular/medium`), Versalien und Sperrung: Wortmarke und
+   Sektionstitel als gesperrte Versalien (`.mark`, `.khead`), Etiketten klein und weit gesperrt
+   (`.label`, `.meta`), Titel und Lesetext normal gesetzt, große Zitate und Leads in Light.
+4. **Weiß & Tinte, Marineblau als Hausfarbe.** Grund ist reines Weiß (`--paper`), Text
+   Blauschwarz (`--ink`), Grautöne neutral. Marineblau erscheint nur einmal vollflächig: Kontakt
+   und Fußzeile am Seitenende. Messing (`--brass`) ist der einzige Akzent – Zähler, Zierlinien,
+   aktive Navigation.
+5. **Weißraum.** Großzügige Abstände (`--s-7`/`--s-8`); weiße Sektionen werden durch eine feine
+   Tintenlinie über Titel und Inhalt geordnet (`.sec--ruled`), nicht durch Farbflächen.
+6. **Linien statt Flächen.** Haarlinien gliedern Register; die **Zierlinie** (`.rule--double`,
    2 px über 1 px) schließt Briefkopf und Seitenköpfe ab, wie im Geschäftsbrief.
-6. **Barrierefrei = vertrauenswürdig.** Alle Text-Grautöne erfüllen WCAG AA auf ihrem Grund.
+7. **Barrierefrei = vertrauenswürdig.** Alle Text-Grautöne erfüllen WCAG AA auf ihrem Grund.
 
 ## 4. Tokens
 
 | Rolle | Token | Wert |
 |---|---|---|
-| Seitengrund | `--paper` (`--bg`) | `#f6f3eb` Elfenbein |
-| Tiefere Papierbühne / Passepartout | `--paper-deep` | `#ece6d9` |
+| Seitengrund | `--paper` (`--bg`) | `#ffffff` Weiß |
+| Hellgrau-Fläche / Passepartout | `--paper-deep` | `#f4f5f6` |
 | Text | `--ink` | `#14181f` Blauschwarz |
 | Fließtext-Nuance | `--ink-soft` | `#3a3f48` |
-| Metadaten | `--grey` (`--fg-muted`) | `#67645d` (5.3:1, AA) |
-| Haarlinie | `--line` / `--line-strong` | `#dcd5c6` / `#b8b0a0` |
+| Metadaten | `--grey` (`--fg-muted`) | `#62666d` neutral (5.8:1, AA) |
+| Haarlinie | `--line` / `--line-strong` | `#e3e5e8` / `#c3c7cd` |
 | Hausfarbe | `--navy` / `--navy-deep` | `#152238` / `#0f1a2c` |
-| Akzent | `--brass` (`--accent`) | `#7d5f33` auf Papier · `--brass-light` `#c2a36b` auf Marineblau |
-| Text auf Marineblau | `--ivory` | `#f3efe5` |
+| Akzent | `--brass` (`--accent`) | `#7d5f33` auf Weiß · `--brass-light` `#c2a36b` auf Marineblau |
+| Text auf Marineblau | `--ivory` | `#fafafa` |
+| Schrift | `--font` | Jost (variabel, selbst gehostet) |
 | Ecken | `--radius` | `0` |
 
 Primitive (`--c-*`) werden **nie** umdefiniert und nur in `tokens.css` und in Bühnen-Definitionen
 verwendet. Komponenten nutzen ausschließlich die Rollen-Tokens.
 
-Typo: `--t-xs … --t-xxl` (fluide), `--t-caps` für Garamond-Versalien, Lesespalte `--measure`
-34em, Zeilenhöhe 1.6. Sperrungen: `--track-mark` (Wortmarke), `--track-head` (Sektionstitel),
-`--track-caps` (Archivo-Etiketten).
+Typo: `--font` (Jost), `--t-xs … --t-xxl` (fluide), `--t-caps` für Sektionstitel, Gewichte
+`--w-light` 300 / `--w-regular` 400 / `--w-medium` 500, Lesespalte `--measure` 36em,
+Zeilenhöhe 1.65. Sperrungen: `--track-mark` (Wortmarke), `--track-head` (Sektionstitel),
+`--track-caps` (Etiketten).
 
 ## 5. Komponenten
 
@@ -89,9 +95,9 @@ Typo: `--t-xs … --t-xxl` (fluide), `--t-caps` für Garamond-Versalien, Lesespa
 | `MediaBand` | randloses Bild-/Video-Band; Höhen full/band/short, `overlay` (= `--scrim`), label |
 | `LogList`, `Breadcrumbs`, `Crest` | Logbuch, Navigation (Etiketten), Wappen (`currentColor`) |
 | MDX: `Figure`, `Callout`, `Stats`, `Video` | ohne Import in MDX nutzbar |
-| Utilities | `.wrap .space .sec .display .t-xxl…t-m .mark .khead .label .meta .lead .link .plain .muted .ledger .rule .rule--double .rule--brass` |
+| Utilities | `.wrap .space .sec .sec--ruled .display .t-xxl…t-m .mark .khead .label .meta .lead .link .plain .muted .ledger .rule .rule--double .rule--brass` |
 
-Neue Sektion = `<section class="wrap space"><div class="sec">` + `h2.khead` links + Inhalt rechts.
+Neue Sektion = `<section class="wrap space"><div class="sec sec--ruled">` + `h2.khead` links + Inhalt rechts.
 Faktentabellen = `<dl class="ledger">` (Etikett links, Wert rechts, wie ein Registerauszug).
 Bilder, die gerahmt wirken sollen (Porträts), bekommen ein Passepartout: Innenabstand,
 Haarlinie, `--paper-deep`.
@@ -121,19 +127,21 @@ Vollflächig: `<section class="stage stage--navy">` enthält innen `.wrap`. Ende
 marineblauen Bühne, schließt die Fußzeile nahtlos an (nur eine Haarlinie, `global.css`).
 Reveal nie auf die Bühne selbst legen – nur auf deren Inhalt.
 
-**Wortmarke.** `.mark` = Garamond 500, Versalien, `--track-mark`. Zentriert gesetzt (Startseite)
+**Wortmarke.** `.mark` = Jost 500 (Startseite: 400), Versalien, `--track-mark`. Zentriert gesetzt (Startseite)
 gleicht `padding-left: var(--track-mark)` die Sperrung des letzten Buchstabens aus.
 
 **Bewegung.** `[data-reveal]` + globaler IntersectionObserver in `BaseLayout.astro`. Element
 startet `.is-hidden` (leicht versetzt + transparent), wird beim Eintritt `.is-in`. Optionaler
 Staffel-Delay: `data-reveal="80"` = 80 ms. Tokens: `--med`, `--ease-out`, `--reveal-y`.
 
-**Rundungen & Schatten.** Reset setzt `border-radius: var(--radius)` (= 0) auf alle Elemente,
-auch Formularelemente. `npm run check:seo` bricht ab, sobald gebautes CSS eine Rundung ≠ 0
-oder einen Schatten enthält.
+**Rundungen, Schatten, Serifen.** Reset setzt `border-radius: var(--radius)` (= 0) auf alle
+Elemente, auch Formularelemente. `npm run check:seo` bricht ab, sobald gebautes CSS eine
+Rundung ≠ 0, einen Schatten oder eine Serifenschrift (`serif`, Garamond, Georgia, Times …)
+enthält.
 
-**OG/Social.** `src/lib/og.ts` spiegelt die Palette (`C`): OG-Bilder auf Marineblau mit Wappen
-in Messing, Wortmarke, Zierlinie; Carousel-Folien auf Papier, letzte Folie auf Marineblau.
+**OG/Social.** `src/lib/og.ts` spiegelt Palette (`C`) und Schrift (Jost): OG-Bilder auf
+Marineblau mit Wappen in Messing, Wortmarke, Zierlinie; Carousel-Folien auf Weiß, letzte Folie
+auf Marineblau.
 
-**Icons.** `public/favicon.svg` (Wappen in Marineblau, im Dark Mode Elfenbein);
-`apple-touch-icon.png`, `icon-512.png`, `favicon-32.png` = Wappen in Elfenbein auf Marineblau.
+**Icons.** `public/favicon.svg` (Wappen in Marineblau, im Dark Mode hell);
+`apple-touch-icon.png`, `icon-512.png`, `favicon-32.png` = helles Wappen auf Marineblau.

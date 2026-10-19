@@ -35,7 +35,7 @@ const crumbs = [{ name: 'Start', path: '/' }, { name: title, path: '/themen/' }]
   .topics li { border-bottom: 1px solid var(--line); }
   .topics__link { display: grid; grid-template-columns: 6fr 4fr 2fr; gap: var(--gutter); padding-block: var(--s-5); align-items: baseline; }
   .topics__name { line-height: 1.05; text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 0.14em; transition: text-decoration-color var(--fast); }
-  .topics__position { color: var(--fg-muted); font-style: italic; }
+  .topics__position { color: var(--fg-muted); }
   .topics__count { text-align: right; font-variant-numeric: tabular-nums; }
   .topics__link:hover .topics__name { text-decoration-color: var(--accent); }
   @media (max-width: 900px) { .topics__link { grid-template-columns: 1fr; gap: var(--s-2); } .topics__count { text-align: left; } }

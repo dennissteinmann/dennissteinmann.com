@@ -65,9 +65,9 @@ const directory = [
     </ul>
   </nav>
 
-  <section class="stage stage--paper space" aria-labelledby="projects-h">
+  <section class="space" aria-labelledby="projects-h">
     <div class="wrap">
-      <div class="sec selection__head" data-reveal>
+      <div class="sec sec--ruled selection__head" data-reveal>
         <h2 id="projects-h" class="khead">Ausgewählte Projekte</h2>
         <p class="selection__intro">
           <span>{projects.length} Apps, Websites, Plattformen und Unternehmen.</span>
@@ -82,7 +82,7 @@ const directory = [
 
   {explorations.length > 0 && (
     <section class="wrap space">
-      <div class="sec">
+      <div class="sec sec--ruled">
         <h2 class="khead" data-reveal>Zuletzt geschrieben</h2>
         <div data-reveal="60">
           <ExplorationList items={explorations} />
@@ -92,8 +92,8 @@ const directory = [
     </section>
   )}
 
-  <section class="stage stage--navy space" aria-labelledby="topics-h">
-    <div class="wrap sec" data-reveal>
+  <section class="wrap space" aria-labelledby="topics-h">
+    <div class="sec sec--ruled" data-reveal>
       <h2 id="topics-h" class="khead">Themen</h2>
       <div>
         <ul role="list" class="topics">
@@ -121,7 +121,7 @@ const directory = [
     </div>
   </section>
 
-  {/* Kontakt: marineblaue Bühne, geht nahtlos in die Fußzeile über. */}
+  {/* Kontakt: einzige marineblaue Bühne, geht nahtlos in die Fußzeile über. */}
   <section class="stage stage--navy contact" aria-labelledby="contact-h">
     <div class="wrap sec" data-reveal>
       <h2 id="contact-h" class="khead">Kontakt</h2>
@@ -141,13 +141,13 @@ const directory = [
   .masthead { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: clamp(3.5rem, 10vh, 7.5rem); padding-bottom: var(--s-6); }
   .masthead :global(.masthead__crest) { color: var(--navy); }
   .masthead__name {
-    margin-top: var(--s-5); font-size: clamp(2.1rem, 0.9rem + 5.4vw, 5.6rem); font-weight: 450;
+    margin-top: var(--s-5); font-size: clamp(2rem, 0.8rem + 5.2vw, 5.4rem); font-weight: var(--w-regular);
     letter-spacing: var(--track-mark); padding-left: var(--track-mark); /* gleicht die Sperrung des letzten Buchstabens aus */
     color: var(--ink); line-height: 1.1;
   }
   .masthead__rule { margin-top: var(--s-5); }
   .masthead__role { margin-top: var(--s-4); color: var(--ink-soft); }
-  .masthead__lead { margin-top: var(--s-3); font-size: var(--t-m); font-style: italic; color: var(--ink-soft); }
+  .masthead__lead { margin-top: var(--s-3); font-size: var(--t-m); font-weight: var(--w-light); color: var(--ink-soft); }
   .masthead__contact { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-2) var(--s-5); margin-top: var(--s-5); }
   .masthead__close { width: 100%; margin-top: var(--s-6); }
 
@@ -176,7 +176,8 @@ const directory = [
 
   .topics { display: grid; }
   .topics li { border-bottom: 1px solid var(--line); }
-  .topics li:first-child { border-top: 1px solid var(--line); }
+  /* Unter der Sektionslinie keine zweite Linie. */
+  .sec--ruled :global(.xl__item:first-child) { border-top: 0; }
   .topics__link {
     display: block; padding-block: var(--s-3); font-size: var(--t-l); line-height: 1.15;
     text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 0.16em;

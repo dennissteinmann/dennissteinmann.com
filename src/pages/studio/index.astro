@@ -57,7 +57,7 @@ const done = (e: (typeof items)[number], ch: string) => e.data.distribution.find
   .channels { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); }
   .table-wrap { overflow-x: auto; }
   .matrix { width: 100%; border-collapse: collapse; font-size: var(--t-s); }
-  .matrix th { text-align: left; font-weight: 400; color: var(--grey); padding: var(--s-2) var(--s-3) var(--s-2) 0; border-bottom: 1px solid var(--ink); white-space: nowrap; }
+  .matrix th { text-align: left; font-weight: var(--w-regular); color: var(--grey); padding: var(--s-2) var(--s-3) var(--s-2) 0; border-bottom: 1px solid var(--ink); white-space: nowrap; }
   .matrix td { padding: var(--s-3) var(--s-3) var(--s-3) 0; border-bottom: 1px solid var(--line); vertical-align: top; }
-  .matrix td:first-child { min-width: 18rem; font-family: var(--serif); font-size: var(--t-body); }
+  .matrix td:first-child { min-width: 18rem; font-family: var(--font); font-size: var(--t-body); }
 </style>

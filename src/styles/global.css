@@ -10,7 +10,7 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-to
 img, picture, video, svg { display: block; max-width: 100%; height: auto; }
 input, button, textarea, select { font: inherit; color: inherit; border-radius: var(--radius); }
 button { cursor: pointer; background: none; border: 0; padding: 0; -webkit-appearance: none; appearance: none; }
-h1, h2, h3, h4 { text-wrap: balance; font-weight: 400; }
+h1, h2, h3, h4 { text-wrap: balance; font-weight: var(--w-regular); }
 p, li { text-wrap: pretty; }
 ul[role='list'], ol[role='list'] { list-style: none; padding: 0; }
 
@@ -21,10 +21,10 @@ body {
   flex-direction: column;
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--serif);
+  font-family: var(--font);
   font-size: var(--t-body);
   line-height: var(--lh-body);
-  font-optical-sizing: auto;
+  font-weight: var(--w-regular);
   font-kerning: normal;
   -webkit-font-smoothing: antialiased;
 }
@@ -47,6 +47,8 @@ a:hover { text-decoration-color: currentColor; }
 .col-left { grid-column: 1 / span 3; }
 .col-wide { grid-column: 1 / -1; }
 .sec { display: grid; grid-template-columns: 3fr 9fr; gap: var(--gutter); align-items: baseline; }
+/* Sektion mit Linie: eine feine Tintenlinie über Titel und Inhalt – ordnet weiße Flächen. */
+.sec--ruled { border-top: 1px solid var(--fg); padding-top: var(--s-4); }
 @media (max-width: 900px) {
   .grid, .sec { grid-template-columns: 1fr; }
   .col-text, .col-left, .col-wide { grid-column: 1; }
@@ -54,27 +56,27 @@ a:hover { text-decoration-color: currentColor; }
 }
 
 /* --- Typografie ---------------------------------------------------------- */
-.display { font-family: var(--serif); font-weight: 400; line-height: var(--lh-display); letter-spacing: -0.005em; }
+.display { font-family: var(--font); font-weight: var(--w-regular); line-height: var(--lh-display); letter-spacing: -0.01em; }
 .display em { font-style: italic; }
-.t-xxl { font-size: var(--t-xxl); letter-spacing: -0.015em; }
-.t-xl { font-size: var(--t-xl); letter-spacing: -0.01em; }
+.t-xxl { font-size: var(--t-xxl); letter-spacing: -0.02em; }
+.t-xl { font-size: var(--t-xl); letter-spacing: -0.015em; }
 .t-l { font-size: var(--t-l); }
 .t-m { font-size: var(--t-m); line-height: 1.2; }
-.sans { font-family: var(--sans); font-size: var(--t-s); letter-spacing: var(--track-sans); line-height: 1.5; }
-.meta { font-family: var(--sans); font-size: var(--t-xs); letter-spacing: var(--track-sans); color: var(--fg-muted); line-height: 1.5; }
+.sans { font-family: var(--font); font-size: var(--t-s); letter-spacing: var(--track-sans); line-height: 1.5; }
+.meta { font-family: var(--font); font-size: var(--t-xs); letter-spacing: var(--track-sans); color: var(--fg-muted); line-height: 1.5; }
 .caps { text-transform: uppercase; letter-spacing: var(--track-caps); }
 .muted { color: var(--fg-muted); }
-.lead { font-size: var(--t-m); line-height: 1.35; max-width: 28em; }
-/* Etikett: kleine, weit gesperrte Grotesk-Versalien (Navigation, Spaltenköpfe). */
-.label { font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps); line-height: 1.5; }
+.lead { font-size: var(--t-m); font-weight: var(--w-light); line-height: 1.4; max-width: 28em; }
+/* Etikett: kleine, weit gesperrte Versalien (Navigation, Spaltenköpfe). */
+.label { font-family: var(--font); font-size: var(--t-xs); font-weight: var(--w-medium); text-transform: uppercase; letter-spacing: var(--track-caps); line-height: 1.5; }
 
-/* Haus-Stimme (v4 „Kontor“): Garamond-Versalien, gesperrt – wie graviert. */
-.mark { font-family: var(--serif); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-mark); line-height: 1.05; }
-.khead { font-family: var(--serif); font-weight: 500; font-size: var(--t-caps); text-transform: uppercase; letter-spacing: var(--track-head); line-height: 1.4; }
+/* Haus-Stimme (v5): geometrische Versalien, gesperrt – Bauhaus-Beschriftung. */
+.mark { font-family: var(--font); font-weight: var(--w-medium); text-transform: uppercase; letter-spacing: var(--track-mark); line-height: 1.05; }
+.khead { font-family: var(--font); font-weight: var(--w-medium); font-size: var(--t-caps); text-transform: uppercase; letter-spacing: var(--track-head); line-height: 1.4; }
 
 /* Link-Varianten: Text, kein Button-Look. `.link` = Etikett mit Messing-Unterstrich. */
 .link {
-  font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps);
+  font-family: var(--font); font-size: var(--t-xs); font-weight: var(--w-medium); text-transform: uppercase; letter-spacing: var(--track-caps);
   text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 0.55em;
 }
 .link:hover { text-decoration-color: currentColor; }
@@ -103,7 +105,7 @@ a:hover { text-decoration-color: currentColor; }
 /* Register: Schlüssel-Wert-Tabelle wie ein Registerauszug (Fakten, Projektdaten). */
 .ledger { display: grid; border-top: 2px solid var(--fg); }
 .ledger > div { display: grid; grid-template-columns: minmax(7rem, 2fr) 5fr; gap: var(--s-3); padding-block: var(--s-2); border-bottom: 1px solid var(--line); align-items: baseline; }
-.ledger dt { font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps); color: var(--fg-muted); }
+.ledger dt { font-family: var(--font); font-size: var(--t-xs); font-weight: var(--w-medium); text-transform: uppercase; letter-spacing: var(--track-caps); color: var(--fg-muted); }
 .ledger dd { margin: 0; }
 
 /* --- Linien ---------------------------------------------------------------- */
@@ -124,7 +126,7 @@ main:has(> .stage--navy:last-child) + .footer { margin-top: 0; border-top: 1px s
 }
 
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.skip-link { position: absolute; left: var(--s-3); top: -100px; z-index: 200; background: var(--navy); color: var(--ivory); padding: var(--s-2) var(--s-3); font-family: var(--sans); font-size: var(--t-s); }
+.skip-link { position: absolute; left: var(--s-3); top: -100px; z-index: 200; background: var(--navy); color: var(--ivory); padding: var(--s-2) var(--s-3); font-family: var(--font); font-size: var(--t-s); }
 .skip-link:focus { top: var(--s-3); }
 
 /* Ruhiges Einblenden von Bildern */
