@@ -1,6 +1,7 @@
 /* ==========================================================================
-   DESIGN TOKENS v4 – „Kontor“. Einzige Quelle für Farbe, Typo, Raum.
-   Hanseatisch: Büttenpapier, Tinte, Marineblau, Messing. Keine Rundungen.
+   DESIGN TOKENS v5 – „Weißes Kontor“. Einzige Quelle für Farbe, Typo, Raum.
+   Bauhaus-Weiß, eine geometrische Grotesk, Tinte, Marineblau, Messing.
+   Keine Serifen, keine Rundungen.
    Begründung: docs/DESIGN.md. In Komponenten nur var(--…) verwenden.
    ========================================================================== */
 
@@ -11,25 +12,25 @@
      Nur hier und in Bühnen-Definitionen (global.css) verwenden. Komponenten
      nutzen die Rollen-Tokens darunter, die Bühnen passend umdefinieren. */
   --c-white: #ffffff;
-  --c-paper: #f6f3eb;       /* Elfenbein wie gutes Briefpapier */
-  --c-paper-deep: #ece6d9;
+  --c-paper: #ffffff;       /* reines Weiß (Bauhaus) */
+  --c-paper-deep: #f4f5f6;  /* kühles Hellgrau für Passepartout & ruhige Flächen */
   --c-ink: #14181f;         /* Blauschwarz wie Tinte */
   --c-ink-soft: #3a3f48;
-  --c-grey: #67645d;        /* 5.3:1 auf Papier (AA) */
-  --c-grey-light: #a39d91;  /* nur dekorativ, nie für Lesetext */
-  --c-line: #dcd5c6;
-  --c-line-strong: #b8b0a0;
-  --c-placeholder: #ebe6da;
+  --c-grey: #62666d;        /* neutrales Grau, 5.9:1 auf Weiß (AA) */
+  --c-grey-light: #a6aab1;  /* nur dekorativ, nie für Lesetext */
+  --c-line: #e3e5e8;
+  --c-line-strong: #c3c7cd;
+  --c-placeholder: #f1f2f4;
   --c-navy: #152238;        /* hanseatisches Marineblau */
   --c-navy-deep: #0f1a2c;
   --c-brass: #7d5f33;       /* Messing auf Papier (5.3:1) */
   --c-brass-light: #c2a36b; /* Messing auf Marineblau (6.6:1) */
-  --c-ivory: #f3efe5;       /* Text auf Marineblau */
+  --c-ivory: #fafafa;       /* Text auf Marineblau (nahezu Weiß) */
 
-  /* --- Fläche & Text: Büttenpapier und Tinte ------------------------------- */
+  /* --- Fläche & Text: Weiß und Tinte ---------------------------------------- */
   --white: var(--c-white);         /* nur Objekt-Bühnen (Projektkarten) */
   --paper: var(--c-paper);         /* Seitengrund */
-  --paper-deep: var(--c-paper-deep); /* tiefere Papierbühne, Passepartout */
+  --paper-deep: var(--c-paper-deep); /* Hellgrau-Fläche, Passepartout */
   --ink: var(--c-ink);             /* Text, starke Linien */
   --ink-soft: var(--c-ink-soft);   /* Fließtext-Nuancen */
   --grey: var(--c-grey);           /* Metadaten */
@@ -66,41 +67,44 @@
   /* --- Form: keine Rundungen. Nirgends. Ecken sind rechtwinklig. -------- */
   --radius: 0;
 
-  /* --- Typografie (v4: „Kontor“) -----------------------------------------
-     Serif (EB Garamond): die Stimme des Hauses – Wortmarke und Sektionstitel
-                          als gesperrte Versalien (wie graviert), Titel, Langform.
-     Grotesk (Archivo):   nur Funktion – Navigation, Meta, Etiketten. Klein,
-                          Versalien, weit gesperrt. Nie für Überschriften. */
-  --serif: 'EB Garamond Variable', 'EB Garamond', Garamond, 'Iowan Old Style', Georgia, serif;
-  --sans: 'Archivo Variable', 'Archivo', 'Helvetica Neue', Helvetica, Arial, system-ui, sans-serif;
-  --grotesk: var(--sans);
+  /* --- Typografie (v5): EINE Schrift – Jost, geometrische Grotesk in der
+     Futura-/Bauhaus-Tradition. Keine Serifen. Hierarchie entsteht nur über
+     Größe, Gewicht, Versalien und Sperrung:
+       Wortmarke & Sektionstitel: Versalien, gesperrt (.mark, .khead)
+       Etiketten & Navigation:    klein, Versalien, weit gesperrt (.label)
+       Titel & Lesetext:          normal gesetzt, ruhige Zeilen */
+  --font: 'Jost Variable', 'Jost', Futura, 'Century Gothic', 'Avenir Next', system-ui, sans-serif;
 
   --t-xs: 0.75rem;                                    /* Etiketten (Caps) */
-  --t-s: 0.875rem;                                    /* Sans-UI */
-  --t-caps: 0.95rem;                                  /* Garamond-Versalien (Sektionstitel) */
-  --t-body: clamp(1.15rem, 1.08rem + 0.3vw, 1.32rem); /* Serif-Lesetext */
-  --t-m: clamp(1.4rem, 1.22rem + 0.65vw, 1.8rem);
-  --t-l: clamp(1.9rem, 1.45rem + 1.6vw, 2.9rem);
-  --t-xl: clamp(2.4rem, 1.6rem + 3vw, 4.6rem);
-  --t-xxl: clamp(2.8rem, 1.5rem + 5.4vw, 7rem);
+  --t-s: 0.875rem;                                    /* UI */
+  --t-caps: 0.875rem;                                 /* Sektionstitel (Versalien) */
+  --t-body: clamp(1.05rem, 1rem + 0.2vw, 1.18rem);    /* Lesetext */
+  --t-m: clamp(1.3rem, 1.15rem + 0.6vw, 1.65rem);
+  --t-l: clamp(1.8rem, 1.4rem + 1.5vw, 2.7rem);
+  --t-xl: clamp(2.3rem, 1.5rem + 3vw, 4.4rem);
+  --t-xxl: clamp(2.7rem, 1.4rem + 5.2vw, 6.6rem);
 
-  --lh-display: 1.08;
-  --lh-body: 1.6;
+  --w-light: 300;          /* große Zitate & Leads */
+  --w-regular: 400;        /* Titel & Lesetext */
+  --w-medium: 500;         /* Wortmarke, Versalien, Etiketten */
+
+  --lh-display: 1.06;
+  --lh-body: 1.65;
   --track-sans: 0.01em;
-  --track-caps: 0.16em;    /* Archivo-Etiketten: Navigation, Meta in Caps */
-  --track-mark: 0.12em;    /* Wortmarke: Garamond-Versalien, gesperrt */
-  --track-head: 0.2em;     /* Sektionstitel: kleine Garamond-Versalien */
-  --measure: 34em;         /* Lesespalte in Serif-em ≈ 66 Zeichen */
+  --track-caps: 0.16em;    /* Etiketten: Navigation, Meta in Caps */
+  --track-mark: 0.14em;    /* Wortmarke: Versalien, gesperrt */
+  --track-head: 0.2em;     /* Sektionstitel: kleine Versalien */
+  --measure: 36em;         /* Lesespalte ≈ 70 Zeichen */
 
-  /* --- Raum: großzügig, ruhig. ----------------------------------------- */
+  /* --- Raum: großzügig – Weißraum ist Gestaltungsmittel (Bauhaus). ----- */
   --s-1: 0.25rem;
   --s-2: 0.5rem;
   --s-3: 1rem;
   --s-4: 1.5rem;
   --s-5: 2.5rem;
   --s-6: 4rem;
-  --s-7: clamp(5rem, 3rem + 6vw, 9rem);
-  --s-8: clamp(7rem, 4rem + 10vw, 15rem);
+  --s-7: clamp(6rem, 3.5rem + 7vw, 11rem);
+  --s-8: clamp(8rem, 4rem + 12vw, 18rem);
 
   --gutter: clamp(1.25rem, 0.5rem + 3vw, 3.5rem);
   --wide: 1440px;

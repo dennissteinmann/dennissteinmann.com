@@ -11,7 +11,7 @@ const { title } = Astro.props;
 
 <style>
   .callout { margin-block: 2.4em; padding: var(--s-4); border: 1px solid var(--line-strong); border-left: 2px solid var(--accent); background: var(--paper-deep); }
-  .callout__title { font-family: var(--sans); font-size: var(--t-xs); font-weight: 500; text-transform: uppercase; letter-spacing: var(--track-caps); color: var(--fg-muted); margin-bottom: var(--s-2); }
-  .callout__body { font-style: italic; }
+  .callout__title { font-family: var(--font); font-size: var(--t-xs); font-weight: var(--w-medium); text-transform: uppercase; letter-spacing: var(--track-caps); color: var(--fg-muted); margin-bottom: var(--s-2); }
+  .callout__body { font-weight: var(--w-regular); }
   .callout__body > :global(* + *) { margin-top: 0.8em; }
 </style>

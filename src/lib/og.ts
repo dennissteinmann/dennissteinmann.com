@@ -1,8 +1,8 @@
 /**
  * Bildgenerator für OG-Bilder (1200×630) und Social-Carousels (1080×1350).
  * satori → SVG → resvg → PNG, zur Build-Zeit. Gleiche Haltung wie die
- * Website (v4 „Kontor“): Marineblau, Papier, Messing, gravierte Versalien,
- * Wappen. Rechtwinklig, ohne Verläufe. Siehe docs/SOCIAL.md.
+ * Website (v5 „Weißes Kontor“): Jost (geometrische Grotesk), Weiß, Marineblau,
+ * Messing, gesperrte Versalien, Wappen. Rechtwinklig, ohne Verläufe. Siehe docs/SOCIAL.md.
  */
 import fs from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -14,21 +14,19 @@ const require = createRequire(import.meta.url);
 
 /** Spiegel von tokens.css (satori kennt keine CSS-Variablen). */
 export const C = {
-  white: '#ffffff', paper: '#f6f3eb', ink: '#14181f', inkSoft: '#3a3f48', grey: '#67645d', line: '#dcd5c6',
-  navy: '#152238', brass: '#7d5f33', brassLight: '#c2a36b', ivory: '#f3efe5', ivoryMuted: '#b0b1b1',
+  white: '#ffffff', paper: '#ffffff', ink: '#14181f', inkSoft: '#3a3f48', grey: '#62666d', line: '#e3e5e8',
+  navy: '#152238', brass: '#7d5f33', brassLight: '#c2a36b', ivory: '#fafafa', ivoryMuted: '#b2b5ba',
 };
 
-type Font = { name: string; data: Buffer; weight: 400 | 500; style: 'normal' | 'italic' };
+type Font = { name: string; data: Buffer; weight: 300 | 400 | 500; style: 'normal' | 'italic' };
 let cache: Font[] | null = null;
 async function loadFonts(): Promise<Font[]> {
   if (cache) return cache;
   const f = (p: string) => fs.readFile(require.resolve(p));
   cache = [
-    { name: 'Serif', data: await f('@fontsource/eb-garamond/files/eb-garamond-latin-400-normal.woff'), weight: 400, style: 'normal' },
-    { name: 'Serif', data: await f('@fontsource/eb-garamond/files/eb-garamond-latin-500-normal.woff'), weight: 500, style: 'normal' },
-    { name: 'Serif', data: await f('@fontsource/eb-garamond/files/eb-garamond-latin-400-italic.woff'), weight: 400, style: 'italic' },
-    { name: 'Sans', data: await f('@fontsource/archivo/files/archivo-latin-400-normal.woff'), weight: 400, style: 'normal' },
-    { name: 'Sans', data: await f('@fontsource/archivo/files/archivo-latin-500-normal.woff'), weight: 500, style: 'normal' },
+    { name: 'Jost', data: await f('@fontsource/jost/files/jost-latin-300-normal.woff'), weight: 300, style: 'normal' },
+    { name: 'Jost', data: await f('@fontsource/jost/files/jost-latin-400-normal.woff'), weight: 400, style: 'normal' },
+    { name: 'Jost', data: await f('@fontsource/jost/files/jost-latin-500-normal.woff'), weight: 500, style: 'normal' },
   ];
   return cache;
 }
@@ -60,10 +58,10 @@ const crest = (color: string, height: number): Node => ({
 });
 /** Wortmarke: Garamond-Versalien, gesperrt – wie auf der Website. */
 const wordmark = (color: string, size: number) =>
-  h('div', { fontFamily: 'Serif', fontWeight: 500, fontSize: size, letterSpacing: size * 0.18, textTransform: 'uppercase', color }, 'Dennis Steinmann');
+  h('div', { fontFamily: 'Jost', fontWeight: 500, fontSize: size, letterSpacing: size * 0.18, textTransform: 'uppercase', color }, 'Dennis Steinmann');
 /** Etikett: kleine, gesperrte Grotesk-Versalien. */
 const label = (text: string, color: string, size: number) =>
-  h('div', { fontFamily: 'Sans', fontWeight: 500, fontSize: size, letterSpacing: size * 0.16, textTransform: 'uppercase', color }, text);
+  h('div', { fontFamily: 'Jost', fontWeight: 500, fontSize: size, letterSpacing: size * 0.16, textTransform: 'uppercase', color }, text);
 /** Zierlinie wie im Briefkopf: kräftig über fein. */
 const doubleRule = (color: string) =>
   h('div', { width: '100%', height: 6, borderTop: `2px solid ${color}`, borderBottom: `1px solid ${color}` });
@@ -80,7 +78,7 @@ export function ogTemplate(o: { title: string; meta: string }) {
       ),
       doubleRule(C.ivory),
     ),
-    h('div', { fontFamily: 'Serif', fontSize: size, lineHeight: 1.08, maxWidth: 980 }, o.title),
+    h('div', { fontFamily: 'Jost', fontSize: size, lineHeight: 1.08, maxWidth: 980 }, o.title),
     h('div', { flexDirection: 'column', gap: 20 },
       h('div', { width: 72, height: 2, backgroundColor: C.brassLight }),
       label('dennissteinmann.com', C.ivoryMuted, 15),
@@ -108,15 +106,15 @@ export function slideTemplate(o: { kind: 'cover' | 'content' | 'cta'; index: num
   if (o.kind === 'cover') {
     const size = fit(o.title ?? '', [[30, 112], [55, 94], [80, 80], [999, 68]]);
     return h('div', base, top,
-      h('div', { fontFamily: 'Serif', fontSize: size, lineHeight: 1.04, letterSpacing: -1 }, o.title ?? ''),
+      h('div', { fontFamily: 'Jost', fontSize: size, lineHeight: 1.04, letterSpacing: -1 }, o.title ?? ''),
       foot('Eine Exploration von Dennis Steinmann'),
     );
   }
   if (o.kind === 'cta') {
     return h('div', base, top,
       h('div', { flexDirection: 'column', gap: 36 },
-        h('div', { fontFamily: 'Serif', fontStyle: 'italic', fontSize: 92, lineHeight: 1.04, letterSpacing: -1 }, o.title ?? 'Weiterdenken'),
-        o.text ? h('div', { fontFamily: 'Serif', fontSize: 38, lineHeight: 1.35, maxWidth: 820 }, o.text) : null,
+        h('div', { fontFamily: 'Jost', fontWeight: 300, fontSize: 92, lineHeight: 1.04, letterSpacing: -1 }, o.title ?? 'Weiterdenken'),
+        o.text ? h('div', { fontFamily: 'Jost', fontSize: 38, lineHeight: 1.35, maxWidth: 820 }, o.text) : null,
       ),
       foot(o.url ?? 'dennissteinmann.com'),
     );
@@ -124,8 +122,8 @@ export function slideTemplate(o: { kind: 'cover' | 'content' | 'cta'; index: num
   const textSize = fit(o.text ?? '', [[90, 60], [160, 50], [999, 42]]);
   return h('div', base, top,
     h('div', { flexDirection: 'column', gap: 36 },
-      o.title ? h('div', { fontFamily: 'Serif', fontSize: fit(o.title, [[24, 84], [45, 70], [999, 58]]), lineHeight: 1.06, letterSpacing: -0.5 }, o.title) : null,
-      o.text ? h('div', { fontFamily: 'Serif', fontStyle: o.title ? 'normal' : 'italic', fontSize: o.title ? 40 : textSize, lineHeight: 1.3, color: o.title ? C.inkSoft : C.ink }, o.text) : null,
+      o.title ? h('div', { fontFamily: 'Jost', fontSize: fit(o.title, [[24, 84], [45, 70], [999, 58]]), lineHeight: 1.06, letterSpacing: -0.5 }, o.title) : null,
+      o.text ? h('div', { fontFamily: 'Jost', fontWeight: o.title ? 400 : 300, fontSize: o.title ? 40 : textSize, lineHeight: 1.3, color: o.title ? C.inkSoft : C.ink }, o.text) : null,
     ),
     foot('dennissteinmann.com'),
   );

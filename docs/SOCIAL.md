@@ -44,6 +44,6 @@ social:
 
 ## Design
 
-Folien folgen dem Designsystem v4 „Kontor“ (`src/lib/og.ts`): Papierflächen, EB Garamond,
-Kopfzeile mit Wappen, gesperrter Wortmarke und Zierlinie, Archivo-Etiketten für Zähler und Fuß.
-Die letzte Folie und alle OG-Bilder stehen auf Marineblau mit Elfenbein-Schrift und Messing.
+Folien folgen dem Designsystem v5 „Weißes Kontor“ (`src/lib/og.ts`): weiße Flächen, Jost
+(geometrische Grotesk), Kopfzeile mit Wappen, gesperrter Wortmarke und Zierlinie, Etiketten in
+Versalien. Die letzte Folie und alle OG-Bilder stehen auf Marineblau mit heller Schrift und Messing.

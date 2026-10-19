@@ -6,7 +6,7 @@
  * Prüft je HTML-Seite: <title>, Meta-Description, Canonical, genau eine <h1>,
  * lang-Attribut, OG-Bild, alt-Texte, JSON-LD parsebar, interne Links auflösbar.
  * Prüft global: jede Sitemap-URL existiert und ist nicht noindex; Designregeln
- * (keine Rundungen, keine Schatten) im gebauten CSS.
+ * (keine Rundungen, keine Schatten, keine Serifen) im gebauten CSS.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -61,7 +61,7 @@ for (const file of htmlFiles) {
   }
 }
 
-// Designregeln (docs/DESIGN.md §2): keine Rundungen, keine Schatten – im gesamten gebauten CSS.
+// Designregeln (docs/DESIGN.md §2): keine Rundungen, keine Schatten, keine Serifen – im gesamten gebauten CSS.
 const cssSources = [
   ...files.filter((f) => f.endsWith('.css')).map((f) => [toPath(f), fs.readFileSync(f, 'utf8')]),
   ...htmlFiles.flatMap((f) => [...fs.readFileSync(f, 'utf8').matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => [toPath(f), m[1]])),
@@ -72,6 +72,9 @@ for (const [p, css] of cssSources) {
   }
   for (const [, v] of css.matchAll(/box-shadow:\s*([^;}]+)/g)) {
     if (v.trim() !== 'none') errors.push(`${p}: Schatten verboten (box-shadow: ${v.trim()})`);
+  }
+  for (const [, v] of css.matchAll(/font-family:\s*([^;}]+)/g)) {
+    if (/(?<!sans-)\bserif\b|garamond|georgia|times|baskerville|palatino|iowan/i.test(v)) errors.push(`${p}: Serifenschrift verboten (font-family: ${v.trim()})`);
   }
 }
 

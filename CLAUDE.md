@@ -39,14 +39,13 @@ npm run new exploration "Titel"   # auch: projekt | thema | log | medium | press
 ### 2. Design nur über Tokens (→ `docs/DESIGN.md`)
 - Farben, Schriften, Abstände, Radien, Animationen ausschließlich via `var(--…)` aus
   `src/styles/tokens.css`. Keine Hex-Werte, keine px-Schriftgrößen in Komponenten.
-- Stil „Kontor“ (v4, hanseatisch – Privatclub/Handelshaus): Elfenbein-**Papier** (`--paper`),
-  Blauschwarz-**Tinte** (`--ink`), **Marineblau** als Hausfarbe (`.stage--navy`, Fußzeile),
-  **Messing** (`--brass`) als einziger Akzent. **EB Garamond** ist die Haus-Stimme (Wortmarke &
-  Sektionstitel als gesperrte Versalien `.mark`/`.khead`, Titel, Langform); **Archivo** nur für
-  Funktion (Navigation, Meta, `.label`). Wappen als Signet, Zierlinie `.rule--double`.
-  Medien-Leitfaden: `docs/MEDIA.md`.
-- Zwei Schriften: **Archivo** (`--grotesk`/`--sans`) und **EB Garamond** (Serif-Stimme). Keine dritte.
-- **Keine Rundungen, keine Schatten** – nirgends. CI bricht ab (`scripts/check-dist.mjs`).
+- Stil „Weißes Kontor“ (v5, Privatclub-Struktur in Bauhaus-Sprache): reines **Weiß** (`--paper`),
+  Blauschwarz-**Tinte** (`--ink`), **Marineblau** als Hausfarbe (nur Kontakt + Fußzeile),
+  **Messing** (`--brass`) als einziger Akzent. Wortmarke & Sektionstitel als gesperrte Versalien
+  (`.mark`/`.khead`), Etiketten `.label`. Wappen als Signet, Zierlinie `.rule--double`,
+  Sektionslinie `.sec--ruled`. Medien-Leitfaden: `docs/MEDIA.md`.
+- **Eine Schrift: Jost** (`--font`, geometrische Grotesk). **Keine Serifen**, keine zweite Schrift.
+- **Keine Serifen, keine Rundungen, keine Schatten** – nirgends. CI bricht ab (`scripts/check-dist.mjs`).
 - **Verboten:** Neon/gesättigte UI-Farben, Eyebrow-/Kicker-Texte, Status-/Live-Dots, Marquees,
   Filmkorn, UI-Verläufe/Glassmorphism, Mono-Deko, Emojis, Icon-Libraries, Buttons mit
   Rahmen/Füllung, Hover-Verschiebungen, Duzen im Interface (Sie-Form). Bild-Abdunklung

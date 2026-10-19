@@ -1,7 +1,7 @@
 # Medien – Art Direction & KI-Asset-Pipeline
 
-Im Designsystem v4 „Kontor“ (`docs/DESIGN.md`) trägt die UI nur Papier, Tinte, Marineblau und
-Messing – **Fotografie und Video** liefern Atmosphäre. Diese Datei ist der verbindliche
+Im Designsystem v5 „Weißes Kontor“ (`docs/DESIGN.md`) trägt die UI nur Weiß, Tinte, Marineblau
+und Messing – **Fotografie und Video** liefern Atmosphäre. Diese Datei ist der verbindliche
 Leitfaden, damit alle Assets wie **eine einzige Serie** wirken: hanseatisch, ruhig, gediegen –
 wie die Bildwelt eines Privatclubs oder Handelshauses, nie wie eine Werbekampagne. Quelle laut `docs/DECISIONS.md` (2026-10-05): **KI-generiert**
 (Midjourney/Flux für Stills, Runway/Veo für Bewegung), von Dennis erzeugt, hier eingepflegt.
@@ -26,14 +26,14 @@ Die Assets sollen in dieser Welt liegen (= `tokens.css`):
 
 | Rolle | Hex | In Prompts als |
 |---|---|---|
-| Papier (Grund) | `#f6f3eb` | „ivory paper“ |
+| Weiß (Grund) | `#ffffff` | „clean white, gallery white“ |
 | Tinte (Tiefe) | `#14181f` | „blue-black ink“ |
 | Marineblau (Hausfarbe) | `#152238` | „deep navy, hanseatic blue“ |
 | Messing (Akzent) | `#7d5f33` / `#c2a36b` | „aged brass“ |
 | Elfenbein (Text auf Marineblau) | `#f3efe5` | — |
 
-Immer anhängen: *„restrained hanseatic palette, deep navy, ivory, aged brass, dark wood, warm
-stone, no neon, no saturated primaries“*.
+Immer anhängen: *„restrained palette, white, deep navy, aged brass, pale stone, bauhaus clarity,
+no neon, no saturated primaries“*.
 
 ## 3. Slots, Formate, Ablage
 
@@ -55,7 +55,7 @@ hellen Text, `label` und `caption`. Videos laufen stumm/loop/autoplay/inline.
 ```
 <motiv>, <licht>, <oberfläche/textur>, wide calm composition, generous negative space,
 shot on medium format film, soft low contrast, restrained hanseatic palette —
-ivory #f6f3eb, deep navy #152238, aged brass #7d5f33, blue-black #14181f —
+white #ffffff, deep navy #152238, aged brass #7d5f33, blue-black #14181f —
 no neon, no text, no logos, no people's faces, editorial, cinematic, architectural
 --ar 16:9 --style raw --v 7
 ```
