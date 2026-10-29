@@ -3,7 +3,7 @@
  * Wissensgraphen rund um die Person. @ids NIE ändern – siehe docs/SEO.md.
  */
 import { SITE, PERSON, activeChannels } from '@/site.config';
-import { getTopics, getPress } from './content';
+import { getInhalt, blockText } from './inhalt';
 
 export const ID = {
   person: `${SITE.url}/#person`,
@@ -12,13 +12,8 @@ export const ID = {
 export const PERSON_IMAGE = '/media/brand/dennis-steinmann.jpg';
 export const abs = (path: string) => new URL(path, SITE.url).href;
 
-/**
- * Person mit Expertise (`knowsAbout` → Themen-Hubs) und Presse (`subjectOf`).
- * Async, weil Themen & Presse aus den Collections kommen.
- */
-export async function personSchema() {
-  const topics = await getTopics();
-  const press = await getPress();
+/** Person (alle Angaben aus INHALT.md); Profile werden zu `sameAs`. */
+export function personSchema() {
   const sameAs = activeChannels().map((c) => c.url);
   return {
     '@type': 'Person',
@@ -26,23 +21,38 @@ export async function personSchema() {
     name: PERSON.name,
     givenName: PERSON.givenName,
     familyName: PERSON.familyName,
-    url: abs('/ueber/'),
+    url: abs('/'),
     image: abs(PERSON_IMAGE),
     jobTitle: PERSON.jobTitle,
     description: PERSON.description,
     nationality: PERSON.nationality,
     homeLocation: { '@type': 'Country', name: PERSON.homeLocation },
-    knowsAbout: topics.map((t) => ({
-      '@type': 'Thing',
-      name: t.data.title,
-      description: t.data.definition,
-      url: abs(`/themen/${t.id}/`),
-      ...(t.data.sameAs ? { sameAs: t.data.sameAs } : {}),
-    })),
     ...(sameAs.length ? { sameAs } : {}),
-    ...(press.length
-      ? { subjectOf: press.map((p) => ({ '@type': 'NewsArticle', headline: p.data.title, publisher: { '@type': 'Organization', name: p.data.outlet }, datePublished: p.data.date.toISOString(), ...(p.data.url ? { url: p.data.url } : {}) })) }
-      : {}),
+  };
+}
+
+/** Projekte aus INHALT.md als ItemList; jedes mit Anker auf der Startseite. */
+export function projectsSchema() {
+  const { projekte } = getInhalt();
+  return {
+    '@type': 'ItemList',
+    '@id': `${abs('/')}#projekte`,
+    name: `Projekte von ${PERSON.name}`,
+    itemListElement: projekte.map((p, i) => {
+      const description = [p.rolle, p.zeit, blockText(p.text)].filter(Boolean).join(' · ');
+      return {
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'CreativeWork',
+          '@id': `${abs('/')}#${p.id}`,
+          name: p.titel,
+          ...(description ? { description } : {}),
+          ...(p.link ? { url: p.link } : {}),
+          creator: { '@id': ID.person },
+        },
+      };
+    }),
   };
 }
 

@@ -1,5 +1,5 @@
 ---
-import { NAV, FOOTER_NAV, SITE, PERSON, activeChannels } from '@/site.config';
+import { FOOTER_NAV, SITE, PERSON, activeChannels } from '@/site.config';
 import Crest from './Crest.astro';
 
 const year = new Date().getFullYear();
@@ -15,12 +15,6 @@ const channels = activeChannels();
           <span class="mark">{SITE.name}</span>
           <span class="meta">{PERSON.jobTitle}<br />{PERSON.homeLocation}</span>
         </p>
-      </div>
-      <div class="footer__col">
-        <p class="label footer__h">Verzeichnis</p>
-        <ul role="list">
-          {NAV.map((n) => <li><a class="plain" href={n.href}>{n.label}</a></li>)}
-        </ul>
       </div>
       <div class="footer__col">
         <p class="label footer__h">Weiteres</p>
@@ -45,8 +39,8 @@ const channels = activeChannels();
 </footer>
 
 <style>
-  .footer { margin-top: var(--s-8); padding-block: var(--s-7) var(--s-4); }
-  .footer__grid { display: grid; grid-template-columns: 6fr 2fr 2fr 2fr; gap: var(--gutter); }
+  .footer { margin-top: var(--s-7); padding-block: var(--s-7) var(--s-4); }
+  .footer__grid { display: grid; grid-template-columns: 8fr 2fr 2fr; gap: var(--gutter); }
   .footer__mark { display: flex; gap: var(--s-4); align-items: flex-start; }
   .footer__mark :global(.footer__crest) { color: var(--accent); }
   .footer__id { display: grid; gap: var(--s-3); }

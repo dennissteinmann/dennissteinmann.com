@@ -1,49 +1,30 @@
 ---
-import { Image } from 'astro:assets';
+/**
+ * Startseite = die ganze Website: Briefkopf, Projekte und alle weiteren
+ * Abschnitte – vollständig aus INHALT.md. Leere Abschnitte erscheinen nicht.
+ */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Crest from '@/components/Crest.astro';
-import ExplorationList from '@/components/ExplorationList.astro';
-import ProjectCard from '@/components/ProjectCard.astro';
-import portrait from '@/assets/brand/portrait.jpg';
-import { SITE, PERSON, activeChannels } from '@/site.config';
-import { getExplorations, getProjects, getTopics, getMedia, getPress } from '@/lib/content';
-import { graph, personSchema, websiteSchema } from '@/lib/seo';
+import RichText from '@/components/RichText.astro';
+import { SITE, activeChannels } from '@/site.config';
+import { getInhalt } from '@/lib/inhalt';
+import { graph, personSchema, projectsSchema, websiteSchema } from '@/lib/seo';
 
-const allExplorations = await getExplorations();
-const explorations = allExplorations.slice(0, 3);
-const projects = await getProjects();
-const topics = await getTopics();
-const media = await getMedia();
-const press = await getPress();
+const inhalt = getInhalt();
 const channels = activeChannels();
-
-const selection = projects
-  .filter((p) => p.data.icon || p.data.cover)
-  .sort((a, b) =>
-    Number(b.data.featured) - Number(a.data.featured) ||
-    ({ l: 0, m: 1, s: 2 })[a.data.size] - ({ l: 0, m: 1, s: 2 })[b.data.size] ||
-    a.data.order - b.data.order)
-  .slice(0, 8);
-
-/** Das Verzeichnis: ein Ort, von dem aus alles auffindbar ist. */
-const directory = [
-  { label: 'Explorationen', href: '/explorationen/', count: allExplorations.length, desc: 'Langform: Theorien, Essays und Geschichten.' },
-  { label: 'Projekte', href: '/projekte/', count: projects.length, desc: 'Apps, Software, Plattformen und Unternehmen.' },
-  { label: 'Themen', href: '/themen/', count: topics.length, desc: 'Schwerpunkte und Expertise.' },
-  { label: 'Medien', href: '/medien/', count: media.length, desc: 'Bilder, Videos, Auftritte und Dokumente.' },
-  { label: 'Presse', href: '/presse/', count: press.length, desc: 'Bio, Fotos, Fakten und Berichterstattung.' },
-  { label: 'Über', href: '/ueber/', count: null, desc: 'Werdegang, Haltung und Kontakt.' },
-] as const;
 ---
 
-<BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), await personSchema())}>
-  {/* Briefkopf: Wappen, gravierte Wortmarke, faktische Zeile, Zierlinie. */}
+<BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), personSchema(), projectsSchema())}>
+  {/* Briefkopf: Wappen, Wortmarke, faktische Zeile, Profile, Zierlinie. */}
   <section class="wrap masthead">
     <Crest size="clamp(4.5rem, 3.5rem + 4vw, 7.5rem)" class="masthead__crest" />
-    <h1 class="mark masthead__name">{PERSON.givenName} {PERSON.familyName}</h1>
+    <h1 class="mark masthead__name">{inhalt.name}</h1>
     <hr class="rule rule--brass masthead__rule" />
-    <p class="label masthead__role"><span>{PERSON.jobTitle}</span><span class="masthead__sep" aria-hidden="true"> · </span><span>{PERSON.homeLocation}</span></p>
-    <p class="masthead__lead">Ich baue Apps, Software und Marken.</p>
+    <p class="label masthead__role">
+      <span>{inhalt.titel}</span>
+      {inhalt.ort && <><span class="masthead__sep" aria-hidden="true"> · </span><span>{inhalt.ort}</span></>}
+    </p>
+    {inhalt.intro && <p class="masthead__lead">{inhalt.intro}</p>}
     <p class="masthead__contact">
       <a class="link" href="/kontakt/">Kontakt</a>
       {channels.map((c) => <a class="link" href={c.url} rel="me noopener">{c.name}</a>)}
@@ -51,93 +32,36 @@ const directory = [
     <hr class="rule rule--double masthead__close" />
   </section>
 
-  <nav class="wrap directory space-b" aria-label="Verzeichnis">
-    <ul role="list" class="directory__list">
-      {directory.map((d, i) => (
-        <li class="directory__item" data-reveal={String(i * 50)}>
-          <a href={d.href} class="directory__link plain">
-            <span class="display directory__label">{d.label}</span>
-            <span class="directory__desc">{d.desc}</span>
-            <span class="directory__count">{d.count !== null ? d.count : '—'}</span>
-          </a>
-        </li>
-      ))}
-    </ul>
-  </nav>
-
-  <section class="space" aria-labelledby="projects-h">
-    <div class="wrap">
-      <div class="sec sec--ruled selection__head" data-reveal>
-        <h2 id="projects-h" class="khead">Ausgewählte Projekte</h2>
-        <p class="selection__intro">
-          <span>{projects.length} Apps, Websites, Plattformen und Unternehmen.</span>
-          <a class="link" href="/projekte/">Vollständiges Verzeichnis</a>
-        </p>
-      </div>
-      <div class="selection" data-reveal="80">
-        {selection.map((p) => <ProjectCard project={p} uniform sizes="(min-width: 900px) 22vw, 45vw" />)}
-      </div>
-    </div>
-  </section>
-
-  {explorations.length > 0 && (
-    <section class="wrap space">
-      <div class="sec sec--ruled">
-        <h2 class="khead" data-reveal>Zuletzt geschrieben</h2>
-        <div data-reveal="60">
-          <ExplorationList items={explorations} />
-          <p class="sec__more"><a class="link" href="/explorationen/">Alle Explorationen ({allExplorations.length})</a></p>
-        </div>
+  {inhalt.abschnitte.map((a) => (
+    <section class="wrap abschnitt" id={a.id} aria-labelledby={`${a.id}-h`}>
+      <div class="sec">
+        <h2 id={`${a.id}-h`} class="khead">{a.titel}</h2>
+        {a.art === 'projekte' ? (
+          <ol role="list" class="projekte">
+            {a.projekte.map((p) => (
+              <li class="projekt" id={p.id}>
+                <div>
+                  <h3 class="projekt__titel">{p.titel}</h3>
+                  {p.rolle && <p class="meta projekt__rolle">{p.rolle}</p>}
+                </div>
+                <div class="projekt__text"><RichText blocks={p.text} /></div>
+                <div class="projekt__meta">
+                  {p.zeit && <p class="meta projekt__zeit">{p.zeit}</p>}
+                  {p.link && <a class="link" href={p.link} rel="noopener">{p.linkText}</a>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div class="prose"><RichText blocks={a.bloecke} /></div>
+        )}
       </div>
     </section>
-  )}
-
-  <section class="wrap space" aria-labelledby="topics-h">
-    <div class="sec sec--ruled" data-reveal>
-      <h2 id="topics-h" class="khead">Themen</h2>
-      <div>
-        <ul role="list" class="topics">
-          {topics.map((t, i) => (
-            <li data-reveal={String(i * 50)}><a class="display plain topics__link" href={`/themen/${t.id}/`}>{t.data.title}</a></li>
-          ))}
-        </ul>
-        <p class="sec__more"><a class="link" href="/themen/">Alle Themen</a></p>
-      </div>
-    </div>
-  </section>
-
-  <section class="wrap space about">
-    <figure class="about__img" data-reveal>
-      <Image src={portrait} alt={`Porträt von ${PERSON.name}`} widths={[360, 560, 800]} sizes="(min-width: 900px) 28vw, 80vw" />
-    </figure>
-    <div class="about__text" data-reveal="80">
-      <h2 class="khead">Über</h2>
-      <p class="display about__statement">{PERSON.description}</p>
-      <p class="about__links">
-        <a class="link" href="/ueber/">Über mich</a>
-        <a class="link" href="/presse/">Presse{press.length > 0 && ` (${press.length})`}</a>
-        <a class="link" href="/kontakt/">Kontakt</a>
-      </p>
-    </div>
-  </section>
-
-  {/* Kontakt: einzige marineblaue Bühne, geht nahtlos in die Fußzeile über. */}
-  <section class="stage stage--navy contact" aria-labelledby="contact-h">
-    <div class="wrap sec" data-reveal>
-      <h2 id="contact-h" class="khead">Kontakt</h2>
-      <div>
-        <p class="display contact__line">Für Anfragen, Presse und Zusammenarbeit.</p>
-        <p class="contact__links">
-          <a class="link" href="/kontakt/">Kontakt aufnehmen</a>
-          {channels.map((c) => <a class="link" href={c.url} rel="me noopener">{c.name}</a>)}
-        </p>
-      </div>
-    </div>
-  </section>
+  ))}
 </BaseLayout>
 
 <style>
-  /* Briefkopf: zentriert, symmetrisch, ruhig – wie eine gravierte Karte. */
+  /* Briefkopf: zentriert, symmetrisch, ruhig. */
   .masthead { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: clamp(3.5rem, 10vh, 7.5rem); padding-bottom: var(--s-6); }
   .masthead :global(.masthead__crest) { color: var(--navy); }
   .masthead__name {
@@ -147,72 +71,34 @@ const directory = [
   }
   .masthead__rule { margin-top: var(--s-5); }
   .masthead__role { margin-top: var(--s-4); color: var(--ink-soft); }
-  .masthead__lead { margin-top: var(--s-3); font-size: var(--t-m); font-weight: var(--w-light); color: var(--ink-soft); }
+  .masthead__lead { margin-top: var(--s-3); font-size: var(--t-m); font-weight: var(--w-light); color: var(--ink-soft); max-width: 32em; }
   .masthead__contact { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-2) var(--s-5); margin-top: var(--s-5); }
   .masthead__close { width: 100%; margin-top: var(--s-6); }
 
-  /* Verzeichnis: strenges Register, echte Zähler in Messing. */
-  .directory { padding-top: 0; }
-  .directory__item { border-bottom: 1px solid var(--line); }
-  .directory__link {
-    display: grid; grid-template-columns: 4fr 7fr 1fr; gap: var(--gutter);
-    align-items: baseline; padding-block: var(--s-4);
+  /* Abschnitte: Titel links, Inhalt rechts; ab dem zweiten mit feiner Linie. */
+  .abschnitt { padding-bottom: var(--s-6); }
+  .abschnitt + .abschnitt .sec { border-top: 1px solid var(--fg); padding-top: var(--s-4); }
+
+  /* Projekte: strenges Register – Titel & Rolle · Beschreibung · Zeit & Link. */
+  .projekt {
+    display: grid; grid-template-columns: 4fr 6fr 2fr; gap: var(--s-2) var(--gutter); align-items: baseline;
+    padding-block: var(--s-4); border-bottom: 1px solid var(--line); scroll-margin-top: 5rem;
   }
-  .directory__label {
-    font-size: var(--t-m); line-height: 1.2;
-    text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 0.18em;
-    transition: text-decoration-color var(--fast);
-  }
-  .directory__desc { font-size: var(--t-body); color: var(--fg-muted); }
-  .directory__count { text-align: right; font-size: var(--t-m); font-variant-numeric: tabular-nums; color: var(--accent); }
-  .directory__link:hover .directory__label { text-decoration-color: var(--accent); }
+  .projekt:first-child { padding-top: 0; }
+  .projekt__titel { font-size: var(--t-m); line-height: 1.2; }
+  .projekt__rolle { margin-top: var(--s-1); }
+  .projekt__text { color: var(--ink-soft); }
+  .projekt__text :global(p + p), .projekt__text :global(ul) { margin-top: var(--s-2); }
+  .projekt__text :global(ul) { padding-left: 1.1em; }
+  .projekt__meta { display: grid; gap: var(--s-1); justify-items: end; text-align: right; }
+  .projekt__zeit { font-variant-numeric: tabular-nums; }
 
-  .sec__more { margin-top: var(--s-5); }
-
-  /* Ausgewählte Projekte: strenges Raster, gleiche Formate. */
-  .selection__head { margin-bottom: var(--s-6); }
-  .selection__intro { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: var(--s-2) var(--s-5); color: var(--fg-muted); }
-  .selection { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); column-gap: var(--gutter); row-gap: var(--s-6); }
-
-  .topics { display: grid; }
-  .topics li { border-bottom: 1px solid var(--line); }
-  /* Unter der Sektionslinie keine zweite Linie. */
-  .sec--ruled :global(.xl__item:first-child) { border-top: 0; }
-  .topics__link {
-    display: block; padding-block: var(--s-3); font-size: var(--t-l); line-height: 1.15;
-    text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 0.16em;
-  }
-  .topics__link:hover { text-decoration-color: var(--accent); }
-
-  .about { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: center; }
-  /* Passepartout: Porträt im Rahmen, wie ein gerahmter Abzug. */
-  .about__img { grid-column: 2 / span 4; padding: var(--s-3); border: 1px solid var(--line-strong); background: var(--paper-deep); }
-  .about__img :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
-  .about__text { grid-column: 7 / span 5; }
-  .about__statement { margin-top: var(--s-4); font-size: var(--t-l); line-height: 1.2; }
-  .about__links { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); margin-top: var(--s-5); }
-
-  .contact { padding-block: var(--s-7); }
-  .contact__line { font-size: var(--t-xl); line-height: 1.1; max-width: 14em; }
-  .contact__links { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); margin-top: var(--s-5); }
-
-  @media (max-width: 1100px) {
-    .selection { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  }
-  @media (max-width: 900px) {
-    .about { grid-template-columns: 1fr; }
-    .about__img, .about__text { grid-column: 1; }
-    .about__img { max-width: 70%; margin-bottom: var(--s-5); }
-    .selection__intro { justify-content: flex-start; }
-  }
   @media (max-width: 600px) {
     .masthead__role span { display: block; }
     .masthead__role .masthead__sep { display: none; }
   }
   @media (max-width: 760px) {
-    .directory__link { grid-template-columns: 1fr auto; gap: var(--s-1) var(--s-3); }
-    .directory__desc { grid-column: 1 / -1; }
-    .directory__count { grid-row: 1; grid-column: 2; }
-    .selection { row-gap: var(--s-5); }
+    .projekt { grid-template-columns: 1fr; }
+    .projekt__meta { justify-items: start; text-align: left; }
   }
 </style>

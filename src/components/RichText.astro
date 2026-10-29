@@ -1,0 +1,13 @@
+---
+/** Rendert Freitext aus INHALT.md (Absätze, Aufzählungen, Zwischentitel, Links). */
+import type { Block } from '@/lib/inhalt';
+
+export interface Props { blocks: Block[] }
+const { blocks } = Astro.props;
+---
+
+{blocks.map((b) =>
+  b.type === 'p' ? <p>{b.inline.map((s) => (s.href ? <a href={s.href} rel="noopener">{s.text}</a> : s.text))}</p>
+  : b.type === 'ul' ? <ul>{b.items.map((it) => <li>{it.map((s) => (s.href ? <a href={s.href} rel="noopener">{s.text}</a> : s.text))}</li>)}</ul>
+  : <h3>{b.text}</h3>
+)}

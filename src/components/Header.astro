@@ -13,27 +13,15 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
       <span class="mark header__name">{SITE.name}</span>
     </a>
 
-    <nav class="header__nav" aria-label="Hauptnavigation" id="nav">
+    <nav class="header__nav" aria-label="Hauptnavigation">
       <ul role="list">
         {NAV.map((item) => (
           <li><a href={item.href} class="plain" aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a></li>
         ))}
       </ul>
     </nav>
-
-    <button class="header__toggle label" type="button" aria-expanded="false" aria-controls="nav" data-menu>Menü</button>
   </div>
 </header>
-
-<script>
-  const btn = document.querySelector<HTMLButtonElement>('[data-menu]');
-  btn?.addEventListener('click', () => {
-    const open = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!open));
-    btn.textContent = open ? 'Menü' : 'Schließen';
-    document.documentElement.classList.toggle('menu-open', !open);
-  });
-</script>
 
 <style>
   .header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid var(--line); }
@@ -51,24 +39,6 @@ const isActive = (href: string) => path === href || (href !== '/' && path.starts
   .header__nav a:hover { color: var(--ink); text-decoration-color: var(--line-strong); }
   .header__nav a[aria-current='page'] { color: var(--ink); text-decoration-color: var(--accent); }
 
-  .header__toggle { display: none; color: var(--ink); }
-
-  @media (max-width: 960px) {
-    .header__toggle { display: block; }
-    .header__nav {
-      position: fixed; inset: 0; z-index: -1; background: var(--bg);
-      display: flex; align-items: flex-end; padding: var(--gutter) var(--gutter) 16vh;
-      opacity: 0; visibility: hidden; transition: opacity var(--fast), visibility var(--fast);
-    }
-    :global(.menu-open) .header__nav { opacity: 1; visibility: visible; }
-    :global(.menu-open) body { overflow: hidden; }
-    .header__nav ul { flex-direction: column; gap: var(--s-2); width: 100%; }
-    .header__nav li { border-top: 1px solid var(--line); padding-top: var(--s-2); }
-    .header__nav a {
-      font-family: var(--font); font-size: var(--t-l); font-weight: var(--w-regular); text-transform: none; letter-spacing: 0;
-      color: var(--ink); line-height: 1.2; text-underline-offset: 0.2em;
-    }
-  }
   @media (max-width: 400px) {
     .header__name { letter-spacing: 0.12em; font-size: var(--t-s); }
     .header__brand { gap: var(--s-2); }
