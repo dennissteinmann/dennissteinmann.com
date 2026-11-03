@@ -3,7 +3,7 @@
  * Wissensgraphen rund um die Person. @ids NIE ändern – siehe docs/SEO.md.
  */
 import { SITE, PERSON, activeChannels } from '@/site.config';
-import { getTopics, getPress } from './content';
+import { getInhalt, blockText, type Eintrag } from './inhalt';
 
 export const ID = {
   person: `${SITE.url}/#person`,
@@ -12,13 +12,8 @@ export const ID = {
 export const PERSON_IMAGE = '/media/brand/dennis-steinmann.jpg';
 export const abs = (path: string) => new URL(path, SITE.url).href;
 
-/**
- * Person mit Expertise (`knowsAbout` → Themen-Hubs) und Presse (`subjectOf`).
- * Async, weil Themen & Presse aus den Collections kommen.
- */
-export async function personSchema() {
-  const topics = await getTopics();
-  const press = await getPress();
+/** Person (alle Angaben aus INHALT.md); Profile werden zu `sameAs`. */
+export function personSchema() {
   const sameAs = activeChannels().map((c) => c.url);
   return {
     '@type': 'Person',
@@ -26,24 +21,52 @@ export async function personSchema() {
     name: PERSON.name,
     givenName: PERSON.givenName,
     familyName: PERSON.familyName,
-    url: abs('/ueber/'),
+    url: abs('/'),
     image: abs(PERSON_IMAGE),
     jobTitle: PERSON.jobTitle,
     description: PERSON.description,
     nationality: PERSON.nationality,
     homeLocation: { '@type': 'Country', name: PERSON.homeLocation },
-    knowsAbout: topics.map((t) => ({
-      '@type': 'Thing',
-      name: t.data.title,
-      description: t.data.definition,
-      url: abs(`/themen/${t.id}/`),
-      ...(t.data.sameAs ? { sameAs: t.data.sameAs } : {}),
-    })),
     ...(sameAs.length ? { sameAs } : {}),
-    ...(press.length
-      ? { subjectOf: press.map((p) => ({ '@type': 'NewsArticle', headline: p.data.title, publisher: { '@type': 'Organization', name: p.data.outlet }, datePublished: p.data.date.toISOString(), ...(p.data.url ? { url: p.data.url } : {}) })) }
-      : {}),
   };
+}
+
+/**
+ * Register aus INHALT.md als ItemLists (je mit Anker auf der Startseite):
+ * Unternehmen → Organization (Person als founder, wenn die Rolle „Gründ…“ enthält),
+ * Projekte → CreativeWork (Person als creator).
+ */
+export function registerSchemas() {
+  const { unternehmen, projekte } = getInhalt();
+  const beschreibung = (e: Eintrag) => [e.rolle, e.zeit, blockText(e.text)].filter(Boolean).join(' · ');
+  const liste = (id: string, name: string, items: object[]) => ({
+    '@type': 'ItemList',
+    '@id': `${abs('/')}#${id}`,
+    name,
+    itemListElement: items.map((item, i) => ({ '@type': 'ListItem', position: i + 1, item })),
+  });
+  const out: object[] = [];
+  if (unternehmen.length) {
+    out.push(liste('unternehmen', `Unternehmen von ${PERSON.name}`, unternehmen.map((e) => ({
+      '@type': 'Organization',
+      '@id': `${abs('/')}#${e.id}`,
+      name: e.titel,
+      ...(beschreibung(e) ? { description: beschreibung(e) } : {}),
+      ...(e.link ? { url: e.link } : {}),
+      ...(/gr(ü|ue)nd/i.test(e.rolle ?? '') ? { founder: { '@id': ID.person } } : {}),
+    }))));
+  }
+  if (projekte.length) {
+    out.push(liste('projekte', `Projekte von ${PERSON.name}`, projekte.map((e) => ({
+      '@type': 'CreativeWork',
+      '@id': `${abs('/')}#${e.id}`,
+      name: e.titel,
+      ...(beschreibung(e) ? { description: beschreibung(e) } : {}),
+      ...(e.link ? { url: e.link } : {}),
+      creator: { '@id': ID.person },
+    }))));
+  }
+  return out;
 }
 
 export function websiteSchema() {

@@ -23,9 +23,24 @@ site_url: https://dennissteinmann.com
 display_url: https://dennissteinmann.com
 
 collections:
+  # ── INHALT DER WEBSITE: die ganze Seite in einer Datei (INHALT.md) ──────────
+  # Bewusst ein reines Textfeld: das einfache Format (siehe Kommentar oben in
+  # INHALT.md) bleibt so Zeichen für Zeichen erhalten.
+  - name: inhalt
+    label: Inhalt der Website
+    description: Name, Tätigkeit, Profile, Projekte und weitere Abschnitte – alles in INHALT.md.
+    files:
+      - name: inhalt
+        label: INHALT.md
+        file: INHALT.md
+        fields:
+          - { name: body, label: Inhalt, widget: text }
+
+  # Die folgenden Sammlungen sind derzeit NICHT auf der Website (docs/DECISIONS.md,
+  # 2026-10-29). Inhalte bleiben erhalten und können später wieder aktiviert werden.
   # ── PROJEKTE & UNTERNEHMEN (eine Collection, „Art" unterscheidet) ──────────
   - name: projects
-    label: Projekte & Unternehmen
+    label: Archiv · Projekte & Unternehmen
     label_singular: Projekt
     description: Apps, Software, Websites, Unternehmen, Plattformen, Medien, Forschung.
     folder: src/content/projects
@@ -81,7 +96,7 @@ collections:
 
   # ── EXPLORATIONEN (Langform) ────────────────────────────────────────────────
   - name: explorations
-    label: Explorationen
+    label: Archiv · Explorationen
     label_singular: Exploration
     folder: src/content/explorations
     path: '{{fields.slug}}/index'
@@ -125,7 +140,7 @@ collections:
 
   # ── THEMEN (Experten-Hubs) ──────────────────────────────────────────────────
   - name: topics
-    label: Themen
+    label: Archiv · Themen
     label_singular: Thema
     folder: src/content/topics
     extension: mdx
@@ -153,7 +168,7 @@ collections:
 
   # ── MEDIEN ──────────────────────────────────────────────────────────────────
   - name: media
-    label: Medien
+    label: Archiv · Medien
     label_singular: Medium
     folder: src/content/media
     extension: mdx
@@ -177,7 +192,7 @@ collections:
 
   # ── PRESSE ──────────────────────────────────────────────────────────────────
   - name: press
-    label: Presse
+    label: Archiv · Presse
     label_singular: Presse-Eintrag
     folder: src/content/press
     extension: mdx
@@ -197,7 +212,7 @@ collections:
 
   # ── LOGBUCH ─────────────────────────────────────────────────────────────────
   - name: log
-    label: Logbuch
+    label: Archiv · Logbuch
     label_singular: Log-Eintrag
     folder: src/content/log
     extension: mdx

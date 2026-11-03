@@ -86,7 +86,7 @@ for (const [, loc] of sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) {
   const html = fs.readFileSync(path.join(DIST, p, 'index.html'), 'utf8');
   if (/<meta name="robots" content="noindex/.test(html)) errors.push(`sitemap.xml: ${loc} ist noindex`);
 }
-for (const f of ['robots.txt', 'llms.txt', 'llms-full.txt', 'rss.xml', 'og/default.png']) {
+for (const f of ['robots.txt', 'llms.txt', 'og/default.png']) {
   if (!fs.existsSync(path.join(DIST, f))) errors.push(`${f} fehlt`);
 }
 

@@ -4,6 +4,11 @@ Git-basiert (Sveltia CMS). Kein Server, keine Datenbank, kein Vendor-Lock-in: In
 MDX im Repo. **Speichern = Commit = automatisches Deploy** (`deploy.yml`). Nicht öffentlich
 (noindex + in `robots.txt` gesperrt). Dateien: `public/admin/`.
 
+**Stand 2026-10-29:** Der erste Eintrag **„Inhalt der Website“** öffnet `INHALT.md` – die eine
+Datei, aus der die ganze Website entsteht (Format: `docs/CONTENT.md`). Bewusst ein reines
+Textfeld, damit das Format unverändert bleibt. Die übrigen Sammlungen sind als **„Archiv ·“**
+markiert und derzeit nicht auf der Website.
+
 **Projekte und Unternehmen sind dieselbe Collection** – das Feld **Art** (`kind`) unterscheidet
 (`unternehmen` = Firma, `app`/`website`/… = Produkt). Kein zweites Verzeichnis nötig.
 

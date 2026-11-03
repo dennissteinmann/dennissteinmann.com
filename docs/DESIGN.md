@@ -88,6 +88,7 @@ Zeilenhöhe 1.65. Sperrungen: `--track-mark` (Wortmarke), `--track-head` (Sektio
 | `BaseLayout` | Pflicht für jede Seite |
 | `Header` | Wappen + Wortmarke links, Etiketten-Navigation rechts; aktive Seite mit Messing-Unterstrich |
 | `PageHeader` | Titel (+ ein Satz) + Brotkrumen + Zierlinie |
+| `RichText` | Freitext aus `INHALT.md` (Absätze, Aufzählungen, Links) |
 | `Footer` | Marineblaue Bühne: Wappen in Messing, Wortmarke, Spalten mit Etiketten-Köpfen |
 | `ExplorationList` | typografischer Index: Datum · Titel/Beschreibung · Art |
 | `ProjectCard` | 4 Varianten nach `kind`; `uniform` = gemeinsames Hochformat 4:5 für Raster |
@@ -113,8 +114,9 @@ sich schreibt.
   Dennis' eigenen Texten (Explorationen, Über).
 - ❌ Pathos, Metaphern, Leitsätze als Headline, Latein/Motto im UI, Superlative, Füllwörter,
   Selbstlob, Startup-Jargon („Lass uns …“, „Let's build“).
-- Die Startseite führt mit **Wappen → Name → faktische Zeile → Zierlinie → Verzeichnis**.
-  Das Verzeichnis (`index.astro`) ist das Herzstück: ein Bereich pro Zeile, mit echtem Zähler.
+- Die Startseite (Stand 2026-10-29: die ganze Website) führt mit **Wappen → Name → faktische
+  Zeile → Profile → Zierlinie → Projekte**. Projekte als strenges Register: Titel & Rolle ·
+  Beschreibung · Zeit & Link. Alles aus `INHALT.md`; weitere Abschnitte nur, wenn sie Text haben.
 
 ## 7. Mechanik
 

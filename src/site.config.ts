@@ -1,70 +1,48 @@
 /**
- * Single Source of Truth für Identität, Navigation und Kanäle.
- * Alles, was an mehr als einer Stelle auftaucht, wird HIER gepflegt.
+ * Technische Konstanten der Website. Alles, was Dennis inhaltlich pflegt
+ * (Name, Tätigkeit, Profile, Projekte), kommt aus INHALT.md – hier wird es
+ * nur für Metadaten, JSON-LD und Navigation aufbereitet.
  */
+import { getInhalt } from './lib/inhalt';
+
+const inhalt = getInhalt();
+const herkunft = inhalt.ort ? ` aus ${inhalt.ort}` : '';
 
 export const SITE = {
   url: 'https://dennissteinmann.com',
-  name: 'Dennis Steinmann',
+  name: inhalt.name,
   lang: 'de',
   locale: 'de_DE',
-  description:
-    'Dennis Steinmann ist Unternehmer und Produktentwickler aus Deutschland. Diese Seite bündelt seine Projekte, Explorationen, Medien und Presse an einem Ort.',
-  /** Identitätszeile (Startseite & Standard-OG-Bild). Faktisch, kein Pathos. */
-  statement: 'Unternehmer und Produktentwickler aus Deutschland.',
-  motto: 'Gradatim Ferociter',
-  mottoTranslation: 'Schritt für Schritt, mit Entschlossenheit.',
+  /** Meta-Description der Startseite. */
+  description: `${inhalt.name} – ${inhalt.titel}${herkunft}.${inhalt.intro ? ` ${inhalt.intro}` : ''} Projekte und Kontakt.`,
+  /** Identitätszeile (Standard-OG-Bild). */
+  statement: `${inhalt.titel}${herkunft}.`,
   startYear: 2026,
 } as const;
 
-/**
- * Die Person als Entität (JSON-LD Person, Über, Presse, llms.txt).
- * Expertise wird NICHT hier gepflegt, sondern als Themen-Dateien in
- * src/content/topics/ – jede wird zu einer eigenen Experten-Seite.
- */
+/** Die Person als Entität (JSON-LD Person, llms.txt). */
 export const PERSON = {
-  name: 'Dennis Steinmann',
-  givenName: 'Dennis',
-  familyName: 'Steinmann',
-  jobTitle: 'Unternehmer und Produktentwickler',
-  description:
-    'Dennis Steinmann ist Unternehmer und Produktentwickler aus Deutschland. Er baut Apps, Software und Marken und schreibt über Technologie, Unternehmertum und künstliche Intelligenz.',
-  homeLocation: 'Deutschland',
+  name: inhalt.name,
+  givenName: inhalt.givenName,
+  familyName: inhalt.familyName,
+  jobTitle: inhalt.titel,
+  description: `${inhalt.name} ist ${inhalt.titel}${herkunft}.`,
+  homeLocation: inhalt.ort ?? 'Deutschland',
   nationality: 'Deutsch',
+  email: inhalt.email,
 };
 
-/**
- * Kanäle (Social Media & Profile). Einzige Quelle für:
- * Footer, Presse-Seite, JSON-LD `sameAs`, Studio-Übersicht.
- * TODO(dennis): URLs eintragen – Einträge ohne URL werden ignoriert.
- */
-export type Channel = { id: string; name: string; url?: string; handle?: string };
-export const CHANNELS: Channel[] = [
-  { id: 'linkedin', name: 'LinkedIn' },
-  { id: 'instagram', name: 'Instagram' },
-  { id: 'x', name: 'X' },
-  { id: 'youtube', name: 'YouTube' },
-  { id: 'tiktok', name: 'TikTok' },
-  { id: 'github', name: 'GitHub', url: 'https://github.com/dennissteinmann', handle: 'dennissteinmann' },
-];
-export const activeChannels = () => CHANNELS.filter((c): c is Channel & { url: string } => !!c.url);
+/** Profile (LinkedIn, GitHub …) aus INHALT.md: Fußzeile, Startseite, JSON-LD `sameAs`. */
+export type Channel = { name: string; url: string };
+export const activeChannels = (): Channel[] => inhalt.profile;
 
-export type NavItem = { label: string; href: string; description?: string };
+export type NavItem = { label: string; href: string };
 
-/** Hauptnavigation – bewusst kurz. */
-export const NAV: NavItem[] = [
-  { label: 'Explorationen', href: '/explorationen/', description: 'Langform-Gedanken, Theorien und Geschichten' },
-  { label: 'Projekte', href: '/projekte/', description: 'Apps, Software, Unternehmen und Medien' },
-  { label: 'Themen', href: '/themen/', description: 'Woran ich denke und wofür ich stehe' },
-  { label: 'Medien', href: '/medien/', description: 'Bilder, Videos, Auftritte und Dokumente' },
-  { label: 'Presse', href: '/presse/', description: 'Bio, Fotos, Fakten und Berichterstattung' },
-  { label: 'Über', href: '/ueber/', description: 'Über Dennis Steinmann' },
-];
+/** Hauptnavigation: bewusst minimal – die Startseite ist das Projektverzeichnis. */
+export const NAV: NavItem[] = [{ label: 'Kontakt', href: '/kontakt/' }];
 
 export const FOOTER_NAV: NavItem[] = [
-  { label: 'Logbuch', href: '/logbuch/' },
   { label: 'Kontakt', href: '/kontakt/' },
-  { label: 'RSS', href: '/rss.xml' },
   { label: 'Impressum', href: '/impressum/' },
   { label: 'Datenschutz', href: '/datenschutz/' },
 ];

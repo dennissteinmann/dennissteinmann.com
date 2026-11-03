@@ -4,6 +4,31 @@ Neue Einträge oben anfügen. Format: Datum · Entscheidung · Begründung · Ko
 
 ---
 
+### 2026-10-29 · Minimal: eine Datei (INHALT.md), nur Projekte
+**Begründung:** Vorgabe von Dennis: Website so weit wie möglich reduzieren, den gesamten Inhalt
+über **eine einzige Datei** steuern, Bereiche „über mich / mein Denken“ vorerst leeren und sich
+auf die **Projekte** konzentrieren (Quelle: LinkedIn-Profil). **Konsequenz:**
+- **`INHALT.md`** (Repo-Wurzel) ist die einzige Inhaltsquelle der Website: Name, Tätigkeit,
+  Einleitung, Ort, E-Mail, Profile, Projekte (`### Titel` + `Rolle/Zeit/Link` + Text) und
+  beliebige weitere Abschnitte (leer = ausgeblendet). Klartext-Format statt YAML, damit es sich
+  im GitHub-Editor auf dem Handy pflegen lässt. Parser: `src/lib/inhalt.ts` – Fehler brechen den
+  Build mit Zeilenangabe ab (nie eine kaputte Seite live). `site.config.ts` leitet SITE/PERSON/
+  Profile daraus ab. Im CMS als erster Eintrag („Inhalt der Website“, reines Textfeld).
+- **Website = eine Seite:** Briefkopf → Projekte → weitere Abschnitte. Daneben nur `/kontakt/`,
+  `/impressum/`, `/datenschutz/`, `404`, `sitemap.xml`, `robots.txt`, `llms.txt`, `og/default.png`.
+  Navigation: nur „Kontakt“.
+- **Vorübergehend offline (Entscheidung des Inhabers):** `/explorationen/…`, `/themen/…`,
+  `/projekte/…`, `/medien/`, `/presse/`, `/logbuch/`, `/ueber/`, `/studio/`, `/social/…`,
+  `/rss.xml`, `/llms-full.txt`, Markdown- und OG-Bilder je Exploration/Projekt. Bewusste Ausnahme
+  vom URL-Vertrag (die Bereiche waren erst wenige Wochen online). **Nur die Routen wurden
+  entfernt** – Inhalte (`src/content/*`), Komponenten und Hilfsfunktionen bleiben. Reaktivieren =
+  Routen aus diesem Commit per `git revert` zurückholen und Navigation/`urls.ts`/`llms.txt`
+  ergänzen; die alten Slugs gelten dann unverändert weiter.
+- JSON-LD: `Person` (`/#person`, unverändert) + `ItemList` der Projekte mit Ankern (`/#<projekt>`).
+- Nachtrag: Jeder Abschnitt ist ein Register aus `### Einträgen` mit `Rolle/Zeit/Ort/Status/Link`
+  (Unternehmen, Projekte, Werdegang, Ausbildung …); „Unternehmen“ wird als `Organization`
+  (mit `founder`, wenn die Rolle „Gründer“ enthält) ausgegeben.
+
 ### 2026-10-19 · Designsystem v5 „Weißes Kontor“: keine Serifen, Bauhaus-Schrift, mehr Weiß
 **Begründung:** Vorgabe von Dennis: „No serifs, font style Bauhaus. More white.“ Die
 institutionelle Struktur von v4 (Wappen, Zierlinie, Register, Sie-Form, keine Rundungen) bleibt;

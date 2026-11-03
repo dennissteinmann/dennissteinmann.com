@@ -1,6 +1,62 @@
 # Inhalte pflegen
 
-Alle Inhalte sind Dateien in `src/content/`. Kein CMS – versioniert, portabel, in 20 Jahren lesbar.
+## Stand 2026-10-29: eine Datei – `INHALT.md`
+
+Die gesamte Website entsteht aus **`INHALT.md`** im Hauptordner des Repos. Bearbeiten (lokal, im
+GitHub-Editor – auch auf dem Handy – oder im CMS unter „Inhalt der Website“) → speichern auf
+`main` → nach ca. 1 Minute live. Fehler im Format brechen den Build mit Zeilenangabe ab; die
+alte Version bleibt dann online.
+
+```markdown
+# Dennis Steinmann                 ← Name (genau einmal, ganz oben)
+Unternehmer und Produktentwickler  ← erste Zeile: Tätigkeit
+Ich baue Apps, Software und Marken. ← weitere Zeilen: Einleitung
+
+Ort: Deutschland
+E-Mail: hello@dennissteinmann.com
+LinkedIn: https://www.linkedin.com/in/dennissteinmann   ← jedes „Name: https://…“ = Profil
+
+## Unternehmen                     ← Abschnitt; erscheint nur mit Inhalt
+
+### Trusted Brands UG               ← jeder Eintrag beginnt mit ###
+Rolle: Gründer & Geschäftsführer   ← alle Schlüssel optional
+Zeit: seit 2024                    ← freier Text
+Ort: Löhne
+Status: aktiv                      ← z. B. aktiv, verkauft, beendet
+Link: https://tbrands.de           ← muss mit https:// beginnen
+Beschreibung, beliebig lang. [Links](https://…) und Aufzählungen mit „- “ sind möglich.
+
+## Projekte
+### …
+
+## Werdegang
+### Geschäftsführer, Trusted Brands UG
+Zeit: 2024 – heute
+- Aufgaben und Ergebnisse
+
+## Ausbildung
+### Abschluss, Hochschule
+Zeit: 2015 – 2019
+
+## Über mich
+Freier Text ohne ### – erscheint als Fließtext.
+```
+
+- Jeder Abschnitt wird als **Register** dargestellt: Titel & Rolle · Beschreibung · Zeit, Ort,
+  Status, Link. Text vor dem ersten `###` eines Abschnitts erscheint als Einleitung.
+- Abschnittsnamen sind frei. „Unternehmen“ (oder „Firmen“) und „Projekte“ werden zusätzlich als
+  strukturierte Daten (JSON-LD `Organization` bzw. `CreativeWork`) ausgegeben.
+- Reihenfolge in der Datei = Reihenfolge auf der Website (Abschnitte und Einträge).
+- `<!-- Kommentare -->` erscheinen nie – gut für Notizen, Vorlagen und Unfertiges.
+- Jeder Eintrag bekommt einen Anker aus seinem Titel (`/#trusted-brands-ug`); kommt ein Titel in
+  zwei Abschnitten vor, mit Abschnittsnamen davor (`/#werdegang-trusted-brands-ug`).
+- Parser & Regeln: `src/lib/inhalt.ts`.
+
+## Archiv (derzeit nicht auf der Website)
+
+Die folgenden Collections in `src/content/` bleiben erhalten, werden aber nicht gebaut
+(`docs/DECISIONS.md`, 2026-10-29). Rechtstexte (`pages/impressum`, `datenschutz`, `kontakt`)
+sind weiterhin aktiv.
 
 ## Schnellstart
 

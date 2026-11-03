@@ -1,5 +1,11 @@
 # SEO & AI Search Optimization (AISO)
 
+> **Stand 2026-10-29 (minimal):** Online sind nur `/` (Projekte aus `INHALT.md`, JSON-LD `Person`
+> + `ItemList` der Projekte mit Ankern `/#<projekt>`), `/kontakt/`, `/impressum/`,
+> `/datenschutz/` sowie `sitemap.xml`, `robots.txt`, `llms.txt`. Explorationen, Themen, Presse,
+> RSS und `llms-full.txt` sind vorübergehend offline (`docs/DECISIONS.md`). Die folgenden
+> Abschnitte beschreiben die volle Architektur für die spätere Reaktivierung.
+
 Ziel: **Jahrzehntelange Auffindbarkeit** – in Google/Bing, in KI-Suche (ChatGPT Search,
 Perplexity, Google AI Overviews, Claude) und offline (stabile, druckbare URLs).
 Leitsatz: *Eine Person, eine Domain, stabile URLs, eindeutige Aussagen, maschinenlesbar.*
