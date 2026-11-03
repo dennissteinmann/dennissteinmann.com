@@ -27,13 +27,12 @@ export const GET: APIRoute = async () => {
     ...inhalt.abschnitte.flatMap((a) => [
       `## ${a.titel}`,
       '',
-      ...(a.art === 'projekte'
-        ? a.projekte.map((p) => {
-            const meta = [p.rolle, p.zeit].filter(Boolean).join(', ');
-            const text = blockText(p.text);
-            return `- [${p.titel}](${p.link ?? u(`/#${p.id}`)})${meta ? ` (${meta})` : ''}${text ? `: ${text}` : ''}`;
-          })
-        : [blockText(a.bloecke)]),
+      ...(a.intro.length ? [blockText(a.intro), ''] : []),
+      ...a.eintraege.map((e) => {
+        const meta = [e.rolle, e.zeit, e.ort, e.status].filter(Boolean).join(', ');
+        const text = blockText(e.text);
+        return `- [${e.titel}](${e.link ?? u(`/#${e.id}`)})${meta ? ` (${meta})` : ''}${text ? `: ${text}` : ''}`;
+      }),
       '',
     ]),
     '## Optional',

@@ -1,20 +1,21 @@
 ---
 /**
- * Startseite = die ganze Website: Briefkopf, Projekte und alle weiteren
- * Abschnitte – vollständig aus INHALT.md. Leere Abschnitte erscheinen nicht.
+ * Startseite = die ganze Website: Briefkopf und alle Abschnitte (Unternehmen,
+ * Projekte, Werdegang …) – vollständig aus INHALT.md. Jeder Abschnitt ist ein
+ * Register aus Einträgen; leere Abschnitte erscheinen nicht.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Crest from '@/components/Crest.astro';
 import RichText from '@/components/RichText.astro';
 import { SITE, activeChannels } from '@/site.config';
 import { getInhalt } from '@/lib/inhalt';
-import { graph, personSchema, projectsSchema, websiteSchema } from '@/lib/seo';
+import { graph, personSchema, registerSchemas, websiteSchema } from '@/lib/seo';
 
 const inhalt = getInhalt();
 const channels = activeChannels();
 ---
 
-<BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), personSchema(), projectsSchema())}>
+<BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), personSchema(), ...registerSchemas())}>
   {/* Briefkopf: Wappen, Wortmarke, faktische Zeile, Profile, Zierlinie. */}
   <section class="wrap masthead">
     <Crest size="clamp(4.5rem, 3.5rem + 4vw, 7.5rem)" class="masthead__crest" />
@@ -36,25 +37,28 @@ const channels = activeChannels();
     <section class="wrap abschnitt" id={a.id} aria-labelledby={`${a.id}-h`}>
       <div class="sec">
         <h2 id={`${a.id}-h`} class="khead">{a.titel}</h2>
-        {a.art === 'projekte' ? (
-          <ol role="list" class="projekte">
-            {a.projekte.map((p) => (
-              <li class="projekt" id={p.id}>
-                <div>
-                  <h3 class="projekt__titel">{p.titel}</h3>
-                  {p.rolle && <p class="meta projekt__rolle">{p.rolle}</p>}
-                </div>
-                <div class="projekt__text"><RichText blocks={p.text} /></div>
-                <div class="projekt__meta">
-                  {p.zeit && <p class="meta projekt__zeit">{p.zeit}</p>}
-                  {p.link && <a class="link" href={p.link} rel="noopener">{p.linkText}</a>}
-                </div>
-              </li>
-            ))}
-          </ol>
-        ) : (
-          <div class="prose"><RichText blocks={a.bloecke} /></div>
-        )}
+        <div>
+          {a.intro.length > 0 && <div class="prose abschnitt__intro"><RichText blocks={a.intro} /></div>}
+          {a.eintraege.length > 0 && (
+            <ol role="list" class="register">
+              {a.eintraege.map((e) => (
+                <li class="eintrag" id={e.id}>
+                  <div>
+                    <h3 class="eintrag__titel">{e.titel}</h3>
+                    {e.rolle && <p class="meta eintrag__rolle">{e.rolle}</p>}
+                  </div>
+                  <div class="eintrag__text"><RichText blocks={e.text} /></div>
+                  <div class="eintrag__meta">
+                    {e.zeit && <p class="meta eintrag__zeit">{e.zeit}</p>}
+                    {e.ort && <p class="meta">{e.ort}</p>}
+                    {e.status && <p class="label eintrag__status">{e.status}</p>}
+                    {e.link && <a class="link" href={e.link} rel="noopener">{e.linkText}</a>}
+                  </div>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
       </div>
     </section>
   ))}
@@ -79,26 +83,31 @@ const channels = activeChannels();
   .abschnitt { padding-bottom: var(--s-6); }
   .abschnitt + .abschnitt .sec { border-top: 1px solid var(--fg); padding-top: var(--s-4); }
 
-  /* Projekte: strenges Register – Titel & Rolle · Beschreibung · Zeit & Link. */
-  .projekt {
+  .abschnitt__intro { margin-bottom: var(--s-5); }
+
+  /* Register (Unternehmen, Projekte, Werdegang …): Titel & Rolle · Beschreibung · Zeit, Ort, Status, Link. */
+  .eintrag {
     display: grid; grid-template-columns: 4fr 6fr 2fr; gap: var(--s-2) var(--gutter); align-items: baseline;
     padding-block: var(--s-4); border-bottom: 1px solid var(--line); scroll-margin-top: 5rem;
   }
-  .projekt:first-child { padding-top: 0; }
-  .projekt__titel { font-size: var(--t-m); line-height: 1.2; }
-  .projekt__rolle { margin-top: var(--s-1); }
-  .projekt__text { color: var(--ink-soft); }
-  .projekt__text :global(p + p), .projekt__text :global(ul) { margin-top: var(--s-2); }
-  .projekt__text :global(ul) { padding-left: 1.1em; }
-  .projekt__meta { display: grid; gap: var(--s-1); justify-items: end; text-align: right; }
-  .projekt__zeit { font-variant-numeric: tabular-nums; }
+  .eintrag:first-child { padding-top: 0; }
+  .abschnitt__intro + .register .eintrag:first-child { padding-top: var(--s-4); border-top: 1px solid var(--line); }
+  .eintrag__titel { font-size: var(--t-m); line-height: 1.2; }
+  .eintrag__rolle { margin-top: var(--s-1); }
+  .eintrag__text { color: var(--ink-soft); }
+  .eintrag__text :global(p + p), .eintrag__text :global(ul) { margin-top: var(--s-2); }
+  .eintrag__text :global(ul) { padding-left: 1.1em; }
+  .eintrag__text :global(ul > li::marker) { content: '–  '; color: var(--grey); }
+  .eintrag__meta { display: grid; gap: var(--s-1); justify-items: end; text-align: right; }
+  .eintrag__zeit { font-variant-numeric: tabular-nums; }
+  .eintrag__status { color: var(--accent); }
 
   @media (max-width: 600px) {
     .masthead__role span { display: block; }
     .masthead__role .masthead__sep { display: none; }
   }
   @media (max-width: 760px) {
-    .projekt { grid-template-columns: 1fr; }
-    .projekt__meta { justify-items: start; text-align: left; }
+    .eintrag { grid-template-columns: 1fr; }
+    .eintrag__meta { justify-items: start; text-align: left; }
   }
 </style>

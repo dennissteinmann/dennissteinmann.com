@@ -25,6 +25,9 @@ auf die **Projekte** konzentrieren (Quelle: LinkedIn-Profil). **Konsequenz:**
   Routen aus diesem Commit per `git revert` zurückholen und Navigation/`urls.ts`/`llms.txt`
   ergänzen; die alten Slugs gelten dann unverändert weiter.
 - JSON-LD: `Person` (`/#person`, unverändert) + `ItemList` der Projekte mit Ankern (`/#<projekt>`).
+- Nachtrag: Jeder Abschnitt ist ein Register aus `### Einträgen` mit `Rolle/Zeit/Ort/Status/Link`
+  (Unternehmen, Projekte, Werdegang, Ausbildung …); „Unternehmen“ wird als `Organization`
+  (mit `founder`, wenn die Rolle „Gründer“ enthält) ausgegeben.
 
 ### 2026-10-19 · Designsystem v5 „Weißes Kontor“: keine Serifen, Bauhaus-Schrift, mehr Weiß
 **Begründung:** Vorgabe von Dennis: „No serifs, font style Bauhaus. More white.“ Die

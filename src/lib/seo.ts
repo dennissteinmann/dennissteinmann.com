@@ -3,7 +3,7 @@
  * Wissensgraphen rund um die Person. @ids NIE ändern – siehe docs/SEO.md.
  */
 import { SITE, PERSON, activeChannels } from '@/site.config';
-import { getInhalt, blockText } from './inhalt';
+import { getInhalt, blockText, type Eintrag } from './inhalt';
 
 export const ID = {
   person: `${SITE.url}/#person`,
@@ -31,29 +31,42 @@ export function personSchema() {
   };
 }
 
-/** Projekte aus INHALT.md als ItemList; jedes mit Anker auf der Startseite. */
-export function projectsSchema() {
-  const { projekte } = getInhalt();
-  return {
+/**
+ * Register aus INHALT.md als ItemLists (je mit Anker auf der Startseite):
+ * Unternehmen → Organization (Person als founder, wenn die Rolle „Gründ…“ enthält),
+ * Projekte → CreativeWork (Person als creator).
+ */
+export function registerSchemas() {
+  const { unternehmen, projekte } = getInhalt();
+  const beschreibung = (e: Eintrag) => [e.rolle, e.zeit, blockText(e.text)].filter(Boolean).join(' · ');
+  const liste = (id: string, name: string, items: object[]) => ({
     '@type': 'ItemList',
-    '@id': `${abs('/')}#projekte`,
-    name: `Projekte von ${PERSON.name}`,
-    itemListElement: projekte.map((p, i) => {
-      const description = [p.rolle, p.zeit, blockText(p.text)].filter(Boolean).join(' · ');
-      return {
-        '@type': 'ListItem',
-        position: i + 1,
-        item: {
-          '@type': 'CreativeWork',
-          '@id': `${abs('/')}#${p.id}`,
-          name: p.titel,
-          ...(description ? { description } : {}),
-          ...(p.link ? { url: p.link } : {}),
-          creator: { '@id': ID.person },
-        },
-      };
-    }),
-  };
+    '@id': `${abs('/')}#${id}`,
+    name,
+    itemListElement: items.map((item, i) => ({ '@type': 'ListItem', position: i + 1, item })),
+  });
+  const out: object[] = [];
+  if (unternehmen.length) {
+    out.push(liste('unternehmen', `Unternehmen von ${PERSON.name}`, unternehmen.map((e) => ({
+      '@type': 'Organization',
+      '@id': `${abs('/')}#${e.id}`,
+      name: e.titel,
+      ...(beschreibung(e) ? { description: beschreibung(e) } : {}),
+      ...(e.link ? { url: e.link } : {}),
+      ...(/gr(ü|ue)nd/i.test(e.rolle ?? '') ? { founder: { '@id': ID.person } } : {}),
+    }))));
+  }
+  if (projekte.length) {
+    out.push(liste('projekte', `Projekte von ${PERSON.name}`, projekte.map((e) => ({
+      '@type': 'CreativeWork',
+      '@id': `${abs('/')}#${e.id}`,
+      name: e.titel,
+      ...(beschreibung(e) ? { description: beschreibung(e) } : {}),
+      ...(e.link ? { url: e.link } : {}),
+      creator: { '@id': ID.person },
+    }))));
+  }
+  return out;
 }
 
 export function websiteSchema() {
