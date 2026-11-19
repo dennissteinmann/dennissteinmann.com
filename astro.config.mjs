@@ -1,6 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
+import { LAUNCHED } from './src/site.config.ts';
+import { placeholder } from './scripts/placeholder.mjs';
 
 // URL-Strategie (siehe docs/SEO.md): Verzeichnis-URLs mit Slash am Ende,
 // keine Dateiendungen, keine Datumsangaben im Pfad. Diese Einstellungen
@@ -20,7 +22,8 @@ export default defineConfig({
     // Responsive Bilder standardmäßig: srcset + sizes werden automatisch erzeugt.
     layout: 'constrained',
   },
-  integrations: [mdx()],
+  // Vor dem Livegang liefert der Build nur die Platzhalterseite aus (docs/DEPLOYMENT.md).
+  integrations: [mdx(), ...(LAUNCHED ? [] : [placeholder()])],
   markdown: {
     shikiConfig: {
       theme: 'vesper',

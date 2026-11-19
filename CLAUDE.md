@@ -99,6 +99,10 @@ scripts/                new.mjs (Content-CLI), check-dist.mjs (SEO-Check)
 
 ## Offene TODOs von Dennis (vor Livegang)
 
+> **Platzhalter-Modus aktiv:** `LAUNCHED = false` in `src/site.config.ts` → live ist nur die
+> „Im Aufbau“-Seite (+ Impressum, Datenschutz). `npm run dev` zeigt die volle Seite.
+> Livegang = `LAUNCHED = true` setzen. Details: `docs/DEPLOYMENT.md` → „Platzhalter-Modus“.
+
 - `src/site.config.ts` → `CHANNELS`: echte Profil-URLs (LinkedIn, Instagram, …)
 - Importierte Projekte prüfen (59 Stück, Quelle als Kommentar im MDX; Entwürfe ergänzen)
 - Themen-Positionen in eigenen Worten schärfen (`src/content/topics/*.mdx`)

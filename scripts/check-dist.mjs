@@ -7,9 +7,12 @@
  * lang-Attribut, OG-Bild, alt-Texte, JSON-LD parsebar, interne Links auflösbar.
  * Prüft global: jede Sitemap-URL existiert und ist nicht noindex; Designregeln
  * (keine Rundungen, keine Schatten, keine Serifen) im gebauten CSS.
+ * Platzhalter-Modus (LAUNCHED = false): nur erlaubte Dateien ausgeliefert.
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import { LAUNCHED } from '../src/site.config.ts';
+import { PLACEHOLDER_KEEP } from './placeholder.mjs';
 
 const DIST = path.resolve(import.meta.dirname, '..', 'dist');
 const SITE = 'https://dennissteinmann.com';
@@ -86,8 +89,17 @@ for (const [, loc] of sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) {
   const html = fs.readFileSync(path.join(DIST, p, 'index.html'), 'utf8');
   if (/<meta name="robots" content="noindex/.test(html)) errors.push(`sitemap.xml: ${loc} ist noindex`);
 }
-for (const f of ['robots.txt', 'llms.txt', 'llms-full.txt', 'rss.xml', 'og/default.png']) {
+const required = LAUNCHED ? ['robots.txt', 'llms.txt', 'llms-full.txt', 'rss.xml', 'og/default.png'] : ['index.html', 'robots.txt', 'og/default.png'];
+for (const f of required) {
   if (!fs.existsSync(path.join(DIST, f))) errors.push(`${f} fehlt`);
+}
+
+// Platzhalter-Modus: Es darf nichts ausgeliefert werden, was nicht auf der Liste steht.
+if (!LAUNCHED) {
+  for (const f of files) {
+    const r = path.relative(DIST, f).split(path.sep).join('/');
+    if (!PLACEHOLDER_KEEP.some((k) => (k.endsWith('/') ? r.startsWith(k) : r === k))) errors.push(`Platzhalter-Modus: ${r} wird ausgeliefert`);
+  }
 }
 
 warn.forEach((w) => console.warn(`⚠ ${w}`));

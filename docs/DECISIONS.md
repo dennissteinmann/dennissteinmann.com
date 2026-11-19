@@ -4,6 +4,25 @@ Neue Einträge oben anfügen. Format: Datum · Entscheidung · Begründung · Ko
 
 ---
 
+### 2026-11-19 · Platzhalter-Modus bis zum Livegang
+**Begründung:** Vorgabe von Dennis: vorerst eine minimalistische „Im Aufbau“-Seite statt der
+vollständigen Website (offene TODOs: Profile, importierte Projekte, Themen, Über-Text).
+Die fertige Seite soll dabei nicht gelöscht oder auf einen Branch verbannt werden, sondern
+weiter im Hauptzweig gepflegt, gebaut und geprüft werden. **Konsequenz:**
+- Schalter `LAUNCHED` in `src/site.config.ts` (Single Source of Truth). Bei `false` liefert
+  der Produktions-Build nur Platzhalter-Startseite, Impressum, Datenschutz, 404, robots.txt,
+  Sitemap (nur `/`), Icons und CMS aus; `npm run dev` zeigt weiter alles. Details und
+  Dateiliste: `docs/DEPLOYMENT.md` → „Platzhalter-Modus“.
+- Ausgeliefert wird bewusst **indexierbar**: Die Startseite trägt Name, Rolle und
+  Person-/WebSite-JSON-LD mit unveränderten `@id`s (`personSchemaBase()` ohne Verweise auf
+  noch nicht ausgelieferte Unterseiten). So kann die Domain schon jetzt für den Namen ranken.
+- Die vollständige Seite wurde seit Oktober bereits ausgeliefert. Ihre Unterseiten liefern im
+  Platzhalter-Modus **404** und kommen beim Livegang unter **unveränderten** URLs zurück – kein
+  Slug ändert sich, der URL-Vertrag bleibt gewahrt. Bewusst keine Weiterleitung auf `/`
+  (Google wertet das als Soft-404). llms.txt, llms-full.txt und RSS ruhen bis zum Livegang.
+- Rechtsseiten bleiben erreichbar (Impressumspflicht), Kopf- und Fußzeile im Platzhalter-Modus
+  ohne Navigation zu nicht ausgelieferten Bereichen. Kontakt-E-Mail neu als `SITE.email`.
+
 ### 2026-10-19 · Designsystem v5 „Weißes Kontor“: keine Serifen, Bauhaus-Schrift, mehr Weiß
 **Begründung:** Vorgabe von Dennis: „No serifs, font style Bauhaus. More white.“ Die
 institutionelle Struktur von v4 (Wappen, Zierlinie, Register, Sie-Form, keine Rundungen) bleibt;

@@ -8,6 +8,8 @@ import portrait from '@/assets/brand/portrait.jpg';
 import { SITE, PERSON, activeChannels } from '@/site.config';
 import { getExplorations, getProjects, getTopics, getMedia, getPress } from '@/lib/content';
 import { graph, personSchema, websiteSchema } from '@/lib/seo';
+import { PLACEHOLDER } from '@/lib/launch';
+import Placeholder from '@/components/Placeholder.astro';
 
 const allExplorations = await getExplorations();
 const explorations = allExplorations.slice(0, 3);
@@ -36,6 +38,8 @@ const directory = [
 ] as const;
 ---
 
+{/* Vor dem Livegang (LAUNCHED = false) zeigt der Produktions-Build nur den Platzhalter. */}
+{PLACEHOLDER ? <Placeholder /> : (
 <BaseLayout title={SITE.name} description={SITE.description} type="profile" jsonLd={graph(websiteSchema(), await personSchema())}>
   {/* Briefkopf: Wappen, gravierte Wortmarke, faktische Zeile, Zierlinie. */}
   <section class="wrap masthead">
@@ -135,6 +139,7 @@ const directory = [
     </div>
   </section>
 </BaseLayout>
+)}
 
 <style>
   /* Briefkopf: zentriert, symmetrisch, ruhig – wie eine gravierte Karte. */

@@ -1,9 +1,11 @@
 import type { APIRoute } from 'astro';
 import { SITE } from '@/site.config';
 import { getIndexableUrls } from '@/lib/urls';
+import { PLACEHOLDER } from '@/lib/launch';
 
 export const GET: APIRoute = async () => {
-  const urls = await getIndexableUrls();
+  // Platzhalter-Modus: nur die Startseite wird ausgeliefert.
+  const urls = (await getIndexableUrls()).filter((u) => !PLACEHOLDER || u.path === '/');
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls

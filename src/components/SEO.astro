@@ -3,8 +3,9 @@
  * Alle <head>-Metadaten an EINER Stelle. Seiten übergeben nur Daten.
  * Checkliste: docs/SEO.md
  */
-import { SITE } from '@/site.config';
+import { SITE, PERSON } from '@/site.config';
 import { abs } from '@/lib/seo';
+import { PLACEHOLDER } from '@/lib/launch';
 
 export interface Props {
   title: string;
@@ -23,7 +24,9 @@ export interface Props {
 
 const { title, description, canonical, image = '/og/default.png', imageAlt, type = 'website', noindex = false, publishedTime, modifiedTime, tags = [], jsonLd, markdownAlt } = Astro.props;
 const isHome = Astro.url.pathname === '/';
-const fullTitle = isHome ? `${SITE.name} – Explorationen, Projekte, Medien` : `${title} · ${SITE.name}`;
+// Platzhalter-Modus: Titel ohne die (noch nicht ausgelieferten) Bereiche, keine Verweise auf RSS/llms.txt.
+const homeTitle = PLACEHOLDER ? `${SITE.name} – ${PERSON.jobTitle}` : `${SITE.name} – Explorationen, Projekte, Medien`;
+const fullTitle = isHome ? homeTitle : `${title} · ${SITE.name}`;
 const canonicalURL = canonical ? abs(canonical) : new URL(Astro.url.pathname, SITE.url).href;
 const ogImage = abs(image);
 ---
@@ -54,8 +57,8 @@ const ogImage = abs(image);
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
 
-<link rel="alternate" type="application/rss+xml" title={`${SITE.name} – Explorationen`} href="/rss.xml" />
-<link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+{!PLACEHOLDER && <link rel="alternate" type="application/rss+xml" title={`${SITE.name} – Explorationen`} href="/rss.xml" />}
+{!PLACEHOLDER && <link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />}
 {markdownAlt && <link rel="alternate" type="text/markdown" title="Markdown" href={markdownAlt} />}
 <link rel="sitemap" href="/sitemap.xml" />
 
