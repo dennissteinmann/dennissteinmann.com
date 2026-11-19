@@ -13,12 +13,10 @@ export const PERSON_IMAGE = '/media/brand/dennis-steinmann.jpg';
 export const abs = (path: string) => new URL(path, SITE.url).href;
 
 /**
- * Person mit Expertise (`knowsAbout` → Themen-Hubs) und Presse (`subjectOf`).
- * Async, weil Themen & Presse aus den Collections kommen.
+ * Person ohne Verweise auf Unterseiten. Allein genutzt im Platzhalter-Modus
+ * (dort existieren nur / und die Rechtsseiten), sonst Basis von personSchema().
  */
-export async function personSchema() {
-  const topics = await getTopics();
-  const press = await getPress();
+export function personSchemaBase() {
   const sameAs = activeChannels().map((c) => c.url);
   return {
     '@type': 'Person',
@@ -26,12 +24,26 @@ export async function personSchema() {
     name: PERSON.name,
     givenName: PERSON.givenName,
     familyName: PERSON.familyName,
-    url: abs('/ueber/'),
+    url: abs('/'),
     image: abs(PERSON_IMAGE),
     jobTitle: PERSON.jobTitle,
     description: PERSON.description,
     nationality: PERSON.nationality,
     homeLocation: { '@type': 'Country', name: PERSON.homeLocation },
+    ...(sameAs.length ? { sameAs } : {}),
+  };
+}
+
+/**
+ * Person mit Expertise (`knowsAbout` → Themen-Hubs) und Presse (`subjectOf`).
+ * Async, weil Themen & Presse aus den Collections kommen.
+ */
+export async function personSchema() {
+  const topics = await getTopics();
+  const press = await getPress();
+  return {
+    ...personSchemaBase(),
+    url: abs('/ueber/'),
     knowsAbout: topics.map((t) => ({
       '@type': 'Thing',
       name: t.data.title,
@@ -39,7 +51,6 @@ export async function personSchema() {
       url: abs(`/themen/${t.id}/`),
       ...(t.data.sameAs ? { sameAs: t.data.sameAs } : {}),
     })),
-    ...(sameAs.length ? { sameAs } : {}),
     ...(press.length
       ? { subjectOf: press.map((p) => ({ '@type': 'NewsArticle', headline: p.data.title, publisher: { '@type': 'Organization', name: p.data.outlet }, datePublished: p.data.date.toISOString(), ...(p.data.url ? { url: p.data.url } : {}) })) }
       : {}),

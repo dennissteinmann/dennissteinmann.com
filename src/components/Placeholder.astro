@@ -1,0 +1,51 @@
+---
+/**
+ * Platzhalterseite „Im Aufbau“. Ersetzt im Produktions-Build die Startseite,
+ * solange LAUNCHED = false (src/lib/launch.ts). Nur der Briefkopf der
+ * Startseite: Wappen, Wortmarke, faktische Zeile, Kontakt.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Crest from '@/components/Crest.astro';
+import { SITE, PERSON, activeChannels } from '@/site.config';
+import { graph, personSchemaBase, websiteSchema } from '@/lib/seo';
+
+const channels = activeChannels();
+---
+
+<BaseLayout title={SITE.name} description={PERSON.description} type="profile" header={false}
+  jsonLd={graph(websiteSchema(), personSchemaBase())}>
+  <section class="wrap ph">
+    <Crest size="clamp(4rem, 3rem + 3.5vw, 6.5rem)" class="ph__crest" />
+    <h1 class="mark ph__name">{PERSON.givenName} {PERSON.familyName}</h1>
+    <hr class="rule rule--brass ph__rule" />
+    <p class="label ph__role"><span>{PERSON.jobTitle}</span><span class="ph__sep" aria-hidden="true"> · </span><span>{PERSON.homeLocation}</span></p>
+    <p class="ph__lead">Diese Website befindet sich im Aufbau.</p>
+    <p class="ph__links">
+      <a class="link" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      {channels.map((c) => <a class="link" href={c.url} rel="me noopener">{c.name}</a>)}
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Vertikal zentriert zwischen Seitenanfang und Fußzeile (body ist Flex-Spalte, main wächst). */
+  :global(main:has(> .ph)) { display: flex; }
+  .ph {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding-block: var(--s-6);
+  }
+  .ph :global(.ph__crest) { color: var(--navy); }
+  .ph__name {
+    margin-top: var(--s-5); font-size: clamp(2rem, 0.8rem + 5.2vw, 5.4rem); font-weight: var(--w-regular);
+    letter-spacing: var(--track-mark); padding-left: var(--track-mark); /* gleicht die Sperrung des letzten Buchstabens aus */
+    color: var(--ink); line-height: 1.1;
+  }
+  .ph__rule { margin-top: var(--s-5); }
+  .ph__role { margin-top: var(--s-4); color: var(--ink-soft); }
+  .ph__lead { margin-top: var(--s-5); font-size: var(--t-m); font-weight: var(--w-light); color: var(--ink-soft); }
+  .ph__links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s-2) var(--s-5); margin-top: var(--s-5); }
+  @media (max-width: 600px) {
+    .ph__role span { display: block; }
+    .ph__role .ph__sep { display: none; }
+  }
+</style>

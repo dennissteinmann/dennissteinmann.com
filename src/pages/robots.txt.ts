@@ -5,6 +5,7 @@
  */
 import type { APIRoute } from 'astro';
 import { SITE } from '@/site.config';
+import { PLACEHOLDER } from '@/lib/launch';
 
 const AI_AGENTS = [
   'GPTBot', 'OAI-SearchBot', 'ChatGPT-User',
@@ -24,8 +25,8 @@ export const GET: APIRoute = () => {
     ...AI_AGENTS.flatMap((a) => [`User-agent: ${a}`, 'Allow: /', 'Disallow: /social/', 'Disallow: /studio/', 'Disallow: /admin/', '']),
     `Sitemap: ${SITE.url}/sitemap.xml`,
     '',
-    `# Maschinenlesbare Übersicht: ${SITE.url}/llms.txt`,
-    '',
+    // llms.txt wird im Platzhalter-Modus nicht ausgeliefert.
+    ...(PLACEHOLDER ? [] : [`# Maschinenlesbare Übersicht: ${SITE.url}/llms.txt`, '']),
   ].join('\n');
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 };

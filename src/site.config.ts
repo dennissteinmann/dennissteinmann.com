@@ -3,6 +3,15 @@
  * Alles, was an mehr als einer Stelle auftaucht, wird HIER gepflegt.
  */
 
+/**
+ * Livegang-Schalter (docs/DEPLOYMENT.md → „Platzhalter-Modus“).
+ * `false`: Der Produktions-Build liefert nur die Platzhalterseite „Im Aufbau“
+ * plus Impressum und Datenschutz – alles andere wird gebaut und geprüft, aber
+ * nicht ausgeliefert. `npm run dev` zeigt weiterhin die vollständige Seite.
+ * `true`: vollständige Seite geht live (nächster Push auf main).
+ */
+export const LAUNCHED: boolean = false;
+
 export const SITE = {
   url: 'https://dennissteinmann.com',
   name: 'Dennis Steinmann',
@@ -12,6 +21,7 @@ export const SITE = {
     'Dennis Steinmann ist Unternehmer und Produktentwickler aus Deutschland. Diese Seite bündelt seine Projekte, Explorationen, Medien und Presse an einem Ort.',
   /** Identitätszeile (Startseite & Standard-OG-Bild). Faktisch, kein Pathos. */
   statement: 'Unternehmer und Produktentwickler aus Deutschland.',
+  email: 'hello@dennissteinmann.com',
   motto: 'Gradatim Ferociter',
   mottoTranslation: 'Schritt für Schritt, mit Entschlossenheit.',
   startYear: 2026,

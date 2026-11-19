@@ -21,6 +21,30 @@ npm run preview    # fertigen Build lokal ansehen
 
 Solange die Secrets fehlen, läuft nur der Build (Deploy wird mit Warnung übersprungen).
 
+## Platzhalter-Modus (vor dem Livegang)
+
+Schalter: `LAUNCHED` in `src/site.config.ts`. Solange er `false` ist, gilt:
+
+| | Platzhalter (`LAUNCHED = false`) | Livegang (`LAUNCHED = true`) |
+|---|---|---|
+| `npm run dev` | vollständige Seite (zum Weiterarbeiten) | vollständige Seite |
+| `npm run build` / Server | nur `/` = „Im Aufbau“ (Wappen, Name, Rolle, E-Mail), `/impressum/`, `/datenschutz/`, `404.html`, `robots.txt`, `sitemap.xml` (nur `/`), Icons, `og/default.png`, Personenbild, `/admin/` (CMS) | alles |
+
+So funktioniert es:
+- `src/lib/launch.ts` → `PLACEHOLDER` (= `!LAUNCHED` im Produktions-Build). Startseite
+  (`src/components/Placeholder.astro`), Kopf-/Fußzeile, `SEO.astro`, 404, Sitemap und
+  robots.txt zeigen dann nur, was auch ausgeliefert wird – keine toten Links.
+- Der Build rendert und prüft trotzdem **alle** Seiten (Typen, Schemas, Rendern). Danach
+  entfernt die Integration `scripts/placeholder.mjs` alles aus `dist/`, was nicht auf der
+  Liste `PLACEHOLDER_KEEP` steht, und auch nicht referenzierte Dateien in `_astro/`.
+- `scripts/check-dist.mjs` schlägt fehl, falls im Platzhalter-Modus etwas außerhalb der
+  Liste ausgeliefert wird. `rsync --delete` räumt den Server entsprechend auf.
+- Platzhalter lokal ansehen: `npm run build && npm run preview`.
+
+**Livegang:** `LAUNCHED = true` setzen → `npm run verify` → Push auf `main`. Danach kann
+der Platzhalter-Code (`launch.ts`, `Placeholder.astro`, `placeholder.mjs` und die
+`PLACEHOLDER`-Zweige) entfernt oder für spätere Wartungsphasen behalten werden.
+
 ### Einmalige Einrichtung
 
 1. In CloudPanel eine **Static HTML Site** für `dennissteinmann.com` anlegen
